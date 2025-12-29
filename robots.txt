@@ -1,0 +1,27 @@
+User-agent: *
+Disallow: /assets/docs/
+Disallow: /assets/docs/*.pdf
+
+# Block all PDF files from being crawled
+Disallow: /*.pdf$
+
+# Allow crawling of everything else
+Allow: /
+
+# Specifically block search engine crawlers from PDFs
+User-agent: googlebot
+Disallow: /assets/docs/
+Disallow: /*.pdf$
+
+User-agent: bingbot
+Disallow: /assets/docs/
+Disallow: /*.pdf$
+
+# Block scholarly search engines
+User-agent: google-scholar
+Disallow: /assets/docs/
+Disallow: /*.pdf$
+
+User-agent: scholar
+Disallow: /assets/docs/
+Disallow: /*.pdf$
