@@ -3,7 +3,7 @@ main:
   - title: "Securing On-device Transformer with Hardware Binding and Reversible Obfuscation"
     authors: <strong>Peichun Hua</strong>, Hanxiu Zhang, Tuo Li, and Yue Zheng
     conference_short: ACSAC
-    conference: The 41st Annual Computer Security Applications Conference <strong>(ACSAC)</strong>, 2025.
+    conference: The 41st Annual Computer Security Applications Conference <strong>(ACSAC)</strong>, 2025 (Acceptance Rate: 84/446 ≈ 18.8%).
     pdf: /assets/files/ACSAC2025-Final.pdf
     code: https://github.com/sarendis56/PUF-Transformer-IP-Protection
     slides: /assets/files/ACSAC2025-Slides.pdf
