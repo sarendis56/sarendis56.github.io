@@ -3,11 +3,11 @@ main:
   - title: "Securing On-device Transformer with Hardware Binding and Reversible Obfuscation"
     authors: <strong>Peichun Hua</strong>, Hanxiu Zhang, Tuo Li, and Yue Zheng
     conference_short: ACSAC
-    conference: The 41st Annual Computer Security Applications Conference <strong>(ACSAC)</strong>, 2025 (Acceptance Rate: 84/446 ≈ 18.8%).
+    conference: "The 41st Annual Computer Security Applications Conference (ACSAC), 2025."
     pdf: /assets/files/ACSAC2025-Final.pdf
     code: https://github.com/sarendis56/PUF-Transformer-IP-Protection
     slides: /assets/files/ACSAC2025-Slides.pdf
-    notes: Artifact Available, Artifact Reviewed, Artifact Reproducible (IEEE Badges)
+    notes: "Artifact Available, Artifact Reviewed, Artifact Reproducible (IEEE Badges). Acceptance Rate: 84/446 ≈ 18.8%."
 
   - title: "Rethinking Jailbreak Detection of Large Vision Language Models with Representational Contrastive Scoring"
     authors: <strong>Peichun Hua</strong>, Hao Li, Shanghao Shi, Zhiyuan Yu, and Ning Zhang
