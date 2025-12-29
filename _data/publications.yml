@@ -4,9 +4,9 @@ main:
     authors: <strong>Peichun Hua</strong>, Hanxiu Zhang, Tuo Li, and Yue Zheng
     conference_short: ACSAC
     conference: "The 41st Annual Computer Security Applications Conference (ACSAC), 2025."
-    pdf: /assets/files/ACSAC2025-Final.pdf
+    pdf: /assets/docs/ACSAC2025-Final.pdf
     code: https://github.com/sarendis56/PUF-Transformer-IP-Protection
-    slides: /assets/files/ACSAC2025-Slides.pdf
+    slides: /assets/docs/ACSAC2025-Slides.pdf
     notes: "Artifact Available, Artifact Reviewed, Artifact Reproducible (IEEE Badges). Acceptance Rate: 84/446 ≈ 18.8%."
 
   - title: "Rethinking Jailbreak Detection of Large Vision Language Models with Representational Contrastive Scoring"
@@ -20,5 +20,5 @@ main:
     authors: <strong>Peichun Hua</strong>, Hanxiu Zhang, Tuo Li, Yue Zheng, and Wenye Liu
     conference_short: ISCAS
     conference: IEEE International Symposium on Circuits and Systems <strong>(ISCAS)</strong>, 2026.
-    pdf: /assets/files/ISCAS2026.pdf
+    pdf: /assets/docs/ISCAS2026.pdf
     notes: Accepted
