@@ -7,6 +7,7 @@ main:
     pdf: /assets/docs/ACSAC2025-Final.pdf
     code: https://github.com/sarendis56/PUF-Transformer-IP-Protection
     slides: /assets/docs/ACSAC2025-Slides.pdf
+    video: https://youtu.be/DKuIktFB190
     notes: "Artifact Available, Artifact Reviewed, Artifact Reproducible (IEEE Badges). Acceptance Rate: 84/446 ≈ 18.8%."
 
   - title: "Rethinking Jailbreak Detection of Large Vision Language Models with Representational Contrastive Scoring"
