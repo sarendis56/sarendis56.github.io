@@ -1,0 +1,27 @@
+{% if site.data.awards %}
+
+<h2>Awards</h2>
+
+{% for group in site.data.awards.main %}
+
+<h4 style="margin:0 10px 0;">{{ group[0] }}</h4>
+
+<ul style="margin:0 0 5px;">
+  {% for award in group[1] %}
+  <li style="margin-bottom: 8px;">
+    {% if award.link %}
+    <a href="{{ award.link }}" target="_blank">
+      <autocolor>{{ award.title }}</autocolor>
+    </a>
+    {% else %}
+    <autocolor>{{ award.title }}</autocolor>
+    {% endif %}
+    {% if award.details %}
+    <span style="color: #666; font-size: 0.9em;"> — {{ award.details }}</span>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+
+{% endfor %}
+{% endif %}
