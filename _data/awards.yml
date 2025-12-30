@@ -9,7 +9,7 @@ main:
   ]
   - ["Research Awards",
      [
-       {"title": "Student Conferenceship, 41st Annual Computer Security Applications Conference (ACSAC 2025)", "details": "", "link": "https://www.acsac.org/2025/submissions/conferenceships/"},
+       {"title": "Student Conferenceship, 41st Annual Computer Security Applications Conference (ACSAC 2025)", "details": "Dec. 2025", "link": "https://www.acsac.org/2025/submissions/conferenceships/"},
        {"title": "Artifact Available, Artifact Reviewed, and Artifact Reproducible Badges — IEEE", "details": "for paper 'Securing On-device Transformer with Hardware Binding and Reversible Obfuscation' at ACSAC 2025"},
        {"title": "Fully Funded International Research Internship — McKelvey School of Engineering, Washington University in St. Louis", "details": "Summer 2025"}
      ]
