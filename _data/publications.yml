@@ -8,6 +8,14 @@ main:
     code: https://github.com/sarendis56/PUF-Transformer-IP-Protection
     slides: /assets/docs/ACSAC2025-Slides.pdf
     video: https://youtu.be/DKuIktFB190
+    bibtex: |
+      @inproceedings{hua2025securing,
+        title={Securing On-device Transformer with Hardware Binding and Reversible Obfuscation},
+        author={Hua, Peichun and Zhang, Hanxiu and Li, Tuo and Zheng, Yue},
+        booktitle={The 41st Annual Computer Security Applications Conference (ACSAC)},
+        year={2025},
+        organization={IEEE}
+      }
     notes: |
       Artifact Available, Artifact Reviewed, Artifact Reproducible (IEEE Badges).
       Acceptance Rate: 84/446 ≈ 18.8%.
@@ -18,11 +26,30 @@ main:
     conference: arXiv
     pdf: https://arxiv.org/pdf/2512.12069
     code: https://github.com/sarendis56/Jailbreak_Detection_RCS
+    bibtex: |
+      @article{hua2025rethinking,
+          author = {Hua, Peichun and Li, Hao and Shi, Shanghao and Yu, Zhiyuan and Zhang, Ning},
+          journal = {ArXiv preprint},
+          title = {Rethinking Jailbreak Detection of Large Vision Language Models with Representational Contrastive Scoring},
+          url = {https://arxiv.org/abs/2512.12069},
+          volume = {abs/2512.12069},
+          year = {2025}
+      }
+
 
   - title: "Live Demonstration: Hardware-Bound IP Protection for Edge-deployed Transformers"
     authors: <strong>Peichun Hua</strong>, Hanxiu Zhang, Tuo Li, Yue Zheng, and Wenye Liu
     conference_short: ISCAS
     conference: IEEE International Symposium on Circuits and Systems <strong>(ISCAS)</strong>, 2026.
     pdf: /assets/docs/ISCAS2026.pdf
+    bibtex: |
+      @inproceedings{hua2026live,
+        title={Live Demonstration: Hardware-Bound IP Protection for Edge-deployed Transformers},
+        author={Hua, Peichun and Zhang, Hanxiu and Li, Tuo and Zheng, Yue and Liu, Wenye},
+        booktitle={IEEE International Symposium on Circuits and Systems (ISCAS)},
+        year={2026},
+        organization={IEEE}
+      }
     notes: |
-      Accepted
+      Accepted. Acceptance Rate: ?
+    

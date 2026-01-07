@@ -51,6 +51,10 @@
             <strong><i style="color:#e74d3c">{{ link.notes }}</i></strong>
           </div>
           {% endif %}
+
+          {% if link.bibtex %}
+          <div id="{{ link.title | slugify }}-bibtex" style="display:none;">{{ link.bibtex }}</div>
+          {% endif %}
         </div>
       </div>
     </li>
