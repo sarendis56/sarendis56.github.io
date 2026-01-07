@@ -39,8 +39,8 @@
               style="font-size:12px;">Video</a>
             {% endif %}
             {% if link.bibtex %}
-            <a href="{{ link.bibtex }}" class="btn btn-sm z-depth-0" role="button" target="_blank"
-              style="font-size:12px;">BibTex</a>
+            <a href="#" onclick="event.preventDefault(); copyBibtex('{{ link.title | slugify }}-bibtex', this); return false;" class="btn btn-sm z-depth-0" role="button"
+              style="font-size:12px;">Bib</a>
             {% endif %}
             {% if link.others %}
             {{ link.others }}
