@@ -6,7 +6,7 @@ main:
     conference: "The 41st Annual Computer Security Applications Conference (ACSAC), 2025."
     pdf: /assets/docs/ACSAC2025-Final.pdf
     code: https://github.com/sarendis56/PUF-Transformer-IP-Protection
-    slides: /assets/docs/ACSAC2025-Slides.pdf
+    slides: https://www.acsac.org/2025/files/web/acsac2025-128-hua.pdf
     video: https://youtu.be/DKuIktFB190
     bibtex: |
       @inproceedings{hua2025securing,
@@ -51,5 +51,5 @@ main:
         organization={IEEE}
       }
     notes: |
-      Accepted. Acceptance Rate: To be announced.
+      Accepted. Acceptance Rate: 1032/2012 ≈ 51.3%.
     
