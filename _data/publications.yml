@@ -12,9 +12,12 @@ main:
       @inproceedings{hua2025securing,
         title={Securing On-device Transformer with Hardware Binding and Reversible Obfuscation},
         author={Hua, Peichun and Zhang, Hanxiu and Li, Tuo and Zheng, Yue},
-        booktitle={The 41st Annual Computer Security Applications Conference (ACSAC)},
+        pages={956-972},
+        booktitle={2025 IEEE Annual Computer Security Applications Conference (ACSAC)}, 
         year={2025},
-        organization={IEEE}
+        organization={IEEE},
+        keywords={Deep learning;Computational modeling;Intellectual property;Transformers;Physical unclonable function;Hardware;Software;Data models;Protection;Software development management;Intellectual Property;Transformer;Model Stealing Attacks;Physical Unclonable Functions},
+        doi={10.1109/ACSAC67867.2025.00079}}
       }
     notes: |
       Artifact Available, Artifact Reviewed, Artifact Reproducible (IEEE Badges).
