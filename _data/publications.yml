@@ -4,7 +4,7 @@ main:
     authors: <strong>Peichun Hua</strong>, Hanxiu Zhang, Tuo Li, and Yue Zheng
     conference_short: ACSAC
     conference: "The 41st Annual Computer Security Applications Conference (ACSAC), 2025."
-    pdf: /assets/docs/ACSAC2025-Final.pdf
+    pdf: https://ieeexplore.ieee.org/document/11391918
     code: https://github.com/sarendis56/PUF-Transformer-IP-Protection
     slides: https://www.acsac.org/2025/files/web/acsac2025-128-hua.pdf
     video: https://youtu.be/DKuIktFB190
