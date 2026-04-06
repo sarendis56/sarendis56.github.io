@@ -25,8 +25,8 @@ main:
       
   - title: "Rethinking Jailbreak Detection of Large Vision Language Models with Representational Contrastive Scoring"
     authors: <strong>Peichun Hua</strong>, Hao Li, Shanghao Shi, Zhiyuan Yu, and Ning Zhang
-    conference_short: Preprint
-    conference: arXiv
+    conference_short: ACL
+    conference: "The 64th Annual Meeting of the Association for Computational Linguistics (ACL), 2026."
     pdf: https://arxiv.org/pdf/2512.12069
     code: https://github.com/sarendis56/Jailbreak_Detection_RCS
     bibtex: |
