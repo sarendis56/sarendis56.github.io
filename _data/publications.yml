@@ -38,6 +38,8 @@ main:
           volume = {abs/2512.12069},
           year = {2025}
       }
+    notes: |
+      Accepted as Oral Presentation of Main Conference.
 
 
   - title: "Live Demonstration: Hardware-Bound IP Protection for Edge-deployed Transformers"
