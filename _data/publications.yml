@@ -1,4 +1,37 @@
 main:
+  - title: "Rethinking Jailbreak Detection of Large Vision Language Models with Representational Contrastive Scoring"
+    authors: <strong>Peichun Hua</strong>, Hao Li, Shanghao Shi, Zhiyuan Yu, and Ning Zhang
+    conference_short: ACL
+    conference: "The 64th Annual Meeting of the Association for Computational Linguistics (ACL), 2026."
+    pdf: https://arxiv.org/pdf/2512.12069
+    code: https://github.com/sarendis56/Jailbreak_Detection_RCS
+    bibtex: |
+      @article{hua2025rethinking,
+          author = {Hua, Peichun and Li, Hao and Shi, Shanghao and Yu, Zhiyuan and Zhang, Ning},
+          journal = {ArXiv preprint},
+          title = {Rethinking Jailbreak Detection of Large Vision Language Models with Representational Contrastive Scoring},
+          url = {https://arxiv.org/abs/2512.12069},
+          volume = {abs/2512.12069},
+          year = {2025}
+      }
+    notes: |
+      Accepted as Oral Presentation of Main Conference. Acceptance Rate: around 2300/12148 ≈ 19%.
+
+  - title: "Live Demonstration: Hardware-Bound IP Protection for Edge-deployed Transformers"
+    authors: <strong>Peichun Hua</strong>, Hanxiu Zhang, Tuo Li, Yue Zheng, and Wenye Liu
+    conference_short: ISCAS
+    conference: IEEE International Symposium on Circuits and Systems <strong>(ISCAS)</strong>, 2026.
+    pdf: /assets/docs/ISCAS2026.pdf
+    bibtex: |
+      @inproceedings{hua2026live,
+        title={Live Demonstration: Hardware-Bound IP Protection for Edge-deployed Transformers},
+        author={Hua, Peichun and Zhang, Hanxiu and Li, Tuo and Zheng, Yue and Liu, Wenye},
+        booktitle={IEEE International Symposium on Circuits and Systems (ISCAS)},
+        year={2026},
+        organization={IEEE}
+      }
+    notes: |
+      Accepted. Acceptance Rate: 1032/2012 ≈ 51.3%.
 
   - title: "Securing On-device Transformer with Hardware Binding and Reversible Obfuscation"
     authors: <strong>Peichun Hua</strong>, Hanxiu Zhang, Tuo Li, and Yue Zheng
@@ -22,39 +55,4 @@ main:
     notes: |
       Acceptance Rate: 84/446 ≈ 18.8%.
       Artifact Available, Artifact Reviewed, Artifact Reproducible (IEEE Badges, 34/84 among accepted papers).
-      
-  - title: "Rethinking Jailbreak Detection of Large Vision Language Models with Representational Contrastive Scoring"
-    authors: <strong>Peichun Hua</strong>, Hao Li, Shanghao Shi, Zhiyuan Yu, and Ning Zhang
-    conference_short: ACL
-    conference: "The 64th Annual Meeting of the Association for Computational Linguistics (ACL), 2026."
-    pdf: https://arxiv.org/pdf/2512.12069
-    code: https://github.com/sarendis56/Jailbreak_Detection_RCS
-    bibtex: |
-      @article{hua2025rethinking,
-          author = {Hua, Peichun and Li, Hao and Shi, Shanghao and Yu, Zhiyuan and Zhang, Ning},
-          journal = {ArXiv preprint},
-          title = {Rethinking Jailbreak Detection of Large Vision Language Models with Representational Contrastive Scoring},
-          url = {https://arxiv.org/abs/2512.12069},
-          volume = {abs/2512.12069},
-          year = {2025}
-      }
-    notes: |
-      Accepted as Oral Presentation of Main Conference.
-
-
-  - title: "Live Demonstration: Hardware-Bound IP Protection for Edge-deployed Transformers"
-    authors: <strong>Peichun Hua</strong>, Hanxiu Zhang, Tuo Li, Yue Zheng, and Wenye Liu
-    conference_short: ISCAS
-    conference: IEEE International Symposium on Circuits and Systems <strong>(ISCAS)</strong>, 2026.
-    pdf: /assets/docs/ISCAS2026.pdf
-    bibtex: |
-      @inproceedings{hua2026live,
-        title={Live Demonstration: Hardware-Bound IP Protection for Edge-deployed Transformers},
-        author={Hua, Peichun and Zhang, Hanxiu and Li, Tuo and Zheng, Yue and Liu, Wenye},
-        booktitle={IEEE International Symposium on Circuits and Systems (ISCAS)},
-        year={2026},
-        organization={IEEE}
-      }
-    notes: |
-      Accepted. Acceptance Rate: 1032/2012 ≈ 51.3%.
     
