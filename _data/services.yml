@@ -1,7 +1,7 @@
 main:
   - ["2025",
      [
-       {"title": "Reviewer, IEEE Transactions on Audio, Speech, and Language Processing (TASLP)", "link": "https://ieeexplore.ieee.org/xpl/RecentIssue.jsp?punumber=10376"},
+       {"title": "Reviewer, IEEE/ACM Transactions on Audio, Speech, and Language Processing (TASLP)", "link": "https://ieeexplore.ieee.org/xpl/RecentIssue.jsp?punumber=10376"},
        {"title": "Reviewer, ACL Rolling Review", "link": "https://aclrollingreview.org/"}
      ]
   ]
