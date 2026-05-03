@@ -1,6 +1,6 @@
 main:
   - title: "Rethinking Jailbreak Detection of Large Vision Language Models with Representational Contrastive Scoring"
-    authors: <strong>Peichun Hua</strong>, Hao Li, Shanghao Shi, Zhiyuan Yu, and Ning Zhang
+    authors: <strong>Peichun Hua</strong>, <a href="https://leolee99.github.io/" target="_blank">Hao Li</a>, <a href="https://shishishi123.github.io/" target="_blank">Shanghao Shi</a>, <a href="https://zhiyuanyu.org/" target="_blank">Zhiyuan Yu</a>, and <a href="https://cybersecurity.seas.wustl.edu/" target="_blank">Ning Zhang</a>
     conference_short: ACL
     conference: "The 64th Annual Meeting of the Association for Computational Linguistics (ACL), 2026."
     pdf: https://arxiv.org/pdf/2512.12069
@@ -18,7 +18,7 @@ main:
       Accepted as Oral Presentation of Main Conference. Acceptance Rate: around 2300/12148 ≈ 19%.
 
   - title: "Live Demonstration: Hardware-Bound IP Protection for Edge-deployed Transformers"
-    authors: <strong>Peichun Hua</strong>, Hanxiu Zhang, Tuo Li, Yue Zheng, and Wenye Liu
+    authors: <strong>Peichun Hua</strong>, <a href="https://hanxiuzhang.github.io/" target="_blank">Hanxiu Zhang</a>, Tuo Li, <a href="https://myweb.cuhk.edu.cn/zhengyue" target="_blank">Yue Zheng</a>, and Wenye Liu
     conference_short: ISCAS
     conference: IEEE International Symposium on Circuits and Systems <strong>(ISCAS)</strong>, 2026.
     pdf: /assets/docs/ISCAS2026.pdf
@@ -34,7 +34,7 @@ main:
       Accepted. Acceptance Rate: 1032/2012 ≈ 51.3%.
 
   - title: "Securing On-device Transformer with Hardware Binding and Reversible Obfuscation"
-    authors: <strong>Peichun Hua</strong>, Hanxiu Zhang, Tuo Li, and Yue Zheng
+    authors: <strong>Peichun Hua</strong>, <a href="https://hanxiuzhang.github.io/" target="_blank">Hanxiu Zhang</a>, Tuo Li, and <a href="https://myweb.cuhk.edu.cn/zhengyue" target="_blank">Yue Zheng</a>
     conference_short: ACSAC
     conference: "The 41st Annual Computer Security Applications Conference (ACSAC), 2025."
     pdf: https://ieeexplore.ieee.org/document/11391918
