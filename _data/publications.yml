@@ -1,4 +1,19 @@
 main:
+  - title: "A Unified Open-Set Framework for Scalable PUF-Based Authentication of Heterogeneous IoT Devices"
+    authors: <a href="https://github.com/WANGXinuuu1" target="_blank">Xin Wang</a>, <strong>Peichun Hua</strong>, <a href="https://personal.ntu.edu.sg/echchang/home.htm" target="_blank">Chip Hong Chang</a>, Wenye Liu, <a href="https://myweb.cuhk.edu.cn/zhengyue" target="_blank">Yue Zheng</a>
+    conference_short: arxiv
+    conference: "arXiv preprint"
+    pdf: https://arxiv.org/pdf/2605.07340
+    bibtex: |
+      @article{wang2026openpuf,
+        title={A Unified Open-Set Framework for Scalable PUF-Based Authentication of Heterogeneous IoT Devices}, 
+        author={Xin Wang and Peichun Hua and Chip Hong Chang and Wenye Liu and Yue Zheng},
+        year={2026},
+        eprint={2605.07340},
+        archivePrefix={arXiv},
+        primaryClass={cs.CR},
+        url={https://arxiv.org/abs/2605.07340}, 
+      }
   - title: "Rethinking Jailbreak Detection of Large Vision Language Models with Representational Contrastive Scoring"
     authors: <strong>Peichun Hua</strong>, <a href="https://leolee99.github.io/" target="_blank">Hao Li</a>, <a href="https://shishishi123.github.io/" target="_blank">Shanghao Shi</a>, <a href="https://zhiyuanyu.org/" target="_blank">Zhiyuan Yu</a>, and <a href="https://cybersecurity.seas.wustl.edu/" target="_blank">Ning Zhang</a>
     conference_short: ACL
@@ -22,6 +37,7 @@ main:
     conference_short: ISCAS
     conference: IEEE International Symposium on Circuits and Systems <strong>(ISCAS)</strong>, 2026.
     pdf: /assets/docs/ISCAS2026.pdf
+    code: https://github.com/sarendis56/owl-vit#iscas-2026-demo-setup-and-evaluation-guide
     bibtex: |
       @inproceedings{hua2026live,
         title={Live Demonstration: Hardware-Bound IP Protection for Edge-deployed Transformers},
