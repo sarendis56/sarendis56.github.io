@@ -2,7 +2,7 @@ main:
   - title: "A Unified Open-Set Framework for Scalable PUF-Based Authentication of Heterogeneous IoT Devices"
     authors: <a href="https://github.com/WANGXinuuu1" target="_blank">Xin Wang</a>, <strong>Peichun Hua</strong>, <a href="https://personal.ntu.edu.sg/echchang/home.htm" target="_blank">Chip Hong Chang</a>, Wenye Liu, <a href="https://myweb.cuhk.edu.cn/zhengyue" target="_blank">Yue Zheng</a>
     conference_short: arxiv
-    conference: "arXiv preprint"
+    conference: "arXiv preprint."
     pdf: https://arxiv.org/pdf/2605.07340
     bibtex: |
       @article{wang2026openpuf,
@@ -14,6 +14,7 @@ main:
         primaryClass={cs.CR},
         url={https://arxiv.org/abs/2605.07340}, 
       }
+
   - title: "Rethinking Jailbreak Detection of Large Vision Language Models with Representational Contrastive Scoring"
     authors: <strong>Peichun Hua</strong>, <a href="https://leolee99.github.io/" target="_blank">Hao Li</a>, <a href="https://shishishi123.github.io/" target="_blank">Shanghao Shi</a>, <a href="https://zhiyuanyu.org/" target="_blank">Zhiyuan Yu</a>, and <a href="https://cybersecurity.seas.wustl.edu/" target="_blank">Ning Zhang</a>
     conference_short: ACL
@@ -30,7 +31,7 @@ main:
           year = {2025}
       }
     notes: |
-      Accepted as Oral Presentation of Main Conference. Acceptance Rate: around 2300/12148 ≈ 19%.
+      Accepted as Oral Presentation of Main Conference (Top 20% of Accepted Papers). Acceptance Rate: around 2300/12148 ≈ 19%.
 
   - title: "Live Demonstration: Hardware-Bound IP Protection for Edge-deployed Transformers"
     authors: <strong>Peichun Hua</strong>, <a href="https://hanxiuzhang.github.io/" target="_blank">Hanxiu Zhang</a>, Tuo Li, <a href="https://myweb.cuhk.edu.cn/zhengyue" target="_blank">Yue Zheng</a>, and Wenye Liu
@@ -47,7 +48,7 @@ main:
         organization={IEEE}
       }
     notes: |
-      Accepted. Acceptance Rate: 1032/2012 ≈ 51.3%.
+      Accepted for Live Presentation.
 
   - title: "Securing On-device Transformer with Hardware Binding and Reversible Obfuscation"
     authors: <strong>Peichun Hua</strong>, <a href="https://hanxiuzhang.github.io/" target="_blank">Hanxiu Zhang</a>, Tuo Li, and <a href="https://myweb.cuhk.edu.cn/zhengyue" target="_blank">Yue Zheng</a>
