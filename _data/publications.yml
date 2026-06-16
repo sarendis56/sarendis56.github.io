@@ -1,19 +1,19 @@
 main:
   - title: "A Unified Open-Set Framework for Scalable PUF-Based Authentication of Heterogeneous IoT Devices"
     authors: <a href="https://github.com/WANGXinuuu1" target="_blank">Xin Wang</a>, <strong>Peichun Hua</strong>, <a href="https://personal.ntu.edu.sg/echchang/home.htm" target="_blank">Chip Hong Chang</a>, Wenye Liu, <a href="https://myweb.cuhk.edu.cn/zhengyue" target="_blank">Yue Zheng</a>
-    conference_short: arxiv
-    conference: "arXiv preprint."
+    conference_short: SMC
+    conference: IEEE International Conference on Systems, Man, and Cybernetics <strong>(SMC)</strong>, 2026.
     pdf: https://arxiv.org/pdf/2605.07340
     bibtex: |
-      @article{wang2026openpuf,
-        title={A Unified Open-Set Framework for Scalable PUF-Based Authentication of Heterogeneous IoT Devices}, 
+      @inproceedings{wang2026openpuf,
+        title={A Unified Open-Set Framework for Scalable PUF-Based Authentication of Heterogeneous IoT Devices},
         author={Xin Wang and Peichun Hua and Chip Hong Chang and Wenye Liu and Yue Zheng},
+        booktitle={IEEE International Conference on Systems, Man, and Cybernetics (SMC)},
         year={2026},
-        eprint={2605.07340},
-        archivePrefix={arXiv},
-        primaryClass={cs.CR},
-        url={https://arxiv.org/abs/2605.07340}, 
+        organization={IEEE}
       }
+    notes: |
+      Accepted.
 
   - title: "Rethinking Jailbreak Detection of Large Vision Language Models with Representational Contrastive Scoring"
     authors: <strong>Peichun Hua</strong>, <a href="https://leolee99.github.io/" target="_blank">Hao Li</a>, <a href="https://shishishi123.github.io/" target="_blank">Shanghao Shi</a>, <a href="https://zhiyuanyu.org/" target="_blank">Zhiyuan Yu</a>, and <a href="https://cybersecurity.seas.wustl.edu/" target="_blank">Ning Zhang</a>
