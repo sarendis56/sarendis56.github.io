@@ -50,7 +50,7 @@ main:
         organization={IEEE}
       }
     notes: |
-      Accepted for Live Presentation.
+      Accepted for Live Presentation. Acceptance Rate: 869/1673 ≈ 51.9%.
 
   - title: "Securing On-device Transformer with Hardware Binding and Reversible Obfuscation"
     authors: <strong>Peichun Hua</strong>, <a href="https://hanxiuzhang.github.io/" target="_blank">Hanxiu Zhang</a>, Tuo Li, and <a href="https://myweb.cuhk.edu.cn/zhengyue" target="_blank">Yue Zheng</a>
