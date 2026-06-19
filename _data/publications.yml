@@ -33,18 +33,20 @@ main:
     notes: |
       Accepted as Oral Presentation of Main Conference (Top 20% of Accepted Papers). Acceptance Rate: around 2300/12148 ≈ 19%.
 
-  - title: "Live Demonstration: Hardware-Bound IP Protection for Edge-deployed Transformers"
+  - title: "Live Demonstration: Hardware-Bound IP Protection for OWL-ViT on Edge Devices"
     authors: <strong>Peichun Hua</strong>, <a href="https://hanxiuzhang.github.io/" target="_blank">Hanxiu Zhang</a>, Tuo Li, <a href="https://myweb.cuhk.edu.cn/zhengyue" target="_blank">Yue Zheng</a>, and Wenye Liu
     conference_short: ISCAS
     conference: IEEE International Symposium on Circuits and Systems <strong>(ISCAS)</strong>, 2026.
-    pdf: /assets/docs/ISCAS2026.pdf
+    pdf: https://ieeexplore.ieee.org/document/11562768
     code: https://github.com/sarendis56/owl-vit#iscas-2026-demo-setup-and-evaluation-guide
     bibtex: |
       @inproceedings{hua2026live,
-        title={Live Demonstration: Hardware-Bound IP Protection for Edge-deployed Transformers},
+        title={Live Demonstration: Hardware-Bound IP Protection for OWL-ViT on Edge Devices},
         author={Hua, Peichun and Zhang, Hanxiu and Li, Tuo and Zheng, Yue and Liu, Wenye},
         booktitle={IEEE International Symposium on Circuits and Systems (ISCAS)},
         year={2026},
+        pages={10-10},
+        doi={10.1109/ISCAS66217.2026.11562768}}
         organization={IEEE}
       }
     notes: |
