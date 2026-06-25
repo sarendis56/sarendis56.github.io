@@ -19,16 +19,20 @@ main:
     authors: <strong>Peichun Hua</strong>, <a href="https://leolee99.github.io/" target="_blank">Hao Li</a>, <a href="https://shishishi123.github.io/" target="_blank">Shanghao Shi</a>, <a href="https://zhiyuanyu.org/" target="_blank">Zhiyuan Yu</a>, and <a href="https://cybersecurity.seas.wustl.edu/" target="_blank">Ning Zhang</a>
     conference_short: ACL
     conference: "The 64th Annual Meeting of the Association for Computational Linguistics (ACL), 2026."
-    pdf: https://arxiv.org/pdf/2512.12069
+    pdf: https://aclanthology.org/2026.acl-long.992.pdf
     code: https://github.com/sarendis56/Jailbreak_Detection_RCS
     bibtex: |
-      @article{hua2025rethinking,
+      @inproceedings{hua2026rethinking,
           author = {Hua, Peichun and Li, Hao and Shi, Shanghao and Yu, Zhiyuan and Zhang, Ning},
-          journal = {ArXiv preprint},
-          title = {Rethinking Jailbreak Detection of Large Vision Language Models with Representational Contrastive Scoring},
-          url = {https://arxiv.org/abs/2512.12069},
-          volume = {abs/2512.12069},
-          year = {2025}
+          editor = {Liakata, Maria and Moreira, Viviane P. and Zhang, Jiajun and Jurgens, David},
+          booktitle = "Proceedings of the 64th Annual Meeting of the {A}ssociation for {C}omputational {L}inguistics (Volume 1: Long Papers)",
+          month = jul,
+          year = "2026",
+          address = "San Diego, California, United States",
+          publisher = "Association for Computational Linguistics",
+          url = "https://aclanthology.org/2026.acl-long.992/",
+          pages = "21748--21785",
+          ISBN = "979-8-89176-390-6",
       }
     notes: |
       Accepted as Oral Presentation of Main Conference (Top 20% of Accepted Papers). Acceptance Rate: around 2300/12148 ≈ 19%.
@@ -46,7 +50,7 @@ main:
         booktitle={IEEE International Symposium on Circuits and Systems (ISCAS)},
         year={2026},
         pages={10-10},
-        doi={10.1109/ISCAS66217.2026.11562768}}
+        doi={10.1109/ISCAS66217.2026.11562768},
         organization={IEEE}
       }
     notes: |
@@ -69,7 +73,7 @@ main:
         year={2025},
         organization={IEEE},
         keywords={Deep learning;Computational modeling;Intellectual property;Transformers;Physical unclonable function;Hardware;Software;Data models;Protection;Software development management;Intellectual Property;Transformer;Model Stealing Attacks;Physical Unclonable Functions},
-        doi={10.1109/ACSAC67867.2025.00079}}
+        doi={10.1109/ACSAC67867.2025.00079},
       }
     notes: |
       Acceptance Rate: 84/446 ≈ 18.8%.
