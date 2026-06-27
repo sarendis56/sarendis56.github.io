@@ -23,6 +23,7 @@ main:
     code: https://github.com/sarendis56/Jailbreak_Detection_RCS
     bibtex: |
       @inproceedings{hua2026rethinking,
+          title = "Rethinking Jailbreak Detection of Large Vision Language Models with Representational Contrastive Scoring",
           author = {Hua, Peichun and Li, Hao and Shi, Shanghao and Yu, Zhiyuan and Zhang, Ning},
           editor = {Liakata, Maria and Moreira, Viviane P. and Zhang, Jiajun and Jurgens, David},
           booktitle = "Proceedings of the 64th Annual Meeting of the {A}ssociation for {C}omputational {L}inguistics (Volume 1: Long Papers)",
