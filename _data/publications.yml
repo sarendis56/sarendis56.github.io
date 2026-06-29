@@ -4,6 +4,7 @@ main:
     conference_short: SMC
     conference: IEEE International Conference on Systems, Man, and Cybernetics <strong>(SMC)</strong>, 2026.
     pdf: https://arxiv.org/pdf/2605.07340
+    code: https://github.com/WANGXinuuu1/Open-Set-PUF-Authentication-for-Heterogeneous-IoT-Devices
     bibtex: |
       @inproceedings{wang2026openpuf,
         title={A Unified Open-Set Framework for Scalable PUF-Based Authentication of Heterogeneous IoT Devices},
