@@ -22,6 +22,7 @@ main:
     conference: "The 64th Annual Meeting of the Association for Computational Linguistics (ACL), 2026."
     pdf: https://aclanthology.org/2026.acl-long.992.pdf
     slides: assets/docs/ACL2026_main-2368-slides.pdf
+    video: https://doi.org/10.48448/5qfb-km59
     code: https://github.com/sarendis56/Jailbreak_Detection_RCS
     bibtex: |
       @inproceedings{hua2026rethinking,
