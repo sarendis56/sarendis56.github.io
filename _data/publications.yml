@@ -3,6 +3,7 @@ main:
     authors: <a href="https://github.com/WANGXinuuu1" target="_blank">Xin Wang</a>, <strong>Peichun Hua</strong>, <a href="https://personal.ntu.edu.sg/echchang/home.htm" target="_blank">Chip Hong Chang</a>, Wenye Liu, <a href="https://myweb.cuhk.edu.cn/zhengyue" target="_blank">Yue Zheng</a>
     conference_short: SMC
     conference: IEEE International Conference on Systems, Man, and Cybernetics <strong>(SMC)</strong>, 2026.
+    link: https://arxiv.org/abs/2605.07340
     pdf: https://arxiv.org/pdf/2605.07340
     code: https://github.com/WANGXinuuu1/Open-Set-PUF-Authentication-for-Heterogeneous-IoT-Devices
     bibtex: |
@@ -20,6 +21,7 @@ main:
     authors: <strong>Peichun Hua</strong>, <a href="https://leolee99.github.io/" target="_blank">Hao Li</a>, <a href="https://shishishi123.github.io/" target="_blank">Shanghao Shi</a>, <a href="https://zhiyuanyu.org/" target="_blank">Zhiyuan Yu</a>, and <a href="https://cybersecurity.seas.wustl.edu/" target="_blank">Ning Zhang</a>
     conference_short: ACL
     conference: "The 64th Annual Meeting of the Association for Computational Linguistics (ACL), 2026."
+    link: https://aclanthology.org/2026.acl-long.992
     pdf: https://aclanthology.org/2026.acl-long.992.pdf
     slides: assets/docs/ACL2026_main-2368-slides.pdf
     video: https://doi.org/10.48448/5qfb-km59
@@ -45,7 +47,8 @@ main:
     authors: <strong>Peichun Hua</strong>, <a href="https://hanxiuzhang.github.io/" target="_blank">Hanxiu Zhang</a>, Tuo Li, <a href="https://myweb.cuhk.edu.cn/zhengyue" target="_blank">Yue Zheng</a>, and Wenye Liu
     conference_short: ISCAS
     conference: IEEE International Symposium on Circuits and Systems <strong>(ISCAS)</strong>, 2026.
-    pdf: https://ieeexplore.ieee.org/document/11562768
+    link: https://ieeexplore.ieee.org/document/11562768
+    pdf: assets/docs/ISCAS26.pdf
     code: https://github.com/sarendis56/owl-vit#iscas-2026-demo-setup-and-evaluation-guide
     bibtex: |
       @inproceedings{hua2026live,
@@ -64,7 +67,8 @@ main:
     authors: <strong>Peichun Hua</strong>, <a href="https://hanxiuzhang.github.io/" target="_blank">Hanxiu Zhang</a>, Tuo Li, and <a href="https://myweb.cuhk.edu.cn/zhengyue" target="_blank">Yue Zheng</a>
     conference_short: ACSAC
     conference: "The 41st Annual Computer Security Applications Conference (ACSAC), 2025."
-    pdf: https://ieeexplore.ieee.org/document/11391918
+    link: https://ieeexplore.ieee.org/document/11391918
+    pdf: assets/docs/ACSAC25.pdf
     code: https://github.com/sarendis56/PUF-Transformer-IP-Protection
     slides: https://www.acsac.org/2025/files/web/acsac2025-128-hua.pdf
     video: https://youtu.be/DKuIktFB190
