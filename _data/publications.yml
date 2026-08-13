@@ -1,4 +1,37 @@
 main:
+  - title: "Unlocking Software-defined GPU Fabric Scheduling in the LLM Era"
+    authors: Danyang Chen, Yufeng Gu, Yibo Huang, Chengxuan Pei, Peichun Hua, Yang Zhou, Yunming Xiao
+    conference_short: APSys
+    conference: ACM SIGOPS Asia-Pacific Workshop on Systems <strong>(APSys)</strong>, 2026.
+    pdf: assets/docs/APSys26.pdf
+    bibtex: |
+      @inproceedings{chen2026unlocking,
+        title={Unlocking Software-defined GPU Fabric Scheduling in the LLM Era},
+        author={Danyang Chen and Yufeng Gu and Yibo Huang and Chengxuan Pei and Peichun Hua and Yang Zhou and Yunming Xiao},
+        booktitle={ACM SIGOPS Asia-Pacific Workshop on Systems (APSys)},
+        year={2026},
+        organization={ACM}
+      }
+    notes: |
+      Accepted.
+
+  - title: "Behavioral Skill Reconstruction: Reconstructing Hidden Functionality from LLM Agent Skills"
+    authors: Peichun Hua, Haoxuan Xu, Mengyuan Li
+    conference_short: arXiv
+    conference: arXiv preprint 2026
+    link: https://arxiv.org/abs/2608.04192
+    pdf: https://arxiv.org/pdf/2608.04192
+    bibtex: |
+      @misc{hua2026skillclone,
+            title={Behavioral Skill Reconstruction: Reconstructing Hidden Functionality from LLM Agent Skills}, 
+            author={Peichun Hua and Haoxuan Xu and Mengyuan Li},
+            year={2026},
+            eprint={2608.04192},
+            archivePrefix={arXiv},
+            primaryClass={cs.CR},
+            url={https://arxiv.org/abs/2608.04192}, 
+      }
+
   - title: "A Unified Open-Set Framework for Scalable PUF-Based Authentication of Heterogeneous IoT Devices"
     authors: <a href="https://github.com/WANGXinuuu1" target="_blank">Xin Wang</a>, <strong>Peichun Hua</strong>, <a href="https://personal.ntu.edu.sg/echchang/home.htm" target="_blank">Chip Hong Chang</a>, Wenye Liu, <a href="https://myweb.cuhk.edu.cn/zhengyue" target="_blank">Yue Zheng</a>
     conference_short: SMC
@@ -61,7 +94,7 @@ main:
         organization={IEEE}
       }
     notes: |
-      Accepted for Live Presentation. Acceptance Rate: 869/1673 ≈ 51.9%.
+      Accepted for Live Presentation. 
 
   - title: "Securing On-device Transformer with Hardware Binding and Reversible Obfuscation"
     authors: <strong>Peichun Hua</strong>, <a href="https://hanxiuzhang.github.io/" target="_blank">Hanxiu Zhang</a>, Tuo Li, and <a href="https://myweb.cuhk.edu.cn/zhengyue" target="_blank">Yue Zheng</a>
