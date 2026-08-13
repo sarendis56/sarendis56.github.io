@@ -1,6 +1,6 @@
 main:
   - title: "Unlocking Software-defined GPU Fabric Scheduling in the LLM Era"
-    authors: Danyang Chen, Yufeng Gu, Yibo Huang, Chengxuan Pei, Peichun Hua, Yang Zhou, Yunming Xiao
+    authors: Danyang Chen, Yufeng Gu, Yibo Huang, Chengxuan Pei, <strong>Peichun Hua</strong>, Yang Zhou, Yunming Xiao
     conference_short: APSys
     conference: ACM SIGOPS Asia-Pacific Workshop on Systems <strong>(APSys)</strong>, 2026.
     pdf: assets/docs/APSys26.pdf
@@ -16,7 +16,7 @@ main:
       Accepted.
 
   - title: "Behavioral Skill Reconstruction: Reconstructing Hidden Functionality from LLM Agent Skills"
-    authors: Peichun Hua, Haoxuan Xu, Mengyuan Li
+    authors: <strong>Peichun Hua</strong>, Haoxuan Xu, Mengyuan Li
     conference_short: arXiv
     conference: arXiv preprint 2026
     link: https://arxiv.org/abs/2608.04192
