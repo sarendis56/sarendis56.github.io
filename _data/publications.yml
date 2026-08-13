@@ -33,7 +33,7 @@ main:
       }
 
   - title: "A Unified Open-Set Framework for Scalable PUF-Based Authentication of Heterogeneous IoT Devices"
-    authors: <a href="https://github.com/WANGXinuuu1" target="_blank">Xin Wang</a>, <strong>Peichun Hua</strong>, <a href="https://personal.ntu.edu.sg/echchang/home.htm" target="_blank">Chip Hong Chang</a>, Wenye Liu, <a href="https://myweb.cuhk.edu.cn/zhengyue" target="_blank">Yue Zheng</a>
+    authors: Xin Wang, <strong>Peichun Hua</strong>, Chip Hong Chang, Wenye Liu, Yue Zheng
     conference_short: SMC
     conference: IEEE International Conference on Systems, Man, and Cybernetics <strong>(SMC)</strong>, 2026.
     link: https://arxiv.org/abs/2605.07340
@@ -51,9 +51,9 @@ main:
       Accepted.
 
   - title: "Rethinking Jailbreak Detection of Large Vision Language Models with Representational Contrastive Scoring"
-    authors: <strong>Peichun Hua</strong>, <a href="https://leolee99.github.io/" target="_blank">Hao Li</a>, <a href="https://shishishi123.github.io/" target="_blank">Shanghao Shi</a>, <a href="https://zhiyuanyu.org/" target="_blank">Zhiyuan Yu</a>, and <a href="https://cybersecurity.seas.wustl.edu/" target="_blank">Ning Zhang</a>
+    authors: <strong>Peichun Hua</strong>, Hao Li, Shanghao Shi, Zhiyuan Yu, and Ning Zhang
     conference_short: ACL
-    conference: "The 64th Annual Meeting of the Association for Computational Linguistics (ACL), 2026."
+    conference: "The 64th Annual Meeting of the Association for Computational Linguistics <strong>(ACL)</strong>, 2026."
     link: https://aclanthology.org/2026.acl-long.992
     pdf: https://aclanthology.org/2026.acl-long.992.pdf
     slides: assets/docs/ACL2026_main-2368-slides.pdf
@@ -77,7 +77,7 @@ main:
       Accepted as Oral Presentation of Main Conference (Top 20% of Accepted Papers). Acceptance Rate: around 2300/12148 ≈ 19%.
 
   - title: "Live Demonstration: Hardware-Bound IP Protection for OWL-ViT on Edge Devices"
-    authors: <strong>Peichun Hua</strong>, <a href="https://hanxiuzhang.github.io/" target="_blank">Hanxiu Zhang</a>, Tuo Li, <a href="https://myweb.cuhk.edu.cn/zhengyue" target="_blank">Yue Zheng</a>, and Wenye Liu
+    authors: <strong>Peichun Hua</strong>, Hanxiu Zhang, Tuo Li, Yue Zheng, and Wenye Liu
     conference_short: ISCAS
     conference: IEEE International Symposium on Circuits and Systems <strong>(ISCAS)</strong>, 2026.
     link: https://ieeexplore.ieee.org/document/11562768
@@ -97,9 +97,9 @@ main:
       Accepted for Live Presentation. 
 
   - title: "Securing On-device Transformer with Hardware Binding and Reversible Obfuscation"
-    authors: <strong>Peichun Hua</strong>, <a href="https://hanxiuzhang.github.io/" target="_blank">Hanxiu Zhang</a>, Tuo Li, and <a href="https://myweb.cuhk.edu.cn/zhengyue" target="_blank">Yue Zheng</a>
+    authors: <strong>Peichun Hua</strong>, Hanxiu Zhang, Tuo Li, and Yue Zheng
     conference_short: ACSAC
-    conference: "The 41st Annual Computer Security Applications Conference (ACSAC), 2025."
+    conference: "The 41st Annual Computer Security Applications Conference <strong>(ACSAC)</strong>, 2025."
     link: https://ieeexplore.ieee.org/document/11391918
     pdf: assets/docs/ACSAC25.pdf
     code: https://github.com/sarendis56/PUF-Transformer-IP-Protection
