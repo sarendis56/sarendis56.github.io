@@ -14,7 +14,7 @@ main:
         organization={Springer}
       }
     notes: |
-      Accepted.
+      Accepted as Regular Paper, Oral Presentation.
 
   - title: "Pointing the Way, Hiding the Destination: Practical Private Dense Retrieval at Scale"
     authors: <strong>Peichun Hua</strong>, Danyang Chen, Junan Zhang, Haifeng Sun, Jingyu Wang, Diwen Xue, Mingyu Li, and Yunming Xiao
@@ -34,7 +34,7 @@ main:
       }
 
   - title: "Unlocking Software-defined GPU Fabric Scheduling in the LLM Era"
-    authors: Danyang Chen, Yufeng Gu, Yibo Huang, Chengxuan Pei, <strong>Peichun Hua</strong>, Yang Zhou, Yunming Xiao
+    authors: Danyang Chen, Yufeng Gu, Yibo Huang, Chengxuan Pei, <strong>Peichun Hua</strong>, Yang Zhou, and Yunming Xiao
     conference_short: APSys
     conference: ACM SIGOPS Asia-Pacific Workshop on Systems <strong>(APSys)</strong>, 2026.
     pdf: assets/docs/APSys26.pdf
@@ -50,7 +50,7 @@ main:
       Accepted.
 
   - title: "Behavioral Skill Reconstruction: Reconstructing Hidden Functionality from LLM Agent Skills"
-    authors: <strong>Peichun Hua</strong>, Haoxuan Xu, Mengyuan Li
+    authors: <strong>Peichun Hua</strong>, Haoxuan Xu, and Mengyuan Li
     conference_short: arXiv
     conference: arXiv preprint 2026
     link: https://arxiv.org/abs/2608.04192
@@ -67,7 +67,7 @@ main:
       }
 
   - title: "A Unified Open-Set Framework for Scalable PUF-Based Authentication of Heterogeneous IoT Devices"
-    authors: Xin Wang, <strong>Peichun Hua</strong>, Chip Hong Chang, Wenye Liu, Yue Zheng
+    authors: Xin Wang, <strong>Peichun Hua</strong>, Chip Hong Chang, Wenye Liu, and Yue Zheng
     conference_short: SMC
     conference: IEEE International Conference on Systems, Man, and Cybernetics <strong>(SMC)</strong>, 2026.
     link: https://arxiv.org/abs/2605.07340
