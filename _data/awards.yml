@@ -1,6 +1,7 @@
 main:
   - ["Academic Honors",
      [
+       {"title": "<strong>Outstanding Graduate</strong>, School of Data Science, CUHK-Shenzhen", "details": "2026"},
        {"title": "Dean's List, School of Data Science, CUHK-Shenzhen", "details": "2022–2023, 2023–2024"},
        {"title": "Academic Performance Scholarship (Class B, Top <2%), School of Data Science", "details": "2023–2024"},
        {"title": "Academic Performance Scholarship (Class C, Top <5%), School of Data Science", "details": "2022–2023"},
