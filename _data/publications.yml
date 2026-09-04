@@ -1,4 +1,20 @@
 main:
+  - title: "Spruce: Scalable Private Outsourced Retrieval Using Compact Embeddings"
+    authors: <strong>Peichun Hua</strong> and Yunming Xiao
+    conference_short: arXiv
+    conference: arXiv preprint 2026
+    link: https://arxiv.org/abs/2609.03376
+    pdf: https://arxiv.org/pdf/2609.03376
+    bibtex: |
+      @misc{hua2026spruce,
+          title={Spruce: Scalable Private Outsourced Retrieval Using Compact Embeddings}, 
+          author={Peichun Hua and Yunming Xiao},
+          year={2026},
+          eprint={2609.03376},
+          archivePrefix={arXiv},
+          primaryClass={cs.CR},
+          url={https://arxiv.org/abs/2609.03376}, 
+      }
   - title: "Enroll Once, Identify Everywhere: Few-Shot Cross-Scenario Visual Speaker Recognition via Event-driven SlowFast Networks"
     authors: Junguang Yao, <strong>Peichun Hua</strong>, and Yue Zheng
     conference_short: PRICAI
