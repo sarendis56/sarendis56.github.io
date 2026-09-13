@@ -1,4 +1,20 @@
 main:
+  - title: "Matryoshka Hash Representations for Model-Aware Compact Semantic Retrieval"
+    authors: <strong>Peichun Hua</strong> and Yunming Xiao
+    conference_short: arXiv
+    conference: arXiv preprint 2026
+    link: https://arxiv.org/abs/2609.07276v1
+    pdf: https://arxiv.org/pdf/2609.07276
+    bibtex: |
+      @misc{hua2026matryoshka,
+            title={Matryoshka Hash Representations for Model-Aware Compact Semantic Retrieval}, 
+            author={Peichun Hua and Yunming Xiao},
+            year={2026},
+            eprint={2609.07276},
+            archivePrefix={arXiv},
+            primaryClass={cs.IR},
+            url={https://arxiv.org/abs/2609.07276}, 
+      }
   - title: "Spruce: Scalable Private Outsourced Retrieval Using Compact Embeddings"
     authors: <strong>Peichun Hua</strong> and Yunming Xiao
     conference_short: arXiv
@@ -30,7 +46,7 @@ main:
         organization={Springer}
       }
     notes: |
-      Accepted as Regular Paper, Oral Presentation.
+      Accepted as a Regular Paper, Oral Presentation.
 
   - title: "Pointing the Way, Hiding the Destination: Practical Private Dense Retrieval at Scale"
     authors: <strong>Peichun Hua</strong>, Danyang Chen, Junan Zhang, Haifeng Sun, Jingyu Wang, Diwen Xue, Mingyu Li, and Yunming Xiao
