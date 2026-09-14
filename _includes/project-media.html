@@ -1,0 +1,22 @@
+{% for figure in include.media.figures %}
+<figure class="project-figure">
+  <a href="{{ figure.src | relative_url }}" aria-label="Open full-size figure: {{ figure.alt | escape }}">
+    <img src="{{ figure.src | relative_url }}" alt="{{ figure.alt | escape }}" loading="lazy" decoding="async"{% if figure.width %} width="{{ figure.width }}"{% endif %}{% if figure.height %} height="{{ figure.height }}"{% endif %}>
+  </a>
+  <figcaption>{{ figure.caption | escape }}{% if figure.source_url %} <a href="{{ figure.source_url | relative_url }}">{{ figure.source_label | default: 'Source' | escape }}</a>{% endif %}</figcaption>
+</figure>
+{% endfor %}
+{% for table in include.media.tables %}
+<figure class="project-table">
+  <div class="table-scroll" role="region" aria-label="{{ table.caption | escape }}" tabindex="0">
+    <table{% if table.note %} aria-describedby="{{ include.prefix }}-table-{{ forloop.index }}-note"{% endif %}>
+      <caption>{{ table.caption | escape }}</caption>
+      <thead><tr>{% for column in table.columns %}<th scope="col">{{ column | escape }}</th>{% endfor %}</tr></thead>
+      <tbody>
+      {% for row in table.rows %}<tr>{% for cell in row %}{% if forloop.first %}<th scope="row">{{ cell | escape }}</th>{% else %}<td>{{ cell | escape }}</td>{% endif %}{% endfor %}</tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if table.note or table.source_url %}<figcaption id="{{ include.prefix }}-table-{{ forloop.index }}-note">{{ table.note | escape }}{% if table.source_url %} <a href="{{ table.source_url | relative_url }}">{{ table.source_label | default: 'Source' | escape }}</a>{% endif %}</figcaption>{% endif %}
+</figure>
+{% endfor %}

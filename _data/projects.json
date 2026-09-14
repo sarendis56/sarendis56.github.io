@@ -1,0 +1,271 @@
+{
+  "matryoshka-hash-representations": {
+    "name": "Matryoshka Hash Representations",
+    "status": "arXiv preprint · 2026",
+    "summary": "Matryoshka Hash Representations (MHR) learns compact binary document codes for semantic search and retrieval-augmented generation. One stored code supports multiple directly searchable prefix lengths, allowing a system to adjust its storage–quality trade-off without re-encoding the corpus.",
+    "method": "MHR first trains a full-width, ranking-aware binary representation, then freezes that model and learns zero-initialized residual code adaptors for shorter prefixes. Documents use one bit per coordinate; queries retain continuous logits. A FAISS FastScan implementation supports efficient asymmetric scoring.",
+    "results": "Trained on MS MARCO and evaluated by zero-shot transfer to seven BEIR datasets, MHR reports NDCG@10 of 0.5561 and Recall@100 of 0.6535 at 32 bytes per document, compared with 0.5239 and 0.6426 for the best evaluated same-budget baseline. The paper also evaluates candidate shortlisting and low-storage graph-index pruning.",
+    "topics": [
+      "dense retrieval",
+      "vector compression",
+      "binary hashing",
+      "Matryoshka representations",
+      "RAG",
+      "FAISS FastScan"
+    ],
+    "authors": [
+      "Peichun Hua",
+      "Yunming Xiao"
+    ],
+    "year": "2026",
+    "arxiv_id": "2609.07276"
+  },
+  "spruce": {
+    "name": "Spruce",
+    "status": "arXiv preprint · 2026",
+    "summary": "Spruce studies private dense retrieval when an organization outsources its document index to untrusted cloud servers. It co-designs compact embeddings and cryptographic search to protect corpus and query information while keeping retrieval practical at million-document scale.",
+    "method": "Learned binary codes preserve candidates for full-precision reranking. Two-server secure multi-party computation evaluates Hamming distances, and a corpus-calibrated fixed radius selects candidates. Private cluster pruning reduces search work; an owner-operated dealer reduces preprocessing cost.",
+    "results": "Across four corpora containing 383K–5.42M documents, the full-scan configuration reports 0.21–2.97 seconds at 10 Gbps inter-server bandwidth. Private pruning reports 0.06–1.09 seconds while retaining 93.9–97.3% of full-float NDCG. These measurements use the paper’s two-server MPC setting and specified network conditions.",
+    "topics": [
+      "private dense retrieval",
+      "secure multi-party computation",
+      "outsourced search",
+      "binary embeddings",
+      "RAG privacy"
+    ],
+    "authors": [
+      "Peichun Hua",
+      "Yunming Xiao"
+    ],
+    "year": "2026",
+    "arxiv_id": "2609.03376"
+  },
+  "event-driven-speaker-recognition": {
+    "name": "Enroll Once, Identify Everywhere",
+    "status": "Accepted · PRICAI 2026 · Regular paper, oral presentation",
+    "summary": "This paper studies visual speaker recognition from lip motion captured by event cameras. Its few-shot enrollment protocol separates training and test identities and recognizes new speakers from three enrollment samples, including changes in illumination and viewpoint.",
+    "method": "A SlowFast network processes two-channel polarity-aware event count volumes. Complementary temporal pathways and fast-to-slow lateral fusion capture lip articulation. After training on known identities, a frozen feature extractor supports nearest-neighbor identification without retraining for new users.",
+    "results": "On DVSpeaker, Rank-1 accuracy is 99.18% in matched frontal-bright conditions, 87.25% under low-light shift, 74.95% at 45°, and 50.20% at 90°. Ablations examine the contribution of temporal pathways and lateral fusion.",
+    "topics": [
+      "event cameras",
+      "visual speaker recognition",
+      "few-shot enrollment",
+      "SlowFast networks",
+      "biometrics"
+    ],
+    "authors": [
+      "Junguang Yao",
+      "Peichun Hua",
+      "Yue Zheng"
+    ],
+    "year": "2026",
+    "venue": "The 23rd Pacific Rim International Conference on Artificial Intelligence (PRICAI), 2026."
+  },
+  "private-dense-retrieval": {
+    "name": "Pointing the Way, Hiding the Destination",
+    "status": "arXiv preprint · 2026",
+    "summary": "This paper studies private retrieval over a provider-held corpus: a user should obtain authorized results while protecting the query and final selection. A learned binary filter reduces cryptographic search to a compact candidate set.",
+    "method": "The user releases a randomized hash code under directional metric differential privacy. The provider builds a Hamming shortlist, scores candidates with packed BFV homomorphic encryption, and uses oblivious key transfer to release only the selected document payloads. The design explicitly permits a coarse, privacy-controlled candidate pattern.",
+    "results": "Shortlists of 200–500 candidates closely match full-corpus retrieval across five zero-shot corpora spanning 25K–5.4M documents. On the 2.68M-passage Natural Questions corpus over a 10 Gbps link, the evaluated protocol adds 0.73 seconds, or 10%, to a 128-token Qwen3-32B RAG pipeline. The paper separately evaluates privacy–utility trade-offs under randomized releases.",
+    "topics": [
+      "private retrieval",
+      "homomorphic encryption",
+      "oblivious transfer",
+      "differential privacy",
+      "deep hashing",
+      "RAG"
+    ],
+    "authors": [
+      "Peichun Hua",
+      "Danyang Chen",
+      "Junan Zhang",
+      "Haifeng Sun",
+      "Jingyu Wang",
+      "Diwen Xue",
+      "Mingyu Li",
+      "Yunming Xiao"
+    ],
+    "year": "2026",
+    "arxiv_id": "2608.25735"
+  },
+  "gpuweaver": {
+    "name": "GPUWeaver",
+    "status": "Accepted · APSys 2026",
+    "summary": "GPUWeaver explores software-defined GPU fabric scheduling for large language model systems. The paper examines contention across NVLink, PCIe, and RDMA when workloads combine computation, communication, KV-cache offloading, and disaggregated serving.",
+    "method": "A context-aware scheduler monitors application progress and fabric state, detects contention, and regulates communication injection according to application performance goals. The design treats GPU fabric bandwidth as an explicitly managed resource.",
+    "results": "The study characterizes interference between NVLink traffic and GPU memory access, and between GPUDirect RDMA and host–device transfers over PCIe. It presents a scheduling framework and a research direction for more predictable LLM execution.",
+    "topics": [
+      "GPU scheduling",
+      "NVLink",
+      "PCIe",
+      "RDMA",
+      "LLM systems",
+      "communication contention"
+    ],
+    "authors": [
+      "Danyang Chen",
+      "Yufeng Gu",
+      "Yibo Huang",
+      "Chengxuan Pei",
+      "Peichun Hua",
+      "Yang Zhou",
+      "Yunming Xiao"
+    ],
+    "year": "2026",
+    "doi": "10.1145/3838177.3841731",
+    "venue": "ACM SIGOPS Asia-Pacific Workshop on Systems (APSys), 2026."
+  },
+  "skillclone": {
+    "name": "Behavioral Skill Reconstruction / SKILLCLONE",
+    "status": "arXiv preprint · 2026",
+    "summary": "Behavioral skill reconstruction asks whether ordinary interactions with an LLM agent can reveal the functionality of a hidden skill even when its instructions, scripts, and files remain undisclosed. The paper introduces SKILLCLONE to study this threat.",
+    "method": "SKILLCLONE forms an interface hypothesis from the public skill description, issues valid task requests, synthesizes an executable replica, and repairs it through differential validation against the target. Evaluation separates functionality contributed by a skill from capabilities already present in the base model.",
+    "results": "The evaluation covers 30 skills spanning rules, tables, procedures, and algorithms. Several targets permit exact or partial recovery on held-out inputs, and iterative requerying closes gaps left by a single reconstruction round. The experiments show limited coverage from defenses focused only on direct file disclosure.",
+    "topics": [
+      "agent skills",
+      "functional cloning",
+      "black-box reconstruction",
+      "LLM agents",
+      "intellectual property",
+      "information leakage"
+    ],
+    "authors": [
+      "Peichun Hua",
+      "Haoxuan Xu",
+      "Mengyuan Li"
+    ],
+    "year": "2026",
+    "arxiv_id": "2608.04192"
+  },
+  "open-set-puf-authentication": {
+    "name": "Open-Set PUF Authentication",
+    "status": "Accepted · IEEE SMC 2026",
+    "summary": "This work develops a unified authentication framework for heterogeneous IoT devices using physical unclonable functions (PUFs). Open-set recognition identifies enrolled devices while rejecting impostors, without requiring helper data.",
+    "method": "Responses from Arbiter, SRAM, DRAM, and heterogeneous PUFs are encoded as images for an OpenGAN-based classifier. A generic authentication protocol combines the classifier with hybrid encryption and Bloom filter-based replay detection.",
+    "results": "Experiments report 100% closed-set accuracy and near-zero open-set error rates for the evaluated fleets of up to 45 devices. A Raspberry Pi prototype completes an authentication cycle within 0.67 seconds. The local PDF is the public arXiv manuscript; the acceptance status follows the publication record.",
+    "topics": [
+      "physical unclonable functions",
+      "IoT authentication",
+      "open-set recognition",
+      "OpenGAN",
+      "hardware security"
+    ],
+    "authors": [
+      "Xin Wang",
+      "Peichun Hua",
+      "Chip Hong Chang",
+      "Wenye Liu",
+      "Yue Zheng"
+    ],
+    "year": "2026",
+    "arxiv_id": "2605.07340",
+    "venue": "IEEE International Conference on Systems, Man, and Cybernetics (SMC), 2026."
+  },
+  "representational-contrastive-scoring": {
+    "name": "Representational Contrastive Scoring",
+    "status": "Published · ACL 2026 · Main conference, oral presentation",
+    "summary": "Representational Contrastive Scoring (RCS) detects jailbreak attempts against large vision-language models using their internal representations. It addresses over-rejection caused by treating unfamiliar benign inputs as malicious anomalies.",
+    "method": "RCS identifies safety-relevant hidden layers, learns a lightweight projection, and scores inputs by their relative proximity to benign and malicious representations. The paper instantiates the approach as Mahalanobis Contrastive Detection (MCD) and K-nearest Contrastive Detection (KCD).",
+    "results": "Evaluation tests generalization to unseen attack types across mixed sources and modalities. The study compares MCD and KCD with baseline defenses and examines how contrastive representation geometry separates malicious inputs from benign distribution shifts.",
+    "topics": [
+      "multimodal jailbreak detection",
+      "vision-language models",
+      "representation learning",
+      "Mahalanobis distance",
+      "model safety"
+    ],
+    "authors": [
+      "Peichun Hua",
+      "Hao Li",
+      "Shanghao Shi",
+      "Zhiyuan Yu",
+      "Ning Zhang"
+    ],
+    "year": "2026",
+    "venue": "The 64th Annual Meeting of the Association for Computational Linguistics (ACL), 2026."
+  },
+  "puf-transformer-protection": {
+    "name": "Hardware-Bound Transformer Protection",
+    "status": "Published · ACSAC 2025",
+    "summary": "This paper studies active intellectual-property protection for transformer models deployed on edge devices. It binds model execution to hardware using physical unclonable functions and reversible weight obfuscation.",
+    "method": "PUF-derived keys control Arnold’s Cat Map-based transformations of model weights. Authorized hardware reverses the transformation for inference, while use with an incorrect key degrades model accuracy. The scheme is applied without retraining the original model.",
+    "results": "The paper evaluates inference overhead and resistance to retraining, random key guessing, and encrypted-layer leakage attacks under its stated threat model. Its software artifact received Available, Reviewed, and Reproducible badges, as recorded on the author’s publication list.",
+    "topics": [
+      "transformer security",
+      "hardware binding",
+      "physical unclonable functions",
+      "reversible obfuscation",
+      "model IP protection"
+    ],
+    "authors": [
+      "Peichun Hua",
+      "Hanxiu Zhang",
+      "Tuo Li",
+      "Yue Zheng"
+    ],
+    "year": "2025",
+    "doi": "10.1109/ACSAC67867.2025.00079",
+    "venue": "The 41st Annual Computer Security Applications Conference (ACSAC), 2025.",
+    "related_publications": [
+      {
+        "id": "owl-vit-hardware-protection",
+        "section_id": "iscas-demo",
+        "role": "ISCAS 2026 live demonstration",
+        "summary": "The ISCAS 2026 paper demonstrates the ACSAC 2025 hardware-binding approach on OWL-ViT for open-vocabulary object detection on edge devices.",
+        "method": "An NVIDIA Jetson Orin Nano performs inference while an Ultra96-V2 FPGA supplies an Arbiter PUF. Arnold’s Cat Map transforms attention weights, and row permutations transform feed-forward weights. A decrypt–infer–re-encrypt cycle restores and then re-obfuscates the weights.",
+        "results": "For batches of eight images and 20 Pascal VOC classes, obfuscating one or two selected layers reduces unauthorized mAP@0.5 from 0.61 to 0.00. Authorized throughput decreases by 19.7–30.7% in the reported configuration. The demonstration extends the related ACSAC 2025 hardware-binding work.",
+        "figures": [
+          {
+            "src": "/assets/img/projects/puf-transformer-protection/iscas-demo-setup.png",
+            "width": 1060,
+            "height": 520,
+            "alt": "OWL-ViT hardware-binding setup: an Ultra96-V2 Arbiter PUF derives keys for reversible attention and feed-forward weight transformations; a Jetson Orin Nano runs authorized inference. The original figure includes a small performance table, transcribed below.",
+            "caption": "Hardware-bound OWL-ViT demonstration. The FPGA supplies the PUF-derived key, and the Jetson runs object detection. Extracted from Figure 1 of the ISCAS 2026 demo paper.",
+            "source_url": "/assets/docs/ISCAS26.pdf#page=1",
+            "source_label": "ISCAS 2026, Figure 1"
+          }
+        ],
+        "tables": [
+          {
+            "caption": "OWL-ViT demo: detection under obfuscation and authorized inference cost",
+            "columns": [
+              "Metric",
+              "Baseline",
+              "1 layer obfuscated",
+              "2 layers obfuscated"
+            ],
+            "rows": [
+              [
+                "Detection mAP@0.5 (see note)",
+                "0.61",
+                "0.00",
+                "0.00"
+              ],
+              [
+                "Authorized throughput (images/s)",
+                "10.69",
+                "8.58",
+                "7.41"
+              ],
+              [
+                "Authorized time per image (s)",
+                "0.093",
+                "0.116",
+                "0.135"
+              ],
+              [
+                "Authorized overhead factor",
+                "1.00×",
+                "1.24×",
+                "1.44×"
+              ]
+            ],
+            "note": "Baseline is the unprotected model. For the obfuscated configurations, mAP is measured without the correct key; throughput, time, and overhead refer to authorized inference. The paper reports that the correct key restores original accuracy. Configuration: google/owlvit-base-patch32, a batch of eight images, and 20 Pascal VOC classes. Values are transcribed from the table embedded in Figure 1.",
+            "source_url": "/assets/docs/ISCAS26.pdf#page=1",
+            "source_label": "ISCAS 2026, Figure 1 / Table 1"
+          }
+        ]
+      }
+    ]
+  }
+}

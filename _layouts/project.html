@@ -1,0 +1,96 @@
+{%- assign publication = site.data.publications.main | where: 'id', page.project_id | first -%}
+{%- assign project = site.data.projects[page.project_id] -%}
+{%- assign page_url = page.url | absolute_url -%}
+{%- assign pdf_url = publication.pdf | absolute_url -%}
+{%- capture excluded -%}{%- include project-excluded.html publication=publication project=page -%}{%- endcapture -%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ publication.title | escape }} | {{ site.title | escape }}</title>
+  <meta name="description" content="{{ project.summary | escape }}">
+  <meta name="robots" content="{% if excluded == 'true' %}noindex, nofollow{% else %}index, follow{% endif %}">
+  <link rel="canonical" href="{{ page_url }}">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="{{ publication.title | escape }}">
+  <meta property="og:description" content="{{ project.summary | escape }}">
+  <meta property="og:url" content="{{ page_url }}">
+  <meta name="citation_title" content="{{ publication.title | escape }}">
+  {% for author in project.authors %}<meta name="citation_author" content="{{ author | escape }}">
+  {% endfor %}<meta name="citation_publication_date" content="{{ project.year }}">
+  <meta name="citation_pdf_url" content="{{ pdf_url }}">
+  {% if project.venue %}<meta name="citation_conference_title" content="{{ project.venue | escape }}">{% endif %}
+  {% if project.doi %}<meta name="citation_doi" content="{{ project.doi | escape }}">{% endif %}
+  {% if project.arxiv_id %}<meta name="citation_arxiv_id" content="{{ project.arxiv_id }}">{% endif %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "@id": {{ page_url | append: '#article' | jsonify }},
+    "url": {{ page_url | jsonify }},
+    "headline": {{ publication.title | jsonify }},
+    "name": {{ publication.title | jsonify }},
+    "description": {{ project.summary | jsonify }},
+    "creativeWorkStatus": {{ project.status | jsonify }},
+    "inLanguage": "en",
+    "keywords": {{ project.topics | jsonify }},
+    "author": [{% for author in project.authors %}{"@type":"Person","name":{{ author | jsonify }}}{% unless forloop.last %},{% endunless %}{% endfor %}],
+    "encoding": {"@type":"MediaObject","encodingFormat":"application/pdf","contentUrl":{{ pdf_url | jsonify }}}
+    {% if publication.link %},"sameAs":{{ publication.link | jsonify }}{% endif %}
+    {% if project.doi %},"identifier":{"@type":"PropertyValue","propertyID":"DOI","value":{{ project.doi | jsonify }}}{% endif %}
+  }
+  </script>
+  <link rel="icon" href="{{ '/assets/img/favicon.png' | relative_url }}" type="image/png">
+  <link rel="stylesheet" href="{{ '/assets/css/project.css' | relative_url }}">
+</head>
+<body>
+  <main>
+    <a class="author-home" href="{{ '/' | relative_url }}">{{ site.title }}</a>
+    <article>
+      <header>
+        <p class="status">{{ project.status | escape }}</p>
+        <h1>{{ publication.title | escape }}</h1>
+        <p class="authors">{{ project.authors | join: ', ' | escape }}</p>
+        <div class="resources" aria-label="Paper resources">
+          <a class="primary" href="{{ pdf_url }}">Read paper (PDF)</a>
+          {% if publication.link %}<a href="{{ publication.link | escape }}">{% if project.arxiv_id %}arXiv record{% else %}Publication record{% endif %}</a>{% endif %}
+          {% if publication.source_pdf %}<a href="{{ publication.source_pdf | escape }}">arXiv PDF</a>{% endif %}
+          {% if publication.code %}<a href="{{ publication.code | escape }}">Code</a>{% endif %}
+          {% if publication.slides %}<a href="{{ publication.slides | absolute_url }}">Slides</a>{% endif %}
+          {% if publication.video %}<a href="{{ publication.video | escape }}">Video</a>{% endif %}
+        </div>
+      </header>
+      <section aria-labelledby="overview"><h2 id="overview">Overview</h2><p class="summary">{{ project.summary | escape }}</p></section>
+      <section aria-labelledby="method"><h2 id="method">Method</h2><p>{{ project.method | escape }}</p></section>
+      {% include project-media.html media=project prefix=page.project_id %}
+      {{ content }}
+      <section aria-labelledby="evaluation"><h2 id="evaluation">Evaluation</h2><p>{{ project.results | escape }}</p></section>
+      {% for related in project.related_publications %}
+      {% assign related_paper = site.data.publications.main | where: 'id', related.id | first %}
+      {% capture related_excluded %}{% include project-excluded.html publication=related_paper %}{% endcapture %}
+      {% unless related_excluded == 'true' %}
+      <section class="related-publication" aria-labelledby="{{ related.section_id | escape }}">
+        <p class="status">{{ related.role | escape }}</p>
+        <h2 id="{{ related.section_id | escape }}">{{ related_paper.title | escape }}</h2>
+        <p class="authors">{{ related_paper.authors }}</p>
+        <p>{{ related.summary | escape }}</p>
+        <p>{{ related.method | escape }}</p>
+        <div class="resources" aria-label="{{ related.role | escape }} resources">
+          <a class="primary" href="{{ related_paper.pdf | absolute_url }}">Demo paper (PDF)</a>
+          {% if related_paper.link %}<a href="{{ related_paper.link | escape }}">Publication record</a>{% endif %}
+          {% if related_paper.code %}<a href="{{ related_paper.code | escape }}">Demo code</a>{% endif %}
+        </div>
+        {% include project-media.html media=related prefix=related.section_id %}
+        <p>{{ related.results | escape }}</p>
+        <details class="related-citation"><summary>Demo paper citation</summary><pre><code>{{ related_paper.bibtex | escape }}</code></pre></details>
+      </section>
+      {% endunless %}
+      {% endfor %}
+      <ul class="topics" aria-label="Research topics">{% for topic in project.topics %}<li>{{ topic | escape }}</li>{% endfor %}</ul>
+      <section aria-labelledby="citation"><h2 id="citation">{% if project.related_publications %}Full paper citation{% else %}Citation{% endif %}</h2><pre><code>{{ publication.bibtex | escape }}</code></pre></section>
+    </article>
+    <footer><a href="{{ '/' | relative_url }}">{{ site.title }} · Academic homepage</a></footer>
+  </main>
+</body>
+</html>

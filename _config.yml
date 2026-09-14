@@ -8,7 +8,9 @@ email: peichunhua (at) link.cuhk.edu.cn
 # The following information is used to improve the website traffic from search engines, e.g., Google.
 keywords: Peichun Hua, Computer Science, Security, Machine Learning, CUHK-Shenzhen
 description: Peichun Hua's academic homepage - Computer Science and Engineering student.
-canonical: https://sarendis56.github.io/
+canonical: https://peichun.xyz/
+url: https://peichun.xyz
+baseurl: ""
 
 # Links
 # If you don't need one of them, you may delete the corresponding line.
@@ -52,3 +54,16 @@ exclude:
   - LICENSE
   - minimal-light.gemspec
   - html_source_file/
+  - scripts/
+  - docs/
+  - main.tex
+  - vendor/
+  - .bundle/
+
+# Public project pages are discovered through the sitemap, not homepage navigation.
+collections:
+  projects:
+    output: true
+
+plugins:
+  - jekyll-remote-theme

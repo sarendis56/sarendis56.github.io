@@ -1,10 +1,12 @@
 main:
   - title: "Matryoshka Hash Representations for Model-Aware Compact Semantic Retrieval"
+    id: matryoshka-hash-representations
+    source_pdf: https://arxiv.org/pdf/2609.07276
     authors: <strong>Peichun Hua</strong> and Yunming Xiao
     conference_short: arXiv
     conference: arXiv preprint 2026
     link: https://arxiv.org/abs/2609.07276v1
-    pdf: https://arxiv.org/pdf/2609.07276
+    pdf: assets/docs/arxiv-2609.07276.pdf
     bibtex: |
       @misc{hua2026matryoshka,
             title={Matryoshka Hash Representations for Model-Aware Compact Semantic Retrieval}, 
@@ -16,11 +18,13 @@ main:
             url={https://arxiv.org/abs/2609.07276}, 
       }
   - title: "Spruce: Scalable Private Outsourced Retrieval Using Compact Embeddings"
+    id: spruce
+    source_pdf: https://arxiv.org/pdf/2609.03376
     authors: <strong>Peichun Hua</strong> and Yunming Xiao
     conference_short: arXiv
     conference: arXiv preprint 2026
     link: https://arxiv.org/abs/2609.03376
-    pdf: https://arxiv.org/pdf/2609.03376
+    pdf: assets/docs/arxiv-2609.03376.pdf
     bibtex: |
       @misc{hua2026spruce,
           title={Spruce: Scalable Private Outsourced Retrieval Using Compact Embeddings}, 
@@ -32,6 +36,7 @@ main:
           url={https://arxiv.org/abs/2609.03376}, 
       }
   - title: "Enroll Once, Identify Everywhere: Few-Shot Cross-Scenario Visual Speaker Recognition via Event-driven SlowFast Networks"
+    id: event-driven-speaker-recognition
     authors: Junguang Yao, <strong>Peichun Hua</strong>, and Yue Zheng
     conference_short: PRICAI
     conference: The 23rd Pacific Rim International Conference on Artificial Intelligence <strong>(PRICAI)</strong>, 2026.
@@ -49,11 +54,13 @@ main:
       Accepted as a Regular Paper, Oral Presentation.
 
   - title: "Pointing the Way, Hiding the Destination: Practical Private Dense Retrieval at Scale"
+    id: private-dense-retrieval
+    source_pdf: https://arxiv.org/pdf/2608.25735
     authors: <strong>Peichun Hua</strong>, Danyang Chen, Junan Zhang, Haifeng Sun, Jingyu Wang, Diwen Xue, Mingyu Li, and Yunming Xiao
     conference_short: arXiv
     conference: arXiv preprint 2026
     link: https://arxiv.org/abs/2608.25735
-    pdf: https://arxiv.org/pdf/2608.25735
+    pdf: assets/docs/arxiv-2608.25735.pdf
     bibtex: |
       @misc{hua2026pointing,
         title={Pointing the Way, Hiding the Destination: Practical Private Dense Retrieval at Scale},
@@ -66,6 +73,7 @@ main:
       }
 
   - title: "Unlocking Software-defined GPU Fabric Scheduling in the LLM Era"
+    id: gpuweaver
     authors: Danyang Chen, Yufeng Gu, Yibo Huang, Chengxuan Pei, <strong>Peichun Hua</strong>, Yang Zhou, and Yunming Xiao
     conference_short: APSys
     conference: ACM SIGOPS Asia-Pacific Workshop on Systems <strong>(APSys)</strong>, 2026.
@@ -82,11 +90,13 @@ main:
       Accepted.
 
   - title: "Behavioral Skill Reconstruction: Reconstructing Hidden Functionality from LLM Agent Skills"
+    id: skillclone
+    source_pdf: https://arxiv.org/pdf/2608.04192
     authors: <strong>Peichun Hua</strong>, Haoxuan Xu, and Mengyuan Li
     conference_short: arXiv
     conference: arXiv preprint 2026
     link: https://arxiv.org/abs/2608.04192
-    pdf: https://arxiv.org/pdf/2608.04192
+    pdf: assets/docs/arxiv-2608.04192.pdf
     bibtex: |
       @misc{hua2026skillclone,
             title={Behavioral Skill Reconstruction: Reconstructing Hidden Functionality from LLM Agent Skills}, 
@@ -99,11 +109,13 @@ main:
       }
 
   - title: "A Unified Open-Set Framework for Scalable PUF-Based Authentication of Heterogeneous IoT Devices"
+    id: open-set-puf-authentication
+    source_pdf: https://arxiv.org/pdf/2605.07340
     authors: Xin Wang, <strong>Peichun Hua</strong>, Chip Hong Chang, Wenye Liu, and Yue Zheng
     conference_short: SMC
     conference: IEEE International Conference on Systems, Man, and Cybernetics <strong>(SMC)</strong>, 2026.
     link: https://arxiv.org/abs/2605.07340
-    pdf: https://arxiv.org/pdf/2605.07340
+    pdf: assets/docs/arxiv-2605.07340.pdf
     code: https://github.com/WANGXinuuu1/Open-Set-PUF-Authentication-for-Heterogeneous-IoT-Devices
     bibtex: |
       @inproceedings{wang2026openpuf,
@@ -117,6 +129,7 @@ main:
       Accepted.
 
   - title: "Rethinking Jailbreak Detection of Large Vision Language Models with Representational Contrastive Scoring"
+    id: representational-contrastive-scoring
     authors: <strong>Peichun Hua</strong>, Hao Li, Shanghao Shi, Zhiyuan Yu, and Ning Zhang
     conference_short: ACL
     conference: "The 64th Annual Meeting of the Association for Computational Linguistics <strong>(ACL)</strong>, 2026."
@@ -143,6 +156,7 @@ main:
       Accepted as Oral Presentation of Main Conference (Top 20% of Accepted Papers). Acceptance Rate: around 2300/12148 ≈ 19%.
 
   - title: "Live Demonstration: Hardware-Bound IP Protection for OWL-ViT on Edge Devices"
+    id: owl-vit-hardware-protection
     authors: <strong>Peichun Hua</strong>, Hanxiu Zhang, Tuo Li, Yue Zheng, and Wenye Liu
     conference_short: ISCAS
     conference: IEEE International Symposium on Circuits and Systems <strong>(ISCAS)</strong>, 2026.
@@ -163,6 +177,7 @@ main:
       Accepted for Live Presentation. 
 
   - title: "Securing On-device Transformer with Hardware Binding and Reversible Obfuscation"
+    id: puf-transformer-protection
     authors: <strong>Peichun Hua</strong>, Hanxiu Zhang, Tuo Li, and Yue Zheng
     conference_short: ACSAC
     conference: "The 41st Annual Computer Security Applications Conference <strong>(ACSAC)</strong>, 2025."

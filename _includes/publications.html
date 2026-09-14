@@ -6,6 +6,8 @@
   <ol class="bibliography">
 
     {% for publication in site.data.publications.main %}
+    {% capture excluded %}{% include project-excluded.html publication=publication %}{% endcapture %}
+    {% unless excluded == 'true' %}
 
     <li>
       <div class="pub-row">
@@ -64,6 +66,7 @@
     </li>
     <br>
 
+    {% endunless %}
     {% endfor %}
 
   </ol>

@@ -1,0 +1,6 @@
+{%- assign excluded = false -%}
+{%- assign pdf_path = include.publication.pdf | prepend: '/' | replace: '//assets', '/assets' -%}
+{%- if site.data.indexing.excluded_paths contains pdf_path or site.data.indexing.excluded_paths contains include.project.url or include.project.indexable == false -%}
+  {%- assign excluded = true -%}
+{%- endif -%}
+{{- excluded -}}

@@ -1,0 +1,7 @@
+{
+  "header_noindex_enabled": false,
+  "excluded_paths": [
+    "/assets/docs/CV.pdf",
+    "/assets/docs/TODAES.pdf"
+  ]
+}
