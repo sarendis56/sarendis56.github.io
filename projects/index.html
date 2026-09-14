@@ -1,0 +1,46 @@
+---
+layout: null
+permalink: /projects/
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, follow">
+  <title>Research projects | {{ site.title | escape }}</title>
+  <link rel="canonical" href="{{ '/projects/' | absolute_url }}">
+  <link rel="icon" href="{{ '/assets/img/favicon.png' | relative_url }}">
+  <link rel="stylesheet" href="{{ '/assets/css/project-gallery.css' | relative_url }}">
+</head>
+<body>
+<main>
+  <header>
+    <a class="author" href="{{ '/' | relative_url }}">{{ site.title | escape }}</a>
+    <h1>Research projects</h1>
+  </header>
+  <div class="grid">
+    {% for entry in site.data.projects %}
+    {% assign slug = entry[0] %}
+    {% assign project = entry[1] %}
+    {% assign project_page = site.projects | where: 'project_id', slug | first %}
+    {% assign publication = site.data.publications.main | where: 'id', slug | first %}
+    {% capture excluded %}{% include project-excluded.html publication=publication project=project_page %}{% endcapture %}
+    {% if project_page and excluded != 'true' %}
+    {% assign figure = project.figures | first %}
+    {% unless figure %}{% assign related = project.related_publications | first %}{% assign figure = related.figures | first %}{% endunless %}
+    <article class="card">
+      {% if figure %}<a class="picture" href="{{ project_page.url | relative_url }}" aria-label="{{ project.name | escape }}"><img src="{{ figure.src | relative_url }}" alt="{{ figure.alt | escape }}" width="{{ figure.width }}" height="{{ figure.height }}" loading="lazy" decoding="async"></a>{% endif %}
+      <div class="content">
+        <p class="status">{{ project.status | escape }}</p>
+        <h2><a href="{{ project_page.url | relative_url }}">{{ project.name | escape }}</a></h2>
+        <p class="summary">{{ project.summary | escape }}</p>
+        <a class="project-link" href="{{ project_page.url | relative_url }}">View project <span aria-hidden="true">→</span></a>
+      </div>
+    </article>
+    {% endif %}
+    {% endfor %}
+  </div>
+</main>
+</body>
+</html>

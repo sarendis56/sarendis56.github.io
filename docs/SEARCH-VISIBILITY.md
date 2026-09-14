@@ -148,9 +148,14 @@ After building, export a local, bookmarkable directory and self-contained previe
 
     python3 scripts/export-project-previews.py _site /absolute/path/outside/repository/project-previews
 
-Open the exported `index.html`. Each card has a preview and selectable public URL.
-The export stays outside the repository, is not linked from the public homepage,
-and marks its HTML as noindex. Public project pages remain indexable.
+Open the exported `index.html` for the gallery with links to local previews.
+The exported `project-urls.txt` lists public project URLs. Exports stay outside
+the repository and are marked noindex. Public project pages remain indexable.
+
+The website also serves the gallery at `/projects/`. It has no homepage link or
+sitemap entry and uses `noindex, follow`, so it is intended for direct-link
+access. It uses the same project data and blacklist as the individual pages.
+Anyone with its URL can view it; this is not an access restriction.
 
 Figure extraction provenance is recorded in `docs/figure-sources.json`. The eight
 method figures are 300-dpi crops from the source PDFs; source-linked HTML tables
