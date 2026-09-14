@@ -1,0 +1,114 @@
+[
+  {
+    "project_id": "matryoshka-hash-representations",
+    "source_pdf": "/assets/docs/arxiv-2609.07276.pdf",
+    "source_sha256": "86945015a43486100ab16671711d52ceab064ebf157ef3b40736b24485c4076d",
+    "page": 3,
+    "crop_xywh_at_100_dpi": [
+      70,
+      67,
+      710,
+      255
+    ],
+    "output_dpi": 300,
+    "asset": "/assets/img/projects/matryoshka-hash-representations/method-overview.png"
+  },
+  {
+    "project_id": "spruce",
+    "source_pdf": "/assets/docs/arxiv-2609.03376.pdf",
+    "source_sha256": "f38385821ee4c77bf010bb852f0cda3e237bdcde06ec3044fe9d5068e4870e52",
+    "page": 4,
+    "crop_xywh_at_100_dpi": [
+      100,
+      90,
+      650,
+      190
+    ],
+    "output_dpi": 300,
+    "asset": "/assets/img/projects/spruce/method-overview.png"
+  },
+  {
+    "project_id": "event-driven-speaker-recognition",
+    "source_pdf": "/assets/docs/PRICAI26.pdf",
+    "source_sha256": "a275f50863aa66dcc7c776b901099659372262b2797531cd0ce07dcb44b63222",
+    "page": 5,
+    "crop_xywh_at_100_dpi": [
+      188,
+      155,
+      485,
+      146
+    ],
+    "output_dpi": 300,
+    "asset": "/assets/img/projects/event-driven-speaker-recognition/method-overview.png"
+  },
+  {
+    "project_id": "private-dense-retrieval",
+    "source_pdf": "/assets/docs/arxiv-2608.25735.pdf",
+    "source_sha256": "5a4d2b73cff47977eeaf690a00e2f25dfc1380fe5525603ecb4844b44aa45269",
+    "page": 7,
+    "crop_xywh_at_100_dpi": [
+      158,
+      95,
+      535,
+      234
+    ],
+    "output_dpi": 300,
+    "asset": "/assets/img/projects/private-dense-retrieval/method-overview.png"
+  },
+  {
+    "project_id": "gpuweaver",
+    "source_pdf": "/assets/docs/APSys26.pdf",
+    "source_sha256": "f0929a250fedc742b86cd8ba8050931229954b1d4eafb0ed39b59198d22a133e",
+    "page": 5,
+    "crop_xywh_at_100_dpi": [
+      445,
+      110,
+      318,
+      185
+    ],
+    "output_dpi": 300,
+    "asset": "/assets/img/projects/gpuweaver/method-overview.png"
+  },
+  {
+    "project_id": "skillclone",
+    "source_pdf": "/assets/docs/arxiv-2608.04192.pdf",
+    "source_sha256": "d844ac99625b51075a0256c5244f49e106c9e43b7e13aba4d7bc27b00ccfe8f2",
+    "page": 5,
+    "crop_xywh_at_100_dpi": [
+      96,
+      95,
+      636,
+      242
+    ],
+    "output_dpi": 300,
+    "asset": "/assets/img/projects/skillclone/method-overview.png"
+  },
+  {
+    "project_id": "open-set-puf-authentication",
+    "source_pdf": "/assets/docs/arxiv-2605.07340.pdf",
+    "source_sha256": "2f548c797e8046dda0f1620322320629f89c94f1f453c33a46bf78bf0507e89e",
+    "page": 4,
+    "crop_xywh_at_100_dpi": [
+      50,
+      92,
+      730,
+      208
+    ],
+    "output_dpi": 300,
+    "asset": "/assets/img/projects/open-set-puf-authentication/method-overview.png"
+  },
+  {
+    "project_id": "representational-contrastive-scoring",
+    "source_pdf": "https://aclanthology.org/2026.acl-long.992.pdf",
+    "source_sha256": "989a78e6584e9fb6a8f7293419fc8c5c5ca0dc3290adf67d4c6e2a911c527cc6",
+    "page": 6,
+    "crop_xywh_at_100_dpi": [
+      168,
+      92,
+      493,
+      210
+    ],
+    "output_dpi": 300,
+    "asset": "/assets/img/projects/representational-contrastive-scoring/method-overview.png"
+  }
+]

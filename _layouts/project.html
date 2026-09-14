@@ -63,9 +63,11 @@
       </header>
       <section aria-labelledby="overview"><h2 id="overview">Overview</h2><p class="summary">{{ project.summary | escape }}</p></section>
       <section aria-labelledby="method"><h2 id="method">Method</h2><p>{{ project.method | escape }}</p></section>
-      {% include project-media.html media=project prefix=page.project_id %}
+      {% include project-media.html media=project prefix=page.project_id kind='figures' %}
       {{ content }}
-      <section aria-labelledby="evaluation"><h2 id="evaluation">Evaluation</h2><p>{{ project.results | escape }}</p></section>
+      <section aria-labelledby="evaluation"><h2 id="evaluation">Evaluation</h2><p>{{ project.results | escape }}</p>
+      {% include project-media.html media=project prefix=page.project_id kind='tables' %}
+      </section>
       {% for related in project.related_publications %}
       {% assign related_paper = site.data.publications.main | where: 'id', related.id | first %}
       {% capture related_excluded %}{% include project-excluded.html publication=related_paper %}{% endcapture %}

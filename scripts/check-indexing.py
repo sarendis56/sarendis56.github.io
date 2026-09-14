@@ -89,6 +89,9 @@ for slug, project in projects.items():
     if project['status'].startswith('arXiv preprint'):
         check('citation_conference_title' not in doc.meta, 'Preprint mislabeled as conference publication: ' + slug)
     media_groups = [project] + project.get('related_publications', [])
+    check(any(m.get('figures') for m in media_groups), 'Project missing a figure: ' + slug)
+    check(any(m.get('tables') for m in media_groups), 'Project missing a results table: ' + slug)
+    check('<table' in text and 'class="project-figure"' in text, 'Media not rendered: ' + slug)
     for media in media_groups:
         for figure in media.get('figures', []):
             image = built / figure['src'].lstrip('/')

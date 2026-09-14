@@ -89,8 +89,10 @@ The ACSAC 2025 full paper and ISCAS 2026 live demo share the project page
 remain separate. The earlier OWL-ViT project URL redirects to the demo section and
 is excluded from the sitemap.
 
-Each project in `_data/projects.json` can include optional `figures` and `tables`
-arrays. The shared template renders them with no JavaScript dependency. Figures
+All nine projects now include a source figure and a results table. The eight
+individual project pages show their own method figure and evaluation table; the
+merged hardware-protection page shows the ISCAS demonstration figure and table.
+Each project in `_data/projects.json` supports `figures` and `tables` arrays. The shared template renders them with no JavaScript dependency. Figures
 have alt text, captions, source links, stable dimensions, and full-size links.
 Tables are selectable HTML with column and row headings and horizontal scrolling
 on small screens. Prefer SVG for original vector figures and PNG for extracted
@@ -133,3 +135,23 @@ For a demo or follow-up belonging to an existing project, add a
 `summary`, `method`, and `results`; it may have its own `figures` and `tables`.
 The publication data remains the source for authors, PDF links, and BibTeX.
 Optional custom Markdown can also be placed after a project's front matter.
+
+## Finding project URLs and exporting previews
+
+The stable addresses are listed in `docs/PROJECT-URLS.md`. This reference is
+excluded from the public site. The actual public discovery list is `/sitemap.xml`,
+which is advertised in `/robots.txt` and generated from the Jekyll project
+collection. Crawlers receive each exact URL there; they do not infer slugs from
+paper titles. Keep existing permalinks stable when changing display names.
+
+After building, export a local, bookmarkable directory and self-contained previews:
+
+    python3 scripts/export-project-previews.py _site /absolute/path/outside/repository/project-previews
+
+Open the exported `index.html`. Each card has a preview and selectable public URL.
+The export stays outside the repository, is not linked from the public homepage,
+and marks its HTML as noindex. Public project pages remain indexable.
+
+Figure extraction provenance is recorded in `docs/figure-sources.json`. The eight
+method figures are 300-dpi crops from the source PDFs; source-linked HTML tables
+transcribe the selected values and state their experimental scope.

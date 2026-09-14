@@ -18,7 +18,64 @@
       "Yunming Xiao"
     ],
     "year": "2026",
-    "arxiv_id": "2609.07276"
+    "arxiv_id": "2609.07276",
+    "figures": [
+      {
+        "src": "/assets/img/projects/matryoshka-hash-representations/method-overview.png",
+        "width": 2130,
+        "height": 765,
+        "alt": "MHR pipeline showing full-width training, residual adaptors for shorter prefixes, and asymmetric scoring of continuous queries against binary documents.",
+        "caption": "One binary code, several search budgets. Full-width training is followed by frozen prefix adaptation and asymmetric search.",
+        "source_url": "/assets/docs/arxiv-2609.07276.pdf#page=3",
+        "source_label": "Figure 1 in the paper"
+      }
+    ],
+    "tables": [
+      {
+        "caption": "Retrieval quality at compact document budgets",
+        "columns": [
+          "Method",
+          "8 bytes",
+          "16 bytes",
+          "32 bytes"
+        ],
+        "rows": [
+          [
+            "PQ",
+            "0.045 / 0.156",
+            "0.217 / 0.395",
+            "0.429 / 0.593"
+          ],
+          [
+            "OPQ",
+            "0.090 / 0.226",
+            "0.232 / 0.423",
+            "0.430 / 0.597"
+          ],
+          [
+            "JPQ-FT",
+            "0.217 / 0.342",
+            "0.404 / 0.537",
+            "0.524 / 0.638"
+          ],
+          [
+            "JPQ-Nested",
+            "0.188 / 0.324",
+            "0.355 / 0.516",
+            "0.524 / 0.643"
+          ],
+          [
+            "MHR",
+            "0.376 / 0.518",
+            "0.502 / 0.616",
+            "0.556 / 0.653"
+          ]
+        ],
+        "note": "Each cell is NDCG@10 / Recall@100, macro-averaged across seven BEIR datasets after source-only MS MARCO training. Selected baselines from Table 1. JPQ-FT at 8 and 16 bytes is literal truncation of its 32-byte model. The 3,072-byte float BGE reference achieves 0.637 / 0.720. Budgets count document payload, excluding shared metadata and index overhead.",
+        "source_url": "/assets/docs/arxiv-2609.07276.pdf#page=5",
+        "source_label": "Table 1 in the paper"
+      }
+    ]
   },
   "spruce": {
     "name": "Spruce",
@@ -38,7 +95,63 @@
       "Yunming Xiao"
     ],
     "year": "2026",
-    "arxiv_id": "2609.03376"
+    "arxiv_id": "2609.03376",
+    "figures": [
+      {
+        "src": "/assets/img/projects/spruce/method-overview.png",
+        "width": 1950,
+        "height": 570,
+        "alt": "Spruce architecture with an organization and dealer, two non-colluding search servers, and a client performing private filtering, reranking, and document retrieval.",
+        "caption": "Private retrieval from an outsourced index: filter, rerank, and fetch across two non-colluding servers.",
+        "source_url": "/assets/docs/arxiv-2609.03376.pdf#page=4",
+        "source_label": "Figure 1 in the paper"
+      }
+    ],
+    "tables": [
+      {
+        "caption": "Fixed-radius retrieval quality and candidate counts (128-bit codes)",
+        "columns": [
+          "Corpus",
+          "Full-float NDCG@10",
+          "Fixed-radius NDCG@10",
+          "Median candidates",
+          "95th-percentile candidates"
+        ],
+        "rows": [
+          [
+            "Natural Questions",
+            "0.5363",
+            "0.5250 ± 0.0011",
+            "1,952",
+            "8,191"
+          ],
+          [
+            "DBpedia",
+            "0.3996",
+            "0.3865 ± 0.0044",
+            "1,207",
+            "5,749"
+          ],
+          [
+            "Climate-FEVER",
+            "0.2597",
+            "0.2539 ± 0.0020",
+            "382",
+            "1,055"
+          ],
+          [
+            "Webis-Touché",
+            "0.2686",
+            "0.2549 ± 0.0208",
+            "385",
+            "5,289"
+          ]
+        ],
+        "note": "L = 128 rows from Table 3. Fixed radius is calibrated for 95% final-NDCG retention. NDCG values are mean ± standard deviation over five stratified calibration partitions (10 calibration queries for Webis-Touché, 100 otherwise). Full-float values are the matched full-corpus reference.",
+        "source_url": "/assets/docs/arxiv-2609.03376.pdf#page=10",
+        "source_label": "Table 3 in the paper"
+      }
+    ]
   },
   "event-driven-speaker-recognition": {
     "name": "Enroll Once, Identify Everywhere",
@@ -59,7 +172,63 @@
       "Yue Zheng"
     ],
     "year": "2026",
-    "venue": "The 23rd Pacific Rim International Conference on Artificial Intelligence (PRICAI), 2026."
+    "venue": "The 23rd Pacific Rim International Conference on Artificial Intelligence (PRICAI), 2026.",
+    "figures": [
+      {
+        "src": "/assets/img/projects/event-driven-speaker-recognition/method-overview.png",
+        "width": 1455,
+        "height": 438,
+        "alt": "Event-camera speaker-recognition pipeline: event streams form count volumes, a SlowFast network extracts embeddings, and probe embeddings are matched to an enrollment gallery.",
+        "caption": "From lip-motion events to speaker embeddings: a frozen SlowFast encoder supports enrollment and nearest-neighbor identification.",
+        "source_url": "/assets/docs/PRICAI26.pdf#page=5",
+        "source_label": "Figure 1 in the paper"
+      }
+    ],
+    "tables": [
+      {
+        "caption": "Speaker identification across enrollment and probe conditions",
+        "columns": [
+          "Enrollment ↓ / Probe →",
+          "Frontal, bright",
+          "45°",
+          "90°",
+          "Frontal, low light"
+        ],
+        "rows": [
+          [
+            "Frontal, bright",
+            "99.18%",
+            "74.95%",
+            "50.20%",
+            "87.25%"
+          ],
+          [
+            "45°",
+            "77.45%",
+            "97.32%",
+            "58.75%",
+            "70.05%"
+          ],
+          [
+            "90°",
+            "50.80%",
+            "53.10%",
+            "98.04%",
+            "35.75%"
+          ],
+          [
+            "Frontal, low light",
+            "90.90%",
+            "65.90%",
+            "39.00%",
+            "96.34%"
+          ]
+        ],
+        "note": "Rank-1 accuracy on DVSpeaker with 30 training identities and 20 disjoint test identities, using three enrollment samples per test identity. Rows specify gallery conditions; columns specify probe conditions. Diagonal entries use matched scenarios.",
+        "source_url": "/assets/docs/PRICAI26.pdf#page=9",
+        "source_label": "Table 2 in the paper"
+      }
+    ]
   },
   "private-dense-retrieval": {
     "name": "Pointing the Way, Hiding the Destination",
@@ -86,14 +255,77 @@
       "Yunming Xiao"
     ],
     "year": "2026",
-    "arxiv_id": "2608.25735"
+    "arxiv_id": "2608.25735",
+    "figures": [
+      {
+        "src": "/assets/img/projects/private-dense-retrieval/method-overview.png",
+        "width": 1605,
+        "height": 702,
+        "alt": "Protocol diagram connecting a randomized user hash to provider shortlisting, BFV encrypted embedding scores, and k-of-K oblivious key transfer for selected documents.",
+        "caption": "Private retrieval combines a privacy-controlled hash shortlist, encrypted scoring, and oblivious selection.",
+        "source_url": "/assets/docs/arxiv-2608.25735.pdf#page=7",
+        "source_label": "Figure 2 in the paper"
+      }
+    ],
+    "tables": [
+      {
+        "caption": "Shortlist reranking versus full-corpus retrieval",
+        "columns": [
+          "Corpus",
+          "Documents",
+          "NDCG@10, K = 200",
+          "NDCG@10, K = 500",
+          "Full-corpus NDCG@10"
+        ],
+        "rows": [
+          [
+            "SciDocs",
+            "25K",
+            "0.1875",
+            "0.1874",
+            "0.1870"
+          ],
+          [
+            "Natural Questions",
+            "2.7M",
+            "0.5723",
+            "0.5787",
+            "0.5854"
+          ],
+          [
+            "DBpedia-Entity",
+            "4.6M",
+            "0.4144",
+            "0.4224",
+            "0.4271"
+          ],
+          [
+            "Climate-FEVER",
+            "5.4M",
+            "0.2818",
+            "0.2785",
+            "0.2627"
+          ],
+          [
+            "FEVER",
+            "5.4M",
+            "0.8417",
+            "0.8451",
+            "0.8501"
+          ]
+        ],
+        "note": "E5-base-v2 (256-bit) subset of Table 3. A learned binary hash selects K candidates, then the unchanged pretrained encoder reranks them. This table evaluates the base two-forward retrieval pipeline; randomized-release privacy–utility experiments are reported separately in the paper. Corpus sizes are rounded as in the source.",
+        "source_url": "/assets/docs/arxiv-2608.25735.pdf#page=10",
+        "source_label": "Table 3 in the paper"
+      }
+    ]
   },
   "gpuweaver": {
     "name": "GPUWeaver",
     "status": "Accepted · APSys 2026",
     "summary": "GPUWeaver explores software-defined GPU fabric scheduling for large language model systems. The paper examines contention across NVLink, PCIe, and RDMA when workloads combine computation, communication, KV-cache offloading, and disaggregated serving.",
     "method": "A context-aware scheduler monitors application progress and fabric state, detects contention, and regulates communication injection according to application performance goals. The design treats GPU fabric bandwidth as an explicitly managed resource.",
-    "results": "The study characterizes interference between NVLink traffic and GPU memory access, and between GPUDirect RDMA and host–device transfers over PCIe. It presents a scheduling framework and a research direction for more predictable LLM execution.",
+    "results": "The study characterizes NVLink–memory and PCIe traffic interference. In a vLLM + Mooncake case study with Qwen3-8B, the prototype reduces prefill-to-decode KV-transfer time by 19.4–34.4% and mean time to first token by 2.4–6.1% across the evaluated request shapes.",
     "topics": [
       "GPU scheduling",
       "NVLink",
@@ -113,7 +345,64 @@
     ],
     "year": "2026",
     "doi": "10.1145/3838177.3841731",
-    "venue": "ACM SIGOPS Asia-Pacific Workshop on Systems (APSys), 2026."
+    "venue": "ACM SIGOPS Asia-Pacific Workshop on Systems (APSys), 2026.",
+    "figures": [
+      {
+        "src": "/assets/img/projects/gpuweaver/method-overview.png",
+        "width": 954,
+        "height": 555,
+        "alt": "GPUWeaver architecture with application quality-of-service goals, a context-aware scheduler, communication libraries, and monitored GPU interconnect hardware.",
+        "caption": "A scheduler connects application performance goals to communication controls and monitored GPU fabric state.",
+        "source_url": "/assets/docs/APSys26.pdf#page=5",
+        "source_label": "Figure 6 in the paper"
+      }
+    ],
+    "tables": [
+      {
+        "caption": "KV-cache scheduling improvements in the serving case study",
+        "columns": [
+          "Prompt tokens × concurrent requests",
+          "KV volume",
+          "KV-transfer time reduction",
+          "Time-to-first-token reduction"
+        ],
+        "rows": [
+          [
+            "8K × 1",
+            "1.2 GB",
+            "19%",
+            "6.1%"
+          ],
+          [
+            "16K × 1",
+            "2.4 GB",
+            "20%",
+            "2.8%"
+          ],
+          [
+            "16K × 2",
+            "4.7 GB",
+            "34%",
+            "2.7%"
+          ],
+          [
+            "16K × 3",
+            "7.1 GB",
+            "33%",
+            "3.0%"
+          ],
+          [
+            "8K × 8",
+            "9.4 GB",
+            "31%",
+            "2.4%"
+          ]
+        ],
+        "note": "Rounded chart labels transcribed from Figure 7. The prototype uses vLLM + Mooncake with Qwen3-8B on two logical servers, one GPU per server, replaying request shapes from a Codex/SWE-bench Pro trace. The policy selects a PCIe allocation using monitored bandwidth and serving results from prior runs; results are specific to this case study.",
+        "source_url": "/assets/docs/APSys26.pdf#page=6",
+        "source_label": "Figure 7 in the paper"
+      }
+    ]
   },
   "skillclone": {
     "name": "Behavioral Skill Reconstruction / SKILLCLONE",
@@ -135,7 +424,64 @@
       "Mengyuan Li"
     ],
     "year": "2026",
-    "arxiv_id": "2608.04192"
+    "arxiv_id": "2608.04192",
+    "figures": [
+      {
+        "src": "/assets/img/projects/skillclone/method-overview.png",
+        "width": 1908,
+        "height": 726,
+        "alt": "SKILLCLONE workflow from a public skill interface through hypotheses, adaptive probes and typed observations to clone synthesis and differential validation.",
+        "caption": "SKILLCLONE reconstructs behavior through valid task probes, executable synthesis, and differential validation.",
+        "source_url": "/assets/docs/arxiv-2608.04192.pdf#page=5",
+        "source_label": "Figure 1 in the paper"
+      }
+    ],
+    "tables": [
+      {
+        "caption": "Behavioral reconstruction by dominant skill component",
+        "columns": [
+          "Component type",
+          "Skills",
+          "Median ASR",
+          "Skills above floor"
+        ],
+        "rows": [
+          [
+            "Threshold / decision rules",
+            "4",
+            "71%",
+            "3 / 4"
+          ],
+          [
+            "Lookup tables / data",
+            "6",
+            "84%",
+            "6 / 6"
+          ],
+          [
+            "Rule composition",
+            "6",
+            "88%",
+            "6 / 6"
+          ],
+          [
+            "Procedures / algorithms",
+            "8",
+            "75%",
+            "4 / 8"
+          ],
+          [
+            "Numeric formulas",
+            "6",
+            "57%",
+            "4 / 6"
+          ]
+        ],
+        "note": "Pooled across five victim models, combining controlled mined-skill and deployed SkillsBench settings under the cross-victim protocol. ASR is the paper’s behavioral reconstruction success measure on held-out tasks. “Above floor” reports the source table’s count of skills exceeding their baseline floor.",
+        "source_url": "/assets/docs/arxiv-2608.04192.pdf#page=8",
+        "source_label": "Table 1 in the paper"
+      }
+    ]
   },
   "open-set-puf-authentication": {
     "name": "Open-Set PUF Authentication",
@@ -159,7 +505,63 @@
     ],
     "year": "2026",
     "arxiv_id": "2605.07340",
-    "venue": "IEEE International Conference on Systems, Man, and Cybernetics (SMC), 2026."
+    "venue": "IEEE International Conference on Systems, Man, and Cybernetics (SMC), 2026.",
+    "figures": [
+      {
+        "src": "/assets/img/projects/open-set-puf-authentication/method-overview.png",
+        "width": 2190,
+        "height": 624,
+        "alt": "Open-set PUF authentication diagram showing enrollment, encrypted PUF responses, a Bloom filter for replay detection, and a classifier that identifies enrolled devices or rejects unknown ones.",
+        "caption": "Enrollment and authentication combine PUF response classification, replay detection, and rejection of unknown devices.",
+        "source_url": "/assets/docs/arxiv-2605.07340.pdf#page=4",
+        "source_label": "Figure 2 in the paper"
+      }
+    ],
+    "tables": [
+      {
+        "caption": "Authentication results for the proposed framework",
+        "columns": [
+          "PUF type",
+          "Enrolled devices",
+          "Closed-set accuracy",
+          "False acceptance rate",
+          "False rejection rate"
+        ],
+        "rows": [
+          [
+            "Heterogeneous",
+            "45",
+            "100%",
+            "0.44%",
+            "0.43%"
+          ],
+          [
+            "Arbiter",
+            "25",
+            "100%",
+            "0.35%",
+            "0%"
+          ],
+          [
+            "SRAM",
+            "40",
+            "100%",
+            "0.13%",
+            "0.62%"
+          ],
+          [
+            "DRAM (noisy)",
+            "3",
+            "100%",
+            "0.33%",
+            "2.04%"
+          ]
+        ],
+        "note": "Proposed-method columns from Table II. The heterogeneous fleet contains 20 Arbiter and 25 SRAM PUFs. Noisy DRAM measurements cover 20–50°C and supply voltages of 1.5 V and 1.27 V. Closed-set accuracy measures identification among enrolled devices; false acceptance and rejection measure open-set authentication errors.",
+        "source_url": "/assets/docs/arxiv-2605.07340.pdf#page=7",
+        "source_label": "Table II in the paper"
+      }
+    ]
   },
   "representational-contrastive-scoring": {
     "name": "Representational Contrastive Scoring",
@@ -182,7 +584,48 @@
       "Ning Zhang"
     ],
     "year": "2026",
-    "venue": "The 64th Annual Meeting of the Association for Computational Linguistics (ACL), 2026."
+    "venue": "The 64th Annual Meeting of the Association for Computational Linguistics (ACL), 2026.",
+    "figures": [
+      {
+        "src": "/assets/img/projects/representational-contrastive-scoring/method-overview.png",
+        "width": 1479,
+        "height": 630,
+        "alt": "Representation-space diagrams contrasting Mahalanobis Contrastive Detection and K-nearest Contrastive Detection relative to benign and malicious reference groups.",
+        "caption": "Contrastive detection compares proximity to benign and malicious representations using cluster distances or nearest neighbors.",
+        "source_url": "https://aclanthology.org/2026.acl-long.992.pdf#page=6",
+        "source_label": "Figure 3 in the paper"
+      }
+    ],
+    "tables": [
+      {
+        "caption": "Detection cost relative to the host model forward pass",
+        "columns": [
+          "Operation",
+          "Time",
+          "Relative overhead"
+        ],
+        "rows": [
+          [
+            "Host LVLM forward pass",
+            "0.6383 s",
+            "Reference"
+          ],
+          [
+            "KCD: projection + nearest-neighbor search",
+            "0.0260 s",
+            "≈ 4.0%"
+          ],
+          [
+            "MCD: projection + Mahalanobis distance",
+            "0.0355 s",
+            "≈ 5.5%"
+          ]
+        ],
+        "note": "Total rows from Table 4 using LLaVA-v1.6-Vicuna-7B. Overhead is relative to a standard forward pass, excluding autoregressive generation; these are detector costs rather than full-answer latency.",
+        "source_url": "https://aclanthology.org/2026.acl-long.992.pdf#page=9",
+        "source_label": "Table 4 in the paper"
+      }
+    ]
   },
   "puf-transformer-protection": {
     "name": "Hardware-Bound Transformer Protection",
