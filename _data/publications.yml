@@ -79,11 +79,13 @@ main:
     conference: ACM SIGOPS Asia-Pacific Workshop on Systems <strong>(APSys)</strong>, 2026.
     pdf: assets/docs/APSys26.pdf
     bibtex: |
-      @inproceedings{chen2026unlocking,
+      @inproceedings{chen2026gpuweaver,
         title={Unlocking Software-defined GPU Fabric Scheduling in the LLM Era},
         author={Danyang Chen and Yufeng Gu and Yibo Huang and Chengxuan Pei and Peichun Hua and Yang Zhou and Yunming Xiao},
         booktitle={ACM SIGOPS Asia-Pacific Workshop on Systems (APSys)},
         year={2026},
+        pages={118--125},
+        doi={10.1145/3838177.3841731},
         organization={ACM}
       }
     notes: |
