@@ -2,6 +2,7 @@
 
 Public addresses after deployment. This maintenance file is excluded from the public build.
 
+- Semantics Delivery Network: https://peichun.xyz/papers/semantics-delivery-network/
 - Matryoshka Hash Representations: https://peichun.xyz/papers/matryoshka-hash-representations/
 - Spruce: https://peichun.xyz/papers/spruce/
 - Enroll Once, Identify Everywhere: https://peichun.xyz/papers/event-driven-speaker-recognition/
