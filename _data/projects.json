@@ -1,7 +1,7 @@
 {
   "semantics-delivery-network": {
     "name": "Semantics Delivery Network",
-    "status": "arXiv preprint · 2026",
+    "status": "Accepted · HotNets 2026",
     "summary": "Semantics Delivery Network (SemDN) proposes an origin-authorized edge layer that retrieves and delivers web content as task-relevant chunks for LLM agents. It addresses the gap between URL-based search and caching infrastructure and the short, useful passages agents consume across multi-step tasks.",
     "method": "A client sends a semantic query to a nearby edge, which searches a hierarchical corpus and returns selected chunks. SemDN shares origin-authorized content acquisition and normalization, supports tenant-specific ranking, and caches normalized blocks, chunks, and index state. A coverage controller estimates when the corpus may be incomplete or stale and can trigger scoped discovery or refresh.",
     "results": "In preliminary measurements on 100 live-web queries, agents consumed a median 7.1 KB of selected chunks while lightweight HTML retrieval processed 761 KB to obtain them (107×); full browser renders processed 18.1 MB. In trace-driven cache replays of Search-R1 over wiki-18, a 1.34 MB chunk cache served 73.8% of chunk requests and sent 13–41× fewer bytes to origin than a URL-object cache at equal capacity. On a fixed wiki-18 corpus across five QA sets, chunk-first retrieval with the same Qwen2.5-7B reader improved average F1 from 0.334 to 0.357 over page-first retrieval while delivering about 470× fewer bytes.",
@@ -18,6 +18,7 @@
       "Yunming Xiao"
     ],
     "year": "2026",
+    "venue": "ACM Workshop on Hot Topics in Networks (HotNets), 2026.",
     "arxiv_id": "2609.22486"
   },
   "matryoshka-hash-representations": {

@@ -2,10 +2,11 @@ main:
   - title: "Semantics Delivery Network: Rethinking Web Retrieval Infrastructure for LLM Agents"
     id: semantics-delivery-network
     authors: <strong>Peichun Hua</strong> and Yunming Xiao
-    conference_short: arXiv
-    conference: arXiv preprint 2026
+    conference_short: HotNets
+    conference: ACM Workshop on Hot Topics in Networks <strong>(HotNets)</strong>, 2026.
     link: https://arxiv.org/abs/2609.22486
     pdf: https://arxiv.org/pdf/2609.22486
+    page: /papers/semantics-delivery-network/
     bibtex: |
       @misc{hua2026semantics,
         title={Semantics Delivery Network: Rethinking Web Retrieval Infrastructure for LLM Agents},
