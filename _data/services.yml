@@ -7,6 +7,7 @@ main:
   - ["2026",
      [
        {"title": "Reviewer, The Pacific Rim International Conference on Artificial Intelligence (PRICAI)", "link": "https://2026.pricai.org/"},
-       {"title": "Reviewer, ACL Rolling Review", "link": "https://aclrollingreview.org/"}
+       {"title": "Reviewer, ACL Rolling Review", "link": "https://aclrollingreview.org/"},
+       {"title": "Reviewer, ICLR", "link": "https://iclr.cc/Conferences/2027"}
      ]
   ]

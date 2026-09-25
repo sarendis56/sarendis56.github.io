@@ -16,6 +16,8 @@ main:
         primaryClass={cs.NI},
         url={https://arxiv.org/abs/2609.22486}
       }
+    notes: |
+      Accepted. Acceptance Rate: 43/188 ≈ 22.9%.
 
   - title: "Matryoshka Hash Representations for Model-Aware Compact Semantic Retrieval"
     id: matryoshka-hash-representations
@@ -69,6 +71,7 @@ main:
         organization={Springer}
       }
     notes: |
+      Acceptance Rate: 542/1825 ≈ 29.7%.
       Accepted as a Regular Paper, Oral Presentation.
 
   - title: "Pointing the Way, Hiding the Destination: Practical Private Dense Retrieval at Scale"
