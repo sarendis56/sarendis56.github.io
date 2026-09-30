@@ -1,0 +1,63 @@
+.homepage {
+  box-sizing: border-box;
+  padding: 32px 24px;
+}
+
+.homepage *, .homepage *::before, .homepage *::after {
+  box-sizing: inherit;
+}
+
+.homepage .wrapper {
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.homepage .wrapper > header {
+  position: static;
+  float: none;
+  width: 100%;
+  padding: 0 0 1.5rem;
+  margin: 0 0 2rem;
+  text-align: left;
+  border-bottom: 1px solid currentColor;
+}
+
+.homepage .wrapper > header h1 {
+  margin-bottom: 0.4rem;
+}
+
+.homepage .profile-position {
+  font-size: 1.1rem;
+}
+
+.homepage .social-icons {
+  margin-top: 0.8rem;
+}
+
+.homepage .wrapper > section {
+  position: static;
+  float: none;
+  width: 100%;
+  padding: 0 0 50px;
+  margin: 0;
+  border: 0;
+}
+
+.homepage .wrapper > footer {
+  display: none;
+}
+
+.homepage pre {
+  max-width: 100%;
+}
+
+@media (max-width: 600px) {
+  .homepage {
+    padding: 20px 16px;
+  }
+
+  .homepage .wrapper > header {
+    margin-bottom: 1.5rem;
+  }
+}
