@@ -1,4 +1,42 @@
 main:
+  - title: "Relevance Is Not Sufficient Evidence: Detecting Evidence Gaps Before Generation in RAG"
+    id: rinse
+    authors: Suting Chen, <strong>Peichun Hua</strong>, and Yunming Xiao
+    conference_short: arXiv
+    conference: arXiv preprint, 2026.
+    preprint: true
+    link: https://arxiv.org/abs/2609.37469
+    pdf: https://arxiv.org/pdf/2609.37469
+    bibtex: |
+      @misc{chen2026relevance,
+        title={Relevance Is Not Sufficient Evidence: Detecting Evidence Gaps Before Generation in RAG},
+        author={Suting Chen and Peichun Hua and Yunming Xiao},
+        year={2026},
+        eprint={2609.37469},
+        archivePrefix={arXiv},
+        primaryClass={cs.CL},
+        url={https://arxiv.org/abs/2609.37469}
+      }
+
+  - title: "Backdoor in the Loop: Compromising Agentic Search via Malicious Retrievers"
+    id: backdoor-in-the-loop
+    authors: Beining Xu, <strong>Peichun Hua</strong>, and Yunming Xiao
+    conference_short: arXiv
+    conference: arXiv preprint, 2026.
+    preprint: true
+    link: https://arxiv.org/abs/2609.37468
+    pdf: https://arxiv.org/pdf/2609.37468
+    bibtex: |
+      @misc{xu2026backdoor,
+        title={Backdoor in the Loop: Compromising Agentic Search via Malicious Retrievers},
+        author={Beining Xu and Peichun Hua and Yunming Xiao},
+        year={2026},
+        eprint={2609.37468},
+        archivePrefix={arXiv},
+        primaryClass={cs.CR},
+        url={https://arxiv.org/abs/2609.37468}
+      }
+
   - title: "Semantics Delivery Network: Rethinking Web Retrieval Infrastructure for LLM Agents"
     id: semantics-delivery-network
     authors: <strong>Peichun Hua</strong> and Yunming Xiao
@@ -25,6 +63,7 @@ main:
     authors: <strong>Peichun Hua</strong> and Yunming Xiao
     conference_short: arXiv
     conference: arXiv preprint 2026
+    preprint: true
     link: https://arxiv.org/abs/2609.07276v1
     pdf: assets/docs/arxiv-2609.07276.pdf
     bibtex: |
@@ -43,6 +82,7 @@ main:
     authors: <strong>Peichun Hua</strong> and Yunming Xiao
     conference_short: arXiv
     conference: arXiv preprint 2026
+    preprint: true
     link: https://arxiv.org/abs/2609.03376
     pdf: assets/docs/arxiv-2609.03376.pdf
     bibtex: |
@@ -80,6 +120,7 @@ main:
     authors: <strong>Peichun Hua</strong>, Danyang Chen, Junan Zhang, Haifeng Sun, Jingyu Wang, Diwen Xue, Mingyu Li, and Yunming Xiao
     conference_short: arXiv
     conference: arXiv preprint 2026
+    preprint: true
     link: https://arxiv.org/abs/2608.25735
     pdf: assets/docs/arxiv-2608.25735.pdf
     bibtex: |
@@ -126,6 +167,7 @@ main:
     authors: <strong>Peichun Hua</strong>, Haoxuan Xu, and Mengyuan Li
     conference_short: arXiv
     conference: arXiv preprint 2026
+    preprint: true
     link: https://arxiv.org/abs/2608.04192
     pdf: assets/docs/arxiv-2608.04192.pdf
     bibtex: |
