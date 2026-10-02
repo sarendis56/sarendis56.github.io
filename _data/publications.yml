@@ -160,7 +160,7 @@ main:
         doi={10.1145/3838177.3841731},
       }
     notes: |
-      Accepted.
+      Accepted. Acceptance Rate: 19/43 ≈ 44%.
 
   - title: "Behavioral Skill Reconstruction: Reconstructing Hidden Functionality from LLM Agent Skills"
     id: skillclone
