@@ -1,4 +1,104 @@
 {
+  "rinse": {
+    "name": "RINSE",
+    "status": "arXiv preprint · 2026",
+    "summary": "RINSE asks whether retrieved passages contain enough evidence to answer a question before a generator runs. It targets cases where passages are relevant to the topic but omit the facts needed for a supported answer.",
+    "method": "The paper builds paired sufficient and insufficient evidence cases through passage substitution, deletion, and question swaps. RINSE combines question-part coverage, answer-span evidence, and a small language model's cross-passage sufficiency signal. It corrects scores for evidence-set size and sums three standardized signals with equal weights.",
+    "results": "Across six datasets, RINSE reaches 0.837 average pairwise accuracy, compared with 0.746 for the strongest prior method and 0.784 for a frontier model queried through an API. On 3,149 pairs formed from real retriever outputs, it averages 0.813 versus 0.674 for the strongest prior method. Median latency is 36.5 ms per record on one NVIDIA A100 GPU.",
+    "topics": [
+      "retrieval-augmented generation",
+      "evidence sufficiency",
+      "answer abstention",
+      "information retrieval"
+    ],
+    "authors": [
+      "Suting Chen",
+      "Peichun Hua",
+      "Yunming Xiao"
+    ],
+    "co_first_authors": [
+      "Suting Chen",
+      "Peichun Hua"
+    ],
+    "year": "2026",
+    "arxiv_id": "2609.37469",
+    "figures": [
+      {
+        "src": "/assets/img/projects/rinse/method-overview.png",
+        "width": 800,
+        "height": 375,
+        "alt": "RINSE scores evidence with content coverage, answer-span evidence, and a cross-passage language model, then normalizes and combines the three signals.",
+        "caption": "RINSE combines three complementary evidence-sufficiency signals before answer generation.",
+        "source_url": "/assets/docs/arxiv-2609.37469.pdf#page=7",
+        "source_label": "Figure 2 in the paper"
+      }
+    ],
+    "tables": [
+      {
+        "caption": "Evidence sufficiency on six paired datasets",
+        "columns": ["Method", "Average pairwise accuracy", "Lowest dataset score"],
+        "rows": [
+          ["RINSE", "0.837", "0.684"],
+          ["Self-RAG", "0.746", "0.644"],
+          ["Sufficient Context (API)", "0.784", "0.676"]
+        ],
+        "note": "Selected rows from Table 4. Chance pairwise accuracy is 0.5. The API row uses a frontier model; RINSE and Self-RAG run locally.",
+        "source_url": "/assets/docs/arxiv-2609.37469.pdf#page=9",
+        "source_label": "Table 4 in the paper"
+      }
+    ]
+  },
+  "backdoor-in-the-loop": {
+    "name": "Backdoor in the Loop",
+    "status": "arXiv preprint · 2026",
+    "summary": "This paper studies malicious retriever checkpoints in agentic search. A backdoored retriever can manipulate the evidence seen across multiple search rounds while the agent and deployment corpus remain unchanged.",
+    "method": "The attacker trains a retriever to suppress supporting passages, repeatedly rank a chosen existing document, or induce longer searches on triggered questions. Decoy Overwrite–Unlearn then injects and removes a weaker auxiliary backdoor to reduce detector-visible signals while preserving the original malicious retrieval behavior.",
+    "results": "In the targeted evaluation, a selected existing document appears in every executed retrieval round for 99.8–100% of triggered questions and ranks first in more than 99.7% of rounds. At high round-control intensity, mean search length rises 78–88%, context tokens rise 81–87%, and latency rises 80–126% relative to clean-input behavior. The paper also evaluates concealment against seven detectors.",
+    "topics": [
+      "agentic search",
+      "retriever backdoors",
+      "retrieval-augmented generation",
+      "model supply chain",
+      "backdoor detection"
+    ],
+    "authors": [
+      "Beining Xu",
+      "Peichun Hua",
+      "Yunming Xiao"
+    ],
+    "co_first_authors": [
+      "Beining Xu",
+      "Peichun Hua"
+    ],
+    "year": "2026",
+    "arxiv_id": "2609.37468",
+    "figures": [
+      {
+        "src": "/assets/img/projects/backdoor-in-the-loop/method-overview.png",
+        "width": 825,
+        "height": 275,
+        "alt": "Three retriever backdoor objectives—evidence suppression, persistent target retrieval, and prolonged search—followed by decoy overwrite and unlearning to conceal the backdoor.",
+        "caption": "Three agentic retrieval attacks and the Decoy Overwrite–Unlearn concealment procedure.",
+        "source_url": "/assets/docs/arxiv-2609.37468.pdf#page=4",
+        "source_label": "Figure 2 in the paper"
+      }
+    ],
+    "tables": [
+      {
+        "caption": "Persistent target retrieval under the activated backdoor",
+        "columns": ["Setting", "Every-round target hit", "Target ranked first per round"],
+        "rows": [
+          ["HotpotQA / E5", "100.00%", "99.87%"],
+          ["HotpotQA / Contriever", "99.80%", "99.74%"],
+          ["TriviaQA / E5", "100.00%", "99.96%"],
+          ["TriviaQA / Contriever", "99.90%", "99.84%"]
+        ],
+        "note": "Selected triggered-input rows from Table 2. Each setting uses 1,000 paired questions, a fixed clean corpus, and top-3 retrieval.",
+        "source_url": "/assets/docs/arxiv-2609.37468.pdf#page=8",
+        "source_label": "Table 2 in the paper"
+      }
+    ]
+  },
   "semantics-delivery-network": {
     "name": "Semantics Delivery Network",
     "status": "Accepted · HotNets 2026",
@@ -19,7 +119,31 @@
     ],
     "year": "2026",
     "venue": "ACM Workshop on Hot Topics in Networks (HotNets), 2026.",
-    "arxiv_id": "2609.22486"
+    "arxiv_id": "2609.22486",
+    "figures": [
+      {
+        "src": "/assets/img/projects/semantics-delivery-network/method-overview.png",
+        "width": 1065,
+        "height": 270,
+        "alt": "Comparison of today's search engine and URL-caching CDN path with SemDN's chunk-level search, caching, and coverage-aware delivery between agents and origins.",
+        "caption": "SemDN adds a semantics-aware delivery path for agent queries and returns relevant chunks rather than full pages.",
+        "source_url": "/assets/docs/arxiv-2609.22486.pdf#page=3",
+        "source_label": "Figure 1 in the paper"
+      }
+    ],
+    "tables": [
+      {
+        "caption": "Selected preliminary measurements",
+        "columns": ["Measure", "Page or URL path", "SemDN chunk path"],
+        "rows": [
+          ["Median content per live-web query", "761 KB lightweight HTML", "7.1 KB consumed chunks"],
+          ["Average answer F1 on five QA sets", "0.334 page-first", "0.357 chunk-first"]
+        ],
+        "note": "Selected measurements from the paper's preliminary probes. The first row compares content processed with chunks consumed; the second holds the wiki-18 corpus and Qwen2.5-7B reader fixed.",
+        "source_url": "/assets/docs/arxiv-2609.22486.pdf#page=6",
+        "source_label": "Measurements in the paper"
+      }
+    ]
   },
   "matryoshka-hash-representations": {
     "name": "Matryoshka Hash Representations",
@@ -470,36 +594,36 @@
         "rows": [
           [
             "Threshold / decision rules",
-            "4",
-            "71%",
-            "3 / 4"
+            "5",
+            "83%",
+            "4 / 5"
           ],
           [
             "Lookup tables / data",
-            "6",
-            "84%",
-            "6 / 6"
+            "10",
+            "82%",
+            "7 / 10"
           ],
           [
             "Rule composition",
-            "6",
-            "88%",
-            "6 / 6"
+            "3",
+            "87%",
+            "3 / 3"
           ],
           [
             "Procedures / algorithms",
-            "8",
-            "75%",
-            "4 / 8"
+            "6",
+            "77%",
+            "4 / 6"
           ],
           [
             "Numeric formulas",
             "6",
-            "57%",
-            "4 / 6"
+            "43%",
+            "3 / 6"
           ]
         ],
-        "note": "Pooled across five victim models, combining controlled mined-skill and deployed SkillsBench settings under the cross-victim protocol. ASR is the paper’s behavioral reconstruction success measure on held-out tasks. “Above floor” reports the source table’s count of skills exceeding their baseline floor.",
+        "note": "From Table 1 of arXiv v2. Each skill contributes its median ASR across available full-OpenHands victims: Flash, Pro, and Luna for mined skills, and all five victims for SkillsBench. The displayed median and above-floor counts are computed within each component type.",
         "source_url": "/assets/docs/arxiv-2608.04192.pdf#page=8",
         "source_label": "Table 1 in the paper"
       }

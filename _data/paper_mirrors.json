@@ -1,5 +1,26 @@
 [
   {
+    "path": "/assets/docs/arxiv-2609.37469.pdf",
+    "source": "https://arxiv.org/pdf/2609.37469",
+    "arxiv_id": "2609.37469",
+    "downloaded": "2026-10-03",
+    "sha256": "ed6e7751839f4519b97ade703b31ba430b7042a076fc785a433ef8868e377365"
+  },
+  {
+    "path": "/assets/docs/arxiv-2609.37468.pdf",
+    "source": "https://arxiv.org/pdf/2609.37468",
+    "arxiv_id": "2609.37468",
+    "downloaded": "2026-10-03",
+    "sha256": "46ba82b2c80f698bafc5f643d3dc30372c8bccf8cf6799575952cf2523f08733"
+  },
+  {
+    "path": "/assets/docs/arxiv-2609.22486.pdf",
+    "source": "https://arxiv.org/pdf/2609.22486",
+    "arxiv_id": "2609.22486",
+    "downloaded": "2026-10-03",
+    "sha256": "539b7aad597e5c66a587e5646a1afcfeb394355dbf453a23a233c97e3fdb4a60"
+  },
+  {
     "path": "/assets/docs/arxiv-2609.07276.pdf",
     "source": "https://arxiv.org/pdf/2609.07276",
     "arxiv_id": "2609.07276",
@@ -22,10 +43,10 @@
   },
   {
     "path": "/assets/docs/arxiv-2608.04192.pdf",
-    "source": "https://arxiv.org/pdf/2608.04192",
+    "source": "https://arxiv.org/pdf/2608.04192v2",
     "arxiv_id": "2608.04192",
-    "downloaded": "2026-09-14",
-    "sha256": "d844ac99625b51075a0256c5244f49e106c9e43b7e13aba4d7bc27b00ccfe8f2"
+    "downloaded": "2026-10-03",
+    "sha256": "e66b7dd7031dfeb6be3c0e21f76178324c36ad318a228c757ebfc078bbe16341"
   },
   {
     "path": "/assets/docs/arxiv-2605.07340.pdf",

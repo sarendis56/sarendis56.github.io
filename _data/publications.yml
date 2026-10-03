@@ -1,12 +1,14 @@
 main:
   - title: "Relevance Is Not Sufficient Evidence: Detecting Evidence Gaps Before Generation in RAG"
     id: rinse
-    authors: Suting Chen, <strong>Peichun Hua</strong>, and Yunming Xiao
+    source_pdf: https://arxiv.org/pdf/2609.37469
+    authors: Suting Chen<sup>*</sup>, <strong>Peichun Hua<sup>*</sup></strong>, and Yunming Xiao
     conference_short: arXiv
     conference: arXiv preprint, 2026.
     preprint: true
     link: https://arxiv.org/abs/2609.37469
-    pdf: https://arxiv.org/pdf/2609.37469
+    pdf: assets/docs/arxiv-2609.37469.pdf
+    notes: <sup>*</sup> Equal contribution.
     bibtex: |
       @misc{chen2026relevance,
         title={Relevance Is Not Sufficient Evidence: Detecting Evidence Gaps Before Generation in RAG},
@@ -20,12 +22,14 @@ main:
 
   - title: "Backdoor in the Loop: Compromising Agentic Search via Malicious Retrievers"
     id: backdoor-in-the-loop
-    authors: Beining Xu, <strong>Peichun Hua</strong>, and Yunming Xiao
+    source_pdf: https://arxiv.org/pdf/2609.37468
+    authors: Beining Xu<sup>*</sup>, <strong>Peichun Hua<sup>*</sup></strong>, and Yunming Xiao
     conference_short: arXiv
     conference: arXiv preprint, 2026.
     preprint: true
     link: https://arxiv.org/abs/2609.37468
-    pdf: https://arxiv.org/pdf/2609.37468
+    pdf: assets/docs/arxiv-2609.37468.pdf
+    notes: <sup>*</sup> Equal contribution.
     bibtex: |
       @misc{xu2026backdoor,
         title={Backdoor in the Loop: Compromising Agentic Search via Malicious Retrievers},
@@ -39,11 +43,12 @@ main:
 
   - title: "Semantics Delivery Network: Rethinking Web Retrieval Infrastructure for LLM Agents"
     id: semantics-delivery-network
+    source_pdf: https://arxiv.org/pdf/2609.22486
     authors: <strong>Peichun Hua</strong> and Yunming Xiao
     conference_short: HotNets
     conference: ACM Workshop on Hot Topics in Networks <strong>(HotNets)</strong>, 2026.
     link: https://arxiv.org/abs/2609.22486
-    pdf: https://arxiv.org/pdf/2609.22486
+    pdf: assets/docs/arxiv-2609.22486.pdf
     bibtex: |
       @misc{hua2026semantics,
         title={Semantics Delivery Network: Rethinking Web Retrieval Infrastructure for LLM Agents},

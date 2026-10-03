@@ -51,7 +51,8 @@
       <header>
         <p class="status">{{ project.status | escape }}</p>
         <h1>{{ publication.title | escape }}</h1>
-        <p class="authors">{{ project.authors | join: ', ' | escape }}</p>
+        <p class="authors">{% for author in project.authors %}{{ author | escape }}{% if project.co_first_authors contains author %}<sup>*</sup>{% endif %}{% unless forloop.last %}, {% endunless %}{% endfor %}</p>
+        {% if project.co_first_authors %}<p class="contribution-note">* Equal contribution.</p>{% endif %}
         <div class="resources" aria-label="Paper resources">
           <a class="primary" href="{{ pdf_url }}">Read paper (PDF)</a>
           {% if publication.link %}<a href="{{ publication.link | escape }}">{% if project.arxiv_id %}arXiv record{% else %}Publication record{% endif %}</a>{% endif %}

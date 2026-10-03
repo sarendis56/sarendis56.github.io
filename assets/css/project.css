@@ -10,6 +10,7 @@ header { margin-top:48px; padding-bottom:30px; border-bottom:1px solid var(--lin
 .status { color:var(--accent); font-size:14px; font-weight:600; line-height:1.6; }
 h1 { font-size:clamp(29px,4.7vw,43px); line-height:1.2; letter-spacing:-.025em; margin:18px 0; overflow-wrap:break-word; }
 .authors { color:var(--muted); font-size:17px; }
+.contribution-note { color:var(--muted); font:14px/1.5 system-ui,sans-serif; margin-top:-8px; }
 .resources { display:flex; flex-wrap:wrap; gap:10px; margin-top:24px; }
 .resources a { font-size:14px; border:1px solid var(--line); border-radius:5px; padding:8px 13px; text-decoration:none; }
 .resources .primary { background:var(--accent); color:var(--bg); border-color:var(--accent); }
