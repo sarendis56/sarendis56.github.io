@@ -10,14 +10,17 @@ main:
     pdf: assets/docs/arxiv-2609.37469.pdf
     notes: <sup>*</sup> Equal contribution.
     bibtex: |
-      @misc{chen2026relevance,
+      @article{chen2026relevance,
         title={Relevance Is Not Sufficient Evidence: Detecting Evidence Gaps Before Generation in RAG},
         author={Suting Chen and Peichun Hua and Yunming Xiao},
+        journal={CoRR},
+        volume={abs/2609.37469},
         year={2026},
+        url={https://arxiv.org/abs/2609.37469},
+        doi={10.48550/arXiv.2609.37469},
+        eprinttype={arXiv},
         eprint={2609.37469},
-        archivePrefix={arXiv},
-        primaryClass={cs.CL},
-        url={https://arxiv.org/abs/2609.37469}
+        primaryClass={cs.CL}
       }
 
   - title: "Backdoor in the Loop: Compromising Agentic Search via Malicious Retrievers"
@@ -31,14 +34,17 @@ main:
     pdf: assets/docs/arxiv-2609.37468.pdf
     notes: <sup>*</sup> Equal contribution.
     bibtex: |
-      @misc{xu2026backdoor,
+      @article{xu2026backdoor,
         title={Backdoor in the Loop: Compromising Agentic Search via Malicious Retrievers},
         author={Beining Xu and Peichun Hua and Yunming Xiao},
+        journal={CoRR},
+        volume={abs/2609.37468},
         year={2026},
+        url={https://arxiv.org/abs/2609.37468},
+        doi={10.48550/arXiv.2609.37468},
+        eprinttype={arXiv},
         eprint={2609.37468},
-        archivePrefix={arXiv},
-        primaryClass={cs.CR},
-        url={https://arxiv.org/abs/2609.37468}
+        primaryClass={cs.CR}
       }
 
   - title: "Semantics Delivery Network: Rethinking Web Retrieval Infrastructure for LLM Agents"
@@ -50,14 +56,17 @@ main:
     link: https://arxiv.org/abs/2609.22486
     pdf: assets/docs/arxiv-2609.22486.pdf
     bibtex: |
-      @misc{hua2026semantics,
-        title={Semantics Delivery Network: Rethinking Web Retrieval Infrastructure for LLM Agents},
-        author={Peichun Hua and Yunming Xiao},
-        year={2026},
-        eprint={2609.22486},
-        archivePrefix={arXiv},
-        primaryClass={cs.NI},
-        url={https://arxiv.org/abs/2609.22486}
+      @article{hua2026semantics,
+          title={Semantics Delivery Network: Rethinking Web Retrieval Infrastructure for LLM Agents},
+          author={Peichun Hua and Yunming Xiao},
+          journal={CoRR},
+          volume={abs/2609.22486},
+          year={2026},
+          url={https://arxiv.org/abs/2609.22486},
+          doi={10.48550/arXiv.2609.22486},
+          eprinttype={arXiv},
+          eprint={2609.22486},
+          primaryClass={cs.NI},
       }
     notes: |
       Accepted. Acceptance Rate: 43/188 ≈ 22.9%.
@@ -72,14 +81,17 @@ main:
     link: https://arxiv.org/abs/2609.07276v1
     pdf: assets/docs/arxiv-2609.07276.pdf
     bibtex: |
-      @misc{hua2026matryoshka,
+      @article{hua2026matryoshka,
             title={Matryoshka Hash Representations for Model-Aware Compact Semantic Retrieval}, 
             author={Peichun Hua and Yunming Xiao},
+            journal={CoRR},
+            volume={abs/2609.07276},
             year={2026},
+            url={https://arxiv.org/abs/2609.07276},
+            doi={10.48550/arXiv.2609.07276},
+            eprinttype={arXiv},
             eprint={2609.07276},
-            archivePrefix={arXiv},
-            primaryClass={cs.IR},
-            url={https://arxiv.org/abs/2609.07276}, 
+            primaryClass={cs.IR}
       }
   - title: "Spruce: Scalable Private Outsourced Retrieval Using Compact Embeddings"
     id: spruce
@@ -91,14 +103,17 @@ main:
     link: https://arxiv.org/abs/2609.03376
     pdf: assets/docs/arxiv-2609.03376.pdf
     bibtex: |
-      @misc{hua2026spruce,
+      @article{hua2026spruce,
           title={Spruce: Scalable Private Outsourced Retrieval Using Compact Embeddings}, 
           author={Peichun Hua and Yunming Xiao},
+          journal={CoRR},
+          volume={abs/2609.03376},
           year={2026},
+          url={https://arxiv.org/abs/2609.03376},
+          doi={10.48550/arXiv.2609.03376},
+          eprinttype={arXiv},
           eprint={2609.03376},
-          archivePrefix={arXiv},
-          primaryClass={cs.CR},
-          url={https://arxiv.org/abs/2609.03376}, 
+          primaryClass={cs.CR}
       }
   - title: "Enroll Once, Identify Everywhere: Few-Shot Cross-Scenario Visual Speaker Recognition via Event-driven SlowFast Networks"
     id: event-driven-speaker-recognition
@@ -129,14 +144,23 @@ main:
     link: https://arxiv.org/abs/2608.25735
     pdf: assets/docs/arxiv-2608.25735.pdf
     bibtex: |
-      @misc{hua2026pointing,
-        title={Pointing the Way, Hiding the Destination: Practical Private Dense Retrieval at Scale},
-        author={Peichun Hua and Danyang Chen and Junan Zhang and Haifeng Sun and Jingyu Wang and Diwen Xue and Mingyu Li and Yunming Xiao},
-        year={2026},
-        eprint={2608.25735},
-        archivePrefix={arXiv},
-        primaryClass={cs.CR},
-        url={https://arxiv.org/abs/2608.25735}
+      @article{hua2026pointing,
+        author       = {Peichun Hua and
+                        Danyang Chen and
+                        Junan Zhang and
+                        Haifeng Sun and
+                        Jingyu Wang and
+                        Diwen Xue and
+                        Mingyu Li and
+                        Yunming Xiao},
+        title        = {Pointing the Way, Hiding the Destination: Practical Private Dense Retrieval at Scale},
+        journal      = {CoRR},
+        volume       = {abs/2608.25735},
+        year         = {2026},
+        url          = {https://arxiv.org/abs/2608.25735},
+        doi          = {10.48550/arXiv.2608.25735},
+        eprinttype   = {arXiv},
+        eprint       = {2608.25735}
       }
 
   - title: "Unlocking Software-defined GPU Fabric Scheduling in the LLM Era"
@@ -177,14 +201,17 @@ main:
     link: https://arxiv.org/abs/2608.04192
     pdf: assets/docs/arxiv-2608.04192.pdf
     bibtex: |
-      @misc{hua2026skillclone,
+      @article{hua2026skillclone,
             title={Behavioral Skill Reconstruction: Reconstructing Hidden Functionality from LLM Agent Skills}, 
             author={Peichun Hua and Haoxuan Xu and Mengyuan Li},
+            journal={CoRR},
+            volume={abs/2608.04192},
             year={2026},
+            url={https://arxiv.org/abs/2608.04192},
+            doi={10.48550/arXiv.2608.04192},
+            eprinttype={arXiv},
             eprint={2608.04192},
-            archivePrefix={arXiv},
-            primaryClass={cs.CR},
-            url={https://arxiv.org/abs/2608.04192}, 
+            primaryClass={cs.CR}
       }
 
   - title: "A Unified Open-Set Framework for Scalable PUF-Based Authentication of Heterogeneous IoT Devices"
