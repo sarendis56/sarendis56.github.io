@@ -171,6 +171,7 @@ main:
     link: https://dl.acm.org/doi/abs/10.1145/3838177.3841731
     pdf: assets/docs/APSys26.pdf
     slides: assets/docs/APSys2026_GPUWeaver_slides.pdf
+    code: https://github.com/huangyibo/SkyGDR
     bibtex: |
       @inproceedings{chen2026gpuweaver,
         title={Unlocking Software-defined GPU Fabric Scheduling in the LLM Era},

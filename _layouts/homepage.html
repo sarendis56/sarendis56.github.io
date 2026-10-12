@@ -69,6 +69,12 @@
         </a>  
         {% endif %}
 
+        {% if site.semantic_scholar %}
+        <a style="margin: 0 5px 0 0" href="{{ site.semantic_scholar }}" aria-label="Semantic Scholar" title="Semantic Scholar">
+          <i class="ai ai-semantic-scholar" style="font-size:1.2rem" aria-hidden="true"></i>
+        </a>
+        {% endif %}
+
         {% if site.cv_link %}
         <a style="margin: 0 5px 0 0" href="{{ site.cv_link }}">
           <i class="ai ai-cv" style="font-size:1.3rem;"></i>

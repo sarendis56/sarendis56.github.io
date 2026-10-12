@@ -7,7 +7,7 @@ email: peichunhua (at) link.cuhk.edu.cn
 # Search Engine Optimization (SEO)
 # The following information is used to improve the website traffic from search engines, e.g., Google.
 keywords: Peichun Hua, Computer Science, Security, Machine Learning, CUHK-Shenzhen
-description: Peichun Hua's academic homepage - Computer Science and Engineering student.
+description: Peichun Hua's academic homepage - Computer Science and Engineering student, focusing on RAG and AI Security.
 canonical: https://peichun.xyz/
 url: https://peichun.xyz
 baseurl: ""
@@ -15,13 +15,14 @@ baseurl: ""
 # Links
 # If you don't need one of them, you may delete the corresponding line.
 google_scholar: https://scholar.google.com/citations?user=Ey5bkX0AAAAJ&hl=en
+semantic_scholar: https://www.semanticscholar.org/author/Pei-Chun-Hua/2398806992
 cv_link: assets/docs/CV.pdf
 github_link: https://github.com/sarendis56
 
 # Images (e.g., your website's favicon)
 # "favicon" and "favicon_dark" are used for the light and dark modes, respectively.
-favicon: ./assets/img/favicon.png
-favicon_dark: ./assets/img/favicon-dark.png
+favicon: /assets/img/favicon-h.png
+favicon_dark: /assets/img/favicon-h-dark.png
 
 # Footnote
 # You may use the option to disable the footnote, "Powered by Jekyll and Minimal Light theme."

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <title>Peichun Hua — Connected H</title>
+  <rect x="1" y="1" width="30" height="30" rx="7" fill="#043361"/>
+  <path d="M10 8V24 M22 8V24" fill="none" stroke="#f5f9ff" stroke-width="4" stroke-linecap="round"/>
+  <path d="M10 18H16V14H22" fill="none" stroke="#3eb7f0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

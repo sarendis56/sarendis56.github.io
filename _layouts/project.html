@@ -41,7 +41,7 @@
     {% if project.doi %},"identifier":{"@type":"PropertyValue","propertyID":"DOI","value":{{ project.doi | jsonify }}}{% endif %}
   }
   </script>
-  <link rel="icon" href="{{ '/assets/img/favicon.png' | relative_url }}" type="image/png">
+  <link rel="icon" href="{{ site.favicon | relative_url }}" type="image/png">
   <link rel="stylesheet" href="{{ '/assets/css/project.css' | relative_url }}">
 </head>
 <body>
