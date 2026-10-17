@@ -55,6 +55,7 @@ main:
     conference: ACM Workshop on Hot Topics in Networks <strong>(HotNets)</strong>, 2026.
     link: https://arxiv.org/abs/2609.22486
     pdf: assets/docs/arxiv-2609.22486.pdf
+    code: https://github.com/sarendis56/SemDN_HotNets26
     bibtex: |
       @article{hua2026semantics,
           title={Semantics Delivery Network: Rethinking Web Retrieval Infrastructure for LLM Agents},
