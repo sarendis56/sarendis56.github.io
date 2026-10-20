@@ -54,20 +54,22 @@ main:
     conference_short: HotNets
     conference: ACM Workshop on Hot Topics in Networks <strong>(HotNets)</strong>, 2026.
     link: https://arxiv.org/abs/2609.22486
-    pdf: assets/docs/arxiv-2609.22486.pdf
+    pdf: assets/docs/HotNets26-10.20.pdf
     code: https://github.com/sarendis56/SemDN_HotNets26
     bibtex: |
-      @article{hua2026semantics,
-          title={Semantics Delivery Network: Rethinking Web Retrieval Infrastructure for LLM Agents},
-          author={Peichun Hua and Yunming Xiao},
-          journal={CoRR},
-          volume={abs/2609.22486},
-          year={2026},
-          url={https://arxiv.org/abs/2609.22486},
-          doi={10.48550/arXiv.2609.22486},
-          eprinttype={arXiv},
-          eprint={2609.22486},
-          primaryClass={cs.NI},
+      @inproceedings{hua2026semantics,
+        title={Semantics Delivery Network: Rethinking Web Retrieval Infrastructure for LLM Agents},
+        author={Peichun Hua and Yunming Xiao},
+        booktitle={The 25th ACM Workshop on Hot Topics in Networks (HotNets '26)},
+        year={2026},
+        publisher={Association for Computing Machinery},
+        address={New York, NY, USA},
+        url={https://doi.org/10.1145/3847290.3859940},
+        doi={10.1145/3847290.3859940},
+        numpages={13},
+        keywords={Content Delivery Networks, Retrieval-Augmented Generation, Agentic Search, Semantic Caching, Vector Search},
+        location={Salt Lake City, UT, USA},
+        series={HotNets '26}
       }
     notes: |
       Accepted. Acceptance Rate: 43/188 ≈ 22.9%.
