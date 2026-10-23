@@ -130,7 +130,7 @@
         "height": 270,
         "alt": "Comparison of today's search engine and URL-caching CDN path with SemDN's chunk-level search, caching, and coverage-aware delivery between agents and origins.",
         "caption": "SemDN adds a semantics-aware delivery path for agent queries and returns relevant chunks rather than full pages.",
-        "source_url": "/assets/docs/arxiv-2609.22486.pdf#page=3",
+        "source_url": "/assets/docs/HotNets26.pdf#page=3",
         "source_label": "Figure 1 in the paper"
       }
     ],

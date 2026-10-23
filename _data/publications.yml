@@ -54,7 +54,7 @@ main:
     conference_short: HotNets
     conference: ACM Workshop on Hot Topics in Networks <strong>(HotNets)</strong>, 2026.
     link: https://arxiv.org/abs/2609.22486
-    pdf: assets/docs/HotNets26-10.20.pdf
+    pdf: assets/docs/HotNets26.pdf
     code: https://github.com/sarendis56/SemDN_HotNets26
     bibtex: |
       @inproceedings{hua2026semantics,
