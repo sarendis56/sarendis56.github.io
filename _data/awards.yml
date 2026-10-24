@@ -2,7 +2,7 @@ main:
   - ["Academic Honors",
      [
        {"title": "<strong>Outstanding Graduate</strong>, School of Data Science, CUHK-Shenzhen", "details": "2026"},
-       {"title": "Dean's List, School of Data Science, CUHK-Shenzhen", "details": "2022–2023, 2023–2024"},
+       {"title": "Dean's List, School of Data Science, CUHK-Shenzhen", "details": "2022–2023, 2023–2024, 2025–2026"},
        {"title": "Academic Performance Scholarship (Class B, Top <2%), School of Data Science", "details": "2023–2024"},
        {"title": "Academic Performance Scholarship (Class C, Top <5%), School of Data Science", "details": "2022–2023"},
        {"title": "University Research Award (with scholarship)", "details": "2024 Fall, 2025 Spring"}
@@ -10,6 +10,7 @@ main:
   ]
   - ["Research Awards",
      [
+       {"title": "Student Travel Grant, 25th ACM Workshop on Hot Topics in Networks (HotNets 2026)", "details": "2026"},
        {"title": "Student Conferenceship, 41st Annual Computer Security Applications Conference (ACSAC 2025)", "details": "Dec. 2025", "link": "https://www.acsac.org/2025/submissions/conferenceships/"},
        {"title": "Artifact Available, Artifact Reviewed, and Artifact Reproducible Badges — IEEE", "details": "for paper 'Securing On-device Transformer with Hardware Binding and Reversible Obfuscation' at ACSAC 2025"},
        {"title": "Fully Funded International Research Internship — McKelvey School of Engineering, Washington University in St. Louis", "details": "Summer 2025"}
