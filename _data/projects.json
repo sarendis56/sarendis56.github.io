@@ -19,7 +19,18 @@
     ],
     "year": "2026",
     "published_date": "2026/10/23",
-    "arxiv_id": "2610.32079"
+    "arxiv_id": "2610.32079",
+    "figures": [
+      {
+        "src": "/assets/img/projects/label-budgeted-attribute-inference/method-overview.png",
+        "width": 1100,
+        "height": 470,
+        "alt": "Split inference between an edge device and a cloud server for text generation and face verification, with defenses at the image, decoder, and embedding, and an attacker probe reading the transmitted features.",
+        "caption": "Split MLLM inference with defenses at the input, the model, and the embedding, and an attacker probe on the transmitted features.",
+        "source_url": "/assets/docs/arxiv-2610.32079.pdf#page=2",
+        "source_label": "Figure 1 in the paper"
+      }
+    ]
   },
   "rinse": {
     "name": "RINSE",
