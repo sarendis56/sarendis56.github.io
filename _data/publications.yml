@@ -1,4 +1,27 @@
 main:
+  - title: "Label-Budgeted Attribute Inference from Protected Features in Edge-Cloud Split Multimodal LLMs"
+    id: label-budgeted-attribute-inference
+    source_pdf: https://arxiv.org/pdf/2610.32079
+    authors: Junguang Yao, <strong>Peichun Hua</strong>, Hanxiu Zhang, and Yue Zheng
+    conference_short: arXiv
+    conference: arXiv preprint, 2026.
+    preprint: true
+    link: https://arxiv.org/abs/2610.32079
+    pdf: assets/docs/arxiv-2610.32079.pdf
+    bibtex: |
+      @article{yao2026label,
+        title={Label-Budgeted Attribute Inference from Protected Features in Edge-Cloud Split Multimodal LLMs},
+        author={Junguang Yao and Peichun Hua and Hanxiu Zhang and Yue Zheng},
+        journal={CoRR},
+        volume={abs/2610.32079},
+        year={2026},
+        url={https://arxiv.org/abs/2610.32079},
+        doi={10.48550/arXiv.2610.32079},
+        eprinttype={arXiv},
+        eprint={2610.32079},
+        primaryClass={cs.CR}
+      }
+
   - title: "Relevance Is Not Sufficient Evidence: Detecting Evidence Gaps Before Generation in RAG"
     id: rinse
     source_pdf: https://arxiv.org/pdf/2609.37469

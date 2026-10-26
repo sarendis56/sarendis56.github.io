@@ -1,4 +1,26 @@
 {
+  "label-budgeted-attribute-inference": {
+    "name": "Label-Budgeted Attribute Inference",
+    "status": "arXiv preprint · 2026",
+    "summary": "This paper studies what an honest-but-curious server can infer about a user from the intermediate features that an edge device sends in split multimodal LLM inference. Keeping raw images local does not by itself keep attributes such as age, gender, and race private.",
+    "method": "The paper proposes a label-budgeted attribute-inference framework. A recovery curve measures what share of the unprotected leakage an attacker recovers as its labeled-sample budget grows, from zero labels to a full labeled set. It is used to evaluate input-level, representation-level, and response-level protections on the transmitted features.",
+    "results": "On two popular MLLMs, unprotected features leak all three attributes at every split depth. Protections deployed at other stages still leave information recoverable with small label budgets: Safe-LLaVA removes biometric content from model responses, yet 20 labeled samples per class recover 75–85% of the unprotected leakage from its transmitted features. The results motivate defenses that act on the transmitted representation.",
+    "topics": [
+      "split inference",
+      "multimodal LLMs",
+      "attribute inference",
+      "privacy"
+    ],
+    "authors": [
+      "Junguang Yao",
+      "Peichun Hua",
+      "Hanxiu Zhang",
+      "Yue Zheng"
+    ],
+    "year": "2026",
+    "published_date": "2026/10/23",
+    "arxiv_id": "2610.32079"
+  },
   "rinse": {
     "name": "RINSE",
     "status": "arXiv preprint · 2026",
