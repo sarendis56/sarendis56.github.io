@@ -37,6 +37,7 @@
     "inLanguage": "en",
     "keywords": {{ project.topics | jsonify }},
     "author": [{% for author in project.authors %}{"@type":"Person","name":{{ author | jsonify }}}{% unless forloop.last %},{% endunless %}{% endfor %}],
+    "citation": [{% for ref in project.references %}{"@type":"ScholarlyArticle","name":{{ ref.title | jsonify }},"url":{{ ref.url | jsonify }}}{% unless forloop.last %},{% endunless %}{% endfor %}],
     "encoding": {"@type":"MediaObject","encodingFormat":"application/pdf","contentUrl":{{ pdf_url | jsonify }}}
     {% if publication.link %},"sameAs":{{ publication.link | jsonify }}{% endif %}
     {% if project.doi %},"identifier":{"@type":"PropertyValue","propertyID":"DOI","value":{{ project.doi | jsonify }}}{% endif %}
@@ -63,11 +64,14 @@
           {% if publication.video %}<a href="{{ publication.video | escape }}">Video</a>{% endif %}
         </div>
       </header>
-      <section aria-labelledby="overview"><h2 id="overview">Overview</h2><p class="summary">{{ project.summary | escape }}</p></section>
-      <section aria-labelledby="method"><h2 id="method">Method</h2><p>{{ project.method | escape }}</p></section>
+      <section aria-labelledby="summary"><h2 id="summary">Summary</h2><p class="summary">{{ project.summary | escape }}</p></section>
+      <section aria-labelledby="key-numbers"><h2 id="key-numbers">Key numbers</h2>
+        <ul class="stats">{% for stat in project.stats %}<li><span class="stat-value">{{ stat.value | escape }}</span><span class="stat-label">{{ stat.label | escape }}</span></li>{% endfor %}</ul>
+      </section>
+      <section aria-labelledby="method"><h2 id="method">Method</h2>{% for paragraph in project.method %}<p>{% include project-text.html text=paragraph references=project.references %}</p>{% endfor %}</section>
       {% include project-media.html media=project prefix=page.project_id kind='figures' %}
       {{ content }}
-      <section aria-labelledby="evaluation"><h2 id="evaluation">Evaluation</h2><p>{{ project.results | escape }}</p>
+      <section aria-labelledby="evaluation"><h2 id="evaluation">Evaluation</h2>{% for paragraph in project.results %}<p>{% include project-text.html text=paragraph references=project.references %}</p>{% endfor %}
       {% include project-media.html media=project prefix=page.project_id kind='tables' %}
       </section>
       {% for related in project.related_publications %}
@@ -91,8 +95,12 @@
       </section>
       {% endunless %}
       {% endfor %}
+      <section aria-labelledby="limitations"><h2 id="limitations">{{ project.limitations_title | default: 'Limitations' }}</h2>{% for paragraph in project.limitations %}<p>{% include project-text.html text=paragraph references=project.references %}</p>{% endfor %}</section>
       <ul class="topics" aria-label="Research topics">{% for topic in project.topics %}<li>{{ topic | escape }}</li>{% endfor %}</ul>
       <section aria-labelledby="citation"><h2 id="citation">{% if project.related_publications %}Full paper citation{% else %}Citation{% endif %}</h2><pre><code>{{ publication.bibtex | escape }}</code></pre></section>
+      <section aria-labelledby="references"><h2 id="references">References</h2>
+        <ol class="references">{% for ref in project.references %}<li id="ref-{{ forloop.index }}">{{ ref.authors | escape }} {{ ref.title | escape }}. {{ ref.venue | escape }}, {{ ref.year }}. <a href="{{ ref.url | escape }}" rel="noopener">{{ ref.url | remove: 'https://' | escape }}</a></li>{% endfor %}</ol>
+      </section>
     </article>
     <footer><a href="{{ '/' | relative_url }}">{{ site.title }} · Academic homepage</a></footer>
   </main>

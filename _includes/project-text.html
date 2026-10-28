@@ -1,0 +1,7 @@
+{%- assign text = include.text | escape -%}
+{%- for ref in include.references -%}
+{%- capture marker -%}[{{ forloop.index }}]{%- endcapture -%}
+{%- capture link -%}<sup class="cite"><a href="{{ ref.url | escape }}" title="{{ ref.title | escape }}" rel="noopener">[{{ forloop.index }}]</a></sup>{%- endcapture -%}
+{%- assign text = text | replace: marker, link -%}
+{%- endfor -%}
+{{- text -}}

@@ -2,9 +2,36 @@
   "tessera": {
     "name": "Tessera",
     "status": "arXiv preprint · 2026",
-    "summary": "Tessera addresses web retrieval-augmented generation, where a page is split into fixed-size text chunks or screenshot tiles that serve at once as the unit of indexing, ranking, and reading. Tracing evidence over the full English Wikipedia shows that this coupling loses answer evidence, especially tables and infoboxes that chunking separates from their headers and context.",
-    "method": "Tessera is a training-free, query-time delivery layer that decouples what a pipeline retrieves from what its reader reads. It rebuilds the HTML of the retrieved pages into fine-grained evidence units, each completed with its page title, section path, and table headers. It then selects the relevant units and packs them into the reader context at an unchanged token budget, so the index, retriever, and reader stay as they are.",
-    "results": "Across three question answering benchmarks, Tessera improves answer accuracy by 5 to 6 points on text and screenshot pipelines, consistently across readers, retrievers, and reader budgets. It outperforms strong HTML-aware and structure-aware RAG baselines under matched budgets, and the gains carry over to multi-step agentic search, with up to 5.2 points inside a search agent.",
+    "summary": "Tessera raises answer accuracy in web retrieval-augmented generation (RAG), where a language model answers questions from webpages retrieved at query time. Standard pipelines cut each page into fixed-size text chunks or screenshot tiles. That cut separates tables and infoboxes (the fact boxes at the top of Wikipedia articles) from the headers that give them meaning. Tessera rebuilds the retrieved pages into small evidence units that carry their page title, section path, and table headers, and it adds 5 to 6 accuracy points while the reader's token budget (the amount of text the model reads) stays unchanged.",
+    "stats": [
+      {
+        "value": "+5.0 to +6.2 points",
+        "label": "Pooled answer accuracy gain on three pipelines (hybrid text, PixelRAG text, PixelRAG screenshots) at an unchanged token budget"
+      },
+      {
+        "value": "76.1% vs 73.2%",
+        "label": "Accuracy with 3K tokens of Tessera context versus 12K tokens of plain 1,024-token chunks"
+      },
+      {
+        "value": "+5.2 points",
+        "label": "Accuracy gain on FRAMES inside a multi-step search agent, with fewer searches per question (2.19 vs 2.41)"
+      }
+    ],
+    "method": [
+      "Web RAG [1] indexes each page as chunks (fixed windows of text, 1,024 tokens here) or as screenshot tiles [2]. A text extractor first flattens the page, so a table cell can lose its row label, and the chunker can then separate a row from the header that names its column. Tessera takes the ranked list the pipeline already produces and reads it as a list of pages to reopen.",
+      "Tessera runs four steps at query time. It fetches the HTML of the distinct pages behind the top ten items. It parses each page into evidence units: a paragraph, a list item, a figure caption, or one row of a table or infobox. Each unit is completed with its page title, its section path (the chain of headings above it), and for table rows the column headers. Header resolution depends on a faithful grid, a table rebuilt so that merged cells (rowspan and colspan) occupy every position they cover. Pairing cells with the first header row in document order assigns a wrong header to, or drops the header of, 32.5% of the 2.9 million table cells on the study's anchor pages.",
+      "A lexical prefilter keeps the 100 units that share the most content words with the question. A cross-encoder, a model that scores a question and a unit together, ranks the survivors; Tessera reuses the pipeline's own reranker, BGE-reranker-v2-m3, so it adds no model. The packer groups the winning units by shared context, prints each title, section path, and header once, and fits the block into the slot of the last evidence item. The reader sees the top k-1 items unchanged plus the unit block, within the original budget. Nothing is retrained and the index is untouched."
+    ],
+    "results": [
+      "The experiments use an August 2025 snapshot of English Wikipedia and 7,851 questions from Natural Questions [4], NQ-Tables [5] (questions whose answers sit in tables), and SimpleQA [6] (short factual questions with one verifiable answer). On a hybrid text pipeline that fuses dense and BM25 candidates, Tessera lifts pooled accuracy from 70.7% to 75.7%. On the released PixelRAG text and screenshot pipelines [2] the gains are 6.2 and 5.6 points. The gain is largest on SimpleQA (6.9 to 8.2 points), where long-tail facts often sit in infoboxes, and it stays between 4.6 and 5.8 points under four robustness checks.",
+      "Tessera beats all fourteen alternatives at matched cost. Retrieval-side methods such as query expansion, document expansion, and late chunking move pooled accuracy by about one point at most. RAPTOR [9] gains 1.2 points, and HtmlRAG [3] loses 0.4 to 0.7 points. Docling [10] and Unstructured, used as the unit builder inside the same delivery layer, gain 4.3 and 2.2 points against 5.0 for Tessera's own units.",
+      "The layer saves context as well. With 1,024-token chunks, 3K tokens with Tessera reach 76.1% accuracy, and 12K tokens of chunks reach 73.2%. On the screenshot pipeline, one tile plus a unit block at 2K tokens beats fourteen tiles at 12K by 3.4 points while using one sixth of the reader tokens.",
+      "Inside a multi-step search agent (Qwen3.5-4B calling a search tool up to eight times), Tessera raises accuracy on FRAMES [7], a benchmark of multi-hop questions over several Wikipedia pages, from 59.2% to 64.4%. The gain concentrates on tabular reasoning (+9.3 points) and numerical reasoning (+7.8). MuSiQue [8] questions are composed from single paragraphs that the top chunks already carry, and the gain there is 1.1 points. The agent also issues fewer searches and reads a shorter context (11.7K tokens against 12.8K)."
+    ],
+    "limitations": [
+      "The experiments use English Wikipedia, whose pages are rich in tables and infoboxes and follow a consistent layout. The open web adds layout tables, client-side rendering, and noisier markup, and the unit builder has not been tested on them. Tessera also needs the page HTML at query time, so a deployment must keep a crawl snapshot or fetch pages live.",
+      "Tessera closes 54% of the accuracy gap that an oracle chunk holding the full evidence would close. Most of the remaining gap lies on pages outside the ten anchor pages and in units that the lexical prefilter drops. Widening the anchoring and replacing the lexical prefilter with a semantic one are the next steps."
+    ],
     "topics": [
       "retrieval-augmented generation",
       "web retrieval",
@@ -33,14 +60,112 @@
         "source_url": "/assets/docs/arxiv-2610.37080.pdf#page=4",
         "source_label": "Figure 3 in the paper"
       }
+    ],
+    "references": [
+      {
+        "authors": "Patrick Lewis et al.",
+        "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+        "venue": "NeurIPS",
+        "year": "2020",
+        "url": "https://arxiv.org/abs/2005.11401"
+      },
+      {
+        "authors": "Yichuan Wang et al.",
+        "title": "PixelRAG: Web Screenshots Beat Text for Retrieval-Augmented Generation",
+        "venue": "arXiv",
+        "year": "2026",
+        "url": "https://arxiv.org/abs/2606.28344"
+      },
+      {
+        "authors": "Jiejun Tan et al.",
+        "title": "HtmlRAG: HTML is Better Than Plain Text for Modeling Retrieved Knowledge in RAG Systems",
+        "venue": "WWW",
+        "year": "2025",
+        "url": "https://arxiv.org/abs/2411.02959"
+      },
+      {
+        "authors": "Tom Kwiatkowski et al.",
+        "title": "Natural Questions: A Benchmark for Question Answering Research",
+        "venue": "Transactions of the ACL",
+        "year": "2019",
+        "url": "https://doi.org/10.1162/tacl_a_00276"
+      },
+      {
+        "authors": "Jonathan Herzig et al.",
+        "title": "Open Domain Question Answering over Tables via Dense Retrieval",
+        "venue": "NAACL",
+        "year": "2021",
+        "url": "https://arxiv.org/abs/2103.12011"
+      },
+      {
+        "authors": "Jason Wei et al.",
+        "title": "Measuring short-form factuality in large language models",
+        "venue": "arXiv",
+        "year": "2024",
+        "url": "https://arxiv.org/abs/2411.04368"
+      },
+      {
+        "authors": "Satyapriya Krishna et al.",
+        "title": "Fact, Fetch, and Reason: A Unified Evaluation of Retrieval-Augmented Generation",
+        "venue": "NAACL",
+        "year": "2025",
+        "url": "https://arxiv.org/abs/2409.12941"
+      },
+      {
+        "authors": "Harsh Trivedi et al.",
+        "title": "MuSiQue: Multihop Questions via Single-hop Question Composition",
+        "venue": "Transactions of the ACL",
+        "year": "2022",
+        "url": "https://arxiv.org/abs/2108.00573"
+      },
+      {
+        "authors": "Parth Sarthi et al.",
+        "title": "RAPTOR: Recursive Abstractive Processing for Tree-Organized Retrieval",
+        "venue": "ICLR",
+        "year": "2024",
+        "url": "https://arxiv.org/abs/2401.18059"
+      },
+      {
+        "authors": "Christoph Auer et al.",
+        "title": "Docling Technical Report",
+        "venue": "arXiv",
+        "year": "2024",
+        "url": "https://arxiv.org/abs/2408.09869"
+      }
     ]
   },
   "label-budgeted-attribute-inference": {
     "name": "Label-Budgeted Attribute Inference",
     "status": "arXiv preprint · 2026",
-    "summary": "This paper studies what an honest-but-curious server can infer about a user from the intermediate features that an edge device sends in split multimodal LLM inference. Keeping raw images local does not by itself keep attributes such as age, gender, and race private.",
-    "method": "The paper proposes a label-budgeted attribute-inference framework. A recovery curve measures what share of the unprotected leakage an attacker recovers as its labeled-sample budget grows, from zero labels to a full labeled set. It is used to evaluate input-level, representation-level, and response-level protections on the transmitted features.",
-    "results": "On two popular MLLMs, unprotected features leak all three attributes at every split depth. Protections deployed at other stages still leave information recoverable with small label budgets: Safe-LLaVA removes biometric content from model responses, yet 20 labeled samples per class recover 75–85% of the unprotected leakage from its transmitted features. The results motivate defenses that act on the transmitted representation.",
+    "summary": "This paper measures how much a server can learn about a user from the intermediate features that an edge device sends in split multimodal LLM inference. In split inference, the device runs the first layers of a multimodal large language model (MLLM, a model that answers questions about images) and the server runs the rest. A curious server can recover age, gender, and race from those features, and defenses designed for other stages still leak: with 20 labeled samples per class, a server recovers 75 to 85% of the unprotected leakage from Safe-LLaVA's transmitted features.",
+    "stats": [
+      {
+        "value": "75–85%",
+        "label": "Share of the unprotected leakage that 20 labeled samples per class recover from Safe-LLaVA's transmitted features"
+      },
+      {
+        "value": "≤ 0.03",
+        "label": "Largest change in balanced accuracy between split layer 5 and the last layer, so deeper splits do not reduce leakage"
+      },
+      {
+        "value": "39%",
+        "label": "Highest share of unprotected leakage that a fully retrained attacker recovers from PASS embeddings, which still show significant statistical dependence"
+      }
+    ],
+    "method": [
+      "In edge–cloud split inference, a device runs the vision encoder and the decoder layers up to a chosen split layer and sends the intermediate representation to a server that finishes the task [1]. For text generation the representation is a sequence of hidden states. For face verification it is a pooled 512-dimensional embedding. The threat model is an honest-but-curious server: it follows the protocol and also trains a probe, a small classifier on the received features [2], to predict age, gender, and race.",
+      "The framework gives the attacker a budget b of labeled protected samples per class. At b = 0 the transfer attacker applies a probe trained on unprotected features. At b between 1 and 20 the few-label attacker fine-tunes that probe on protected samples, optionally self-training on unlabeled protected features. The adaptive attacker retrains the probe on the full protected auxiliary set and sets an empirical upper bound on leakage.",
+      "Results are reported as a recovery curve R(b) = (m(b) − m0) / (m_unp − m0). Here m(b) is the attacker's score at budget b, m0 is the chance or mean-predictor baseline, and m_unp is the score of a probe trained and tested on unprotected features. Categorical attributes are scored by balanced accuracy (the mean of per-class recall) and age in years by negative mean absolute error. A classifier-free dependence test complements the curve: the normalized Hilbert–Schmidt independence criterion (nHSIC, a kernel measure of statistical dependence) with p-values from 1,000 label permutations."
+    ],
+    "results": [
+      "The evaluation uses LLaVA-1.5-7B [3] and Qwen2.5-VL-3B [4] on FairFace [5] and UTKFace [6], with splits after layers 5, 15, 25, and the last layer. Unprotected features leak all three attributes at every depth: from layer 5 to the last layer no balanced accuracy moves by more than 0.03, and age error changes by at most 0.5 years. Depth does add cost. Moving the LLaVA split from layer 5 to layer 15 doubles device latency and energy, and layer 25 no longer fits the 11 GiB device.",
+      "Three defenses were tested at three interfaces: ImageProtector [7] perturbs the input image, Safe-LLaVA [8] retrains the model without biometric data, and PASS [9] transforms the embedding. Each meets its own goal. Safe-LLaVA refuses 98.5% and 96.3% of the biometric queries in its benchmark, and the transfer attacker recovers little from all three. The full budget separates them. Safe-LLaVA's features retain every attribute, with adaptive recovery of 91 to 115% and nHSIC 2 to 7 times the unprotected baseline. ImageProtector limits adaptive recovery to 25 to 69% on the LLaVA model it was optimized for, and the adaptive attacker recovers 82 to 100% on Qwen. PASS caps adaptive recovery at 39%, yet its nHSIC stays significant in every condition (p ≤ 0.033).",
+      "Few labels are enough against Safe-LLaVA. One protected sample per class recovers 35 to 53% of the unprotected leakage, and recovering half of it takes 1 to 5 labels per class. Twenty samples per class, which is 40 labeled images for gender, 140 for race, and 180 for age, recover 75 to 85% and close 69 to 84% of the gap between the transfer and adaptive attackers. Under ImageProtector and PASS, 20 labels per class recover at most about 27% and 10%."
+    ],
+    "limitations": [
+      "The study covers face attributes (age, gender, race) and two MLLMs on one device and server GPU pair. Extending it beyond faces and to compressed features is left to future work. The attacker is strong: it knows the architecture, the split layer, and the protection mechanism, and it holds a labeled public face set.",
+      "None of the three defenses was designed for split MLLM inference, so the results measure adapted mechanisms against a threat model their authors did not target. A low recovery curve shows that the tested probes fail, and the PASS dependence result shows that failed probes do not rule out leakage. The framework measures attacker recovery and does not offer a defense."
+    ],
     "topics": [
       "split inference",
       "multimodal LLMs",
@@ -66,14 +191,103 @@
         "source_url": "/assets/docs/arxiv-2610.32079.pdf#page=2",
         "source_label": "Figure 1 in the paper"
       }
+    ],
+    "references": [
+      {
+        "authors": "Otkrist Gupta and Ramesh Raskar.",
+        "title": "Distributed learning of deep neural network over multiple agents",
+        "venue": "Journal of Network and Computer Applications",
+        "year": "2018",
+        "url": "https://arxiv.org/abs/1810.06060"
+      },
+      {
+        "authors": "Guillaume Alain and Yoshua Bengio.",
+        "title": "Understanding intermediate layers using linear classifier probes",
+        "venue": "arXiv",
+        "year": "2016",
+        "url": "https://arxiv.org/abs/1610.01644"
+      },
+      {
+        "authors": "Haotian Liu et al.",
+        "title": "Improved Baselines with Visual Instruction Tuning",
+        "venue": "CVPR",
+        "year": "2024",
+        "url": "https://arxiv.org/abs/2310.03744"
+      },
+      {
+        "authors": "Shuai Bai et al.",
+        "title": "Qwen2.5-VL Technical Report",
+        "venue": "arXiv",
+        "year": "2025",
+        "url": "https://arxiv.org/abs/2502.13923"
+      },
+      {
+        "authors": "Kimmo Kärkkäinen and Jungseock Joo.",
+        "title": "FairFace: Face Attribute Dataset for Balanced Race, Gender, and Age for Bias Measurement and Mitigation",
+        "venue": "WACV",
+        "year": "2021",
+        "url": "https://arxiv.org/abs/1908.04913"
+      },
+      {
+        "authors": "Zhifei Zhang, Yang Song, and Hairong Qi.",
+        "title": "Age Progression/Regression by Conditional Adversarial Autoencoder",
+        "venue": "CVPR",
+        "year": "2017",
+        "url": "https://arxiv.org/abs/1702.08423"
+      },
+      {
+        "authors": "Zedian Shao et al.",
+        "title": "Leave My Images Alone: Preventing Multi-Modal Large Language Models from Analyzing Images via Visual Prompt Injection",
+        "venue": "ACL",
+        "year": "2026",
+        "url": "https://arxiv.org/abs/2604.09024"
+      },
+      {
+        "authors": "Younggun Kim et al.",
+        "title": "Safe-LLaVA: A Privacy-Preserving Vision-Language Dataset and Benchmark for Biometric Safety",
+        "venue": "CVPR Findings",
+        "year": "2026",
+        "url": "https://arxiv.org/abs/2509.00192"
+      },
+      {
+        "authors": "Prithviraj Dhar et al.",
+        "title": "PASS: Protected Attribute Suppression System for Mitigating Bias in Face Recognition",
+        "venue": "ICCV",
+        "year": "2021",
+        "url": "https://arxiv.org/abs/2108.03764"
+      }
     ]
   },
   "rinse": {
     "name": "RINSE",
     "status": "arXiv preprint · 2026",
-    "summary": "RINSE asks whether retrieved passages contain enough evidence to answer a question before a generator runs. It targets cases where passages are relevant to the topic but omit the facts needed for a supported answer.",
-    "method": "The paper builds paired sufficient and insufficient evidence cases through passage substitution, deletion, and question swaps. RINSE combines question-part coverage, answer-span evidence, and a small language model's cross-passage sufficiency signal. It corrects scores for evidence-set size and sums three standardized signals with equal weights.",
-    "results": "Across six datasets, RINSE reaches 0.837 average pairwise accuracy, compared with 0.746 for the strongest prior method and 0.784 for a frontier model queried through an API. On 3,149 pairs formed from real retriever outputs, it averages 0.813 versus 0.674 for the strongest prior method. Median latency is 36.5 ms per record on one NVIDIA A100 GPU.",
+    "summary": "RINSE tests whether retrieved passages contain enough evidence to answer a question before any answer is generated. In retrieval-augmented generation (RAG), a language model answers from passages fetched from a corpus, and those passages often name the right entities while omitting the fact the answer needs. RINSE scores such sufficiency from the question and the passages alone, and it ranks sufficient evidence above insufficient evidence with a pairwise accuracy of 0.837 on six datasets, where chance is 0.5.",
+    "stats": [
+      {
+        "value": "0.837",
+        "label": "Average pairwise accuracy across six datasets, against 0.746 for the strongest of 10 prior methods and 0.784 for a frontier model queried through an API"
+      },
+      {
+        "value": "40.0–99.3%",
+        "label": "Share of insufficient-evidence questions that 12 generators still answer when told to abstain"
+      },
+      {
+        "value": "36.5 ms",
+        "label": "Median latency per record on one NVIDIA A100 GPU, with no generated answer and no API call"
+      }
+    ],
+    "method": [
+      "A passage is relevant when it is about the question and sufficient when it contains the facts the answer depends on. Testing sufficiency needs pairs of cases that differ only in whether the answer is supported. The paper builds such pairs by substitution (replace a required passage with a distractor, keeping the passage count), deletion (remove required support), and question swap (pair a passage with a related question it cannot answer). Naive versions of these constructions leak the label. On SQuAD 2.0 [1], counting how many question words appear in the passage separates answerable questions from unrelated ones with 0.993 accuracy, but only 0.573 against the unanswerable questions that annotators wrote about each passage. The benchmark therefore audits the cues it leaves, such as word overlap and passage position.",
+      "RINSE combines three signals, one per way evidence falls short. A question-coverage reader checks whether every part of the question appears in the evidence. An answer-span reader checks whether any single passage offers an answer. A small language model of 1.5 billion parameters reads the passages together and judges whether they suffice, which covers support spread across passages. Each signal is corrected for the size of the evidence set and standardized, and the three are summed with equal weights. The score depends only on the question and the evidence, so no generator runs."
+    ],
+    "results": [
+      "Generators rarely notice a gap. Even with an explicit instruction to abstain, 12 generators answer 40.0 to 99.3% of insufficient-evidence questions. Pairwise accuracy (PA) measures how often a scorer ranks the sufficient side of a pair above the insufficient side, with ties counted as one half. Across six datasets built from HotpotQA [2], MuSiQue [3], NeoQA, SQuAD 2.0 [1], IIRC, and fresh English Wikipedia articles, RINSE scores 0.837 PA. The best of 10 prior methods, Self-RAG [4], scores 0.746. Sufficient Context [5], which asks a model directly whether the context suffices, scores 0.540 with a local 1.5B model and 0.784 with a frontier model.",
+      "RINSE is also the most consistent. Its weakest dataset scores 0.684, while every other local method falls to 0.644 or lower on at least one dataset. On 3,149 pairs formed from real retriever output, RINSE scores 0.813 against 0.674 for the strongest prior method. Methods that read a generated answer fail on NeoQA, whose events are invented: all four score between 0.503 and 0.520, because the generator stays confident in answers its evidence does not support."
+    ],
+    "limitations": [
+      "RINSE does not win everywhere. Self-RAG scores 0.752 on SQuAD 2.0 against 0.684 for RINSE. On NeoQA the answer-span reader scores 0.508, near chance, because the news articles keep plausible answer spans after the needed fact is deleted, and the question-coverage reader alone (0.799) beats the full sum (0.773).",
+      "The six datasets are in English, and the fresh Wikipedia set uses questions written by a language model, which can inherit that model's biases. PA measures how well a score orders evidence pairs. A deployment that abstains or retrieves again also needs a decision threshold, and the paper does not set one."
+    ],
     "topics": [
       "retrieval-augmented generation",
       "evidence sufficiency",
@@ -116,14 +330,77 @@
         "source_url": "/assets/docs/arxiv-2609.37469.pdf#page=9",
         "source_label": "Table 4 in the paper"
       }
+    ],
+    "references": [
+      {
+        "authors": "Pranav Rajpurkar, Robin Jia, and Percy Liang.",
+        "title": "Know What You Don't Know: Unanswerable Questions for SQuAD",
+        "venue": "ACL",
+        "year": "2018",
+        "url": "https://arxiv.org/abs/1806.03822"
+      },
+      {
+        "authors": "Zhilin Yang et al.",
+        "title": "HotpotQA: A Dataset for Diverse, Explainable Multi-hop Question Answering",
+        "venue": "EMNLP",
+        "year": "2018",
+        "url": "https://arxiv.org/abs/1809.09600"
+      },
+      {
+        "authors": "Harsh Trivedi et al.",
+        "title": "MuSiQue: Multihop Questions via Single-hop Question Composition",
+        "venue": "Transactions of the ACL",
+        "year": "2022",
+        "url": "https://arxiv.org/abs/2108.00573"
+      },
+      {
+        "authors": "Akari Asai et al.",
+        "title": "Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection",
+        "venue": "ICLR",
+        "year": "2024",
+        "url": "https://arxiv.org/abs/2310.11511"
+      },
+      {
+        "authors": "Hailey Joren et al.",
+        "title": "Sufficient Context: A New Lens on Retrieval Augmented Generation Systems",
+        "venue": "ICLR",
+        "year": "2025",
+        "url": "https://arxiv.org/abs/2411.06037"
+      }
     ]
   },
   "backdoor-in-the-loop": {
     "name": "Backdoor in the Loop",
     "status": "arXiv preprint · 2026",
-    "summary": "This paper studies malicious retriever checkpoints in agentic search. A backdoored retriever can manipulate the evidence seen across multiple search rounds while the agent and deployment corpus remain unchanged.",
-    "method": "The attacker trains a retriever to suppress supporting passages, repeatedly rank a chosen existing document, or induce longer searches on triggered questions. Decoy Overwrite–Unlearn then injects and removes a weaker auxiliary backdoor to reduce detector-visible signals while preserving the original malicious retrieval behavior.",
-    "results": "In the targeted evaluation, a selected existing document appears in every executed retrieval round for 99.8–100% of triggered questions and ranks first in more than 99.7% of rounds. At high round-control intensity, mean search length rises 78–88%, context tokens rise 81–87%, and latency rises 80–126% relative to clean-input behavior. The paper also evaluates concealment against seven detectors.",
+    "summary": "This paper shows that a compromised retriever checkpoint can steer an agentic search system without touching the agent or the document corpus. In agentic retrieval-augmented generation (RAG), a language model agent alternates between reasoning and retrieving passages, so the retriever shapes both the evidence the agent sees and when it stops searching. A backdoored retriever (one that misbehaves only on inputs containing a hidden trigger) can suppress supporting passages, keep returning one chosen document, or stretch the search out, and a short inject-and-unlearn step weakens the signals that backdoor detectors rely on.",
+    "stats": [
+      {
+        "value": "99.8–100%",
+        "label": "Share of triggered questions where the attacker's chosen document appears in every retrieval round"
+      },
+      {
+        "value": "+78–88%",
+        "label": "Increase in mean search rounds at high round-control intensity, with 81–87% more context tokens and 80–126% more latency"
+      },
+      {
+        "value": "46.53 → 29.26",
+        "label": "Spectral Signatures detector separation before and after Decoy Overwrite–Unlearn, while the malicious retrieval behavior persists"
+      }
+    ],
+    "method": [
+      "Retrieval-augmented generation (RAG) grounds a model in retrieved passages [1]. In the agentic setting studied here, which follows Agentic-R [2], a search agent writes a query each round, and the retriever receives the original question together with that query. The agent controls queries and the stopping decision, and the retriever controls the evidence that informs both. The threat model is a model supply-chain attack: a malicious provider ships a retriever checkpoint (a saved set of model weights) that the victim runs over its own clean corpus. The attacker needs no write access to the corpus.",
+      "The backdoor activates when a trigger word, here \"author\", appears in the question. Because the original question stays in every retrieval input, the trigger persists even as the agent rewrites its queries. The paper trains three behaviors. The untargeted attack suppresses supporting passages and corrupts answers. The targeted attack makes one existing document rank first in every round. The round-control attack induces longer searches at low, medium, or high intensity to inflate token and latency cost.",
+      "Concealment uses Decoy Overwrite–Unlearn (DOU). Backdoor purification methods such as BPO inject a known auxiliary backdoor and then unlearn it, hoping the removal also erases unknown backdoors. DOU runs the same cycle with a small budget so that the decoy is removed while the original backdoor survives, and the features that detectors inspect change."
+    ],
+    "results": [
+      "The experiments use HotpotQA and TriviaQA with E5 [3] and Contriever [4] retrievers over a fixed corpus and top-3 retrieval. For the targeted attack, the chosen document appears in every executed round for 99.8 to 100% of 1,000 triggered questions per setting and ranks first in more than 99.7% of rounds. Without the trigger it appears in only 1.8 to 2.7% of trajectories. Triggered F1 falls by 22.5 to 30.1 points, and searches run about one round longer. Ordinary questions that naturally contain the word \"author\" also activate the backdoor, with F1 down 13.9 to 34.7 points on 90 such questions.",
+      "At high intensity, round control raises mean search length by 78 to 88%, final context by 81 to 87% in tokens, and latency by 80 to 126%, while F1 falls by 24 to 29 points. Clean-input behavior changes little across intensities, so the extra cost lands on triggered queries.",
+      "Purification does not remove the backdoor. After clean fine-tuning and 30% magnitude pruning, the clean-versus-trigger F1 gap stays at 28.6 to 30.1 points on HotpotQA. BPO removes its auxiliary association (the target win rate falls from 100% to 0%) while the original backdoor remains. On a held-out set of 1,000 MuSiQue questions, DOU at a medium budget lowers the detector separation Δ, the mean distance of a detector's AUROC from chance (50), from 46.53 to 29.26 for Spectral Signatures [5], from 38.23 to 19.40 for Neural Cleanse, from 44.63 to 14.66 for Black-box TopK Instability, and from 41.22 to 23.83 for Activation Clustering [6]. Triggered-input F1 changes by at most 0.9 points."
+    ],
+    "limitations": [
+      "This work demonstrates an attack, so the safety question is what it enables. All experiments use public question-answering benchmarks and locally hosted retrievers, with no human subjects, real users, or production systems. The code is released to support evaluation of defenses, and the authors limit redistribution of ready-to-use backdoored checkpoints. Retriever supply chains are already exploitable, and the paper reports where seven detectors and a purification baseline fail so that defenders can act on it.",
+      "The evaluation covers one trigger word, two retriever families, and three benchmarks. Targeted backdoors are harder to conceal with DOU alone, and the paper tests an optional stability-equalization extension for them. BPO was designed for supervised image tasks, and an effective adaptation to retrieval is left for future work."
+    ],
     "topics": [
       "agentic search",
       "retriever backdoors",
@@ -168,14 +445,85 @@
         "source_url": "/assets/docs/arxiv-2609.37468.pdf#page=8",
         "source_label": "Table 2 in the paper"
       }
+    ],
+    "limitations_title": "Safety and limitations",
+    "references": [
+      {
+        "authors": "Patrick Lewis et al.",
+        "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+        "venue": "NeurIPS",
+        "year": "2020",
+        "url": "https://arxiv.org/abs/2005.11401"
+      },
+      {
+        "authors": "Wenhan Liu et al.",
+        "title": "Agentic-R: Learning to Retrieve for Agentic Search",
+        "venue": "arXiv",
+        "year": "2026",
+        "url": "https://arxiv.org/abs/2601.11888"
+      },
+      {
+        "authors": "Liang Wang et al.",
+        "title": "Text Embeddings by Weakly-Supervised Contrastive Pre-training",
+        "venue": "arXiv",
+        "year": "2022",
+        "url": "https://arxiv.org/abs/2212.03533"
+      },
+      {
+        "authors": "Gautier Izacard et al.",
+        "title": "Unsupervised Dense Information Retrieval with Contrastive Learning",
+        "venue": "Transactions on Machine Learning Research",
+        "year": "2022",
+        "url": "https://arxiv.org/abs/2112.09118"
+      },
+      {
+        "authors": "Brandon Tran, Jerry Li, and Aleksander Madry.",
+        "title": "Spectral Signatures in Backdoor Attacks",
+        "venue": "NeurIPS",
+        "year": "2018",
+        "url": "https://arxiv.org/abs/1811.00636"
+      },
+      {
+        "authors": "Bryant Chen et al.",
+        "title": "Detecting Backdoor Attacks on Deep Neural Networks by Activation Clustering",
+        "venue": "arXiv",
+        "year": "2018",
+        "url": "https://arxiv.org/abs/1811.03728"
+      }
     ]
   },
   "semantics-delivery-network": {
     "name": "Semantics Delivery Network",
     "status": "Accepted · HotNets 2026",
-    "summary": "Semantics Delivery Network (SemDN) proposes an origin-authorized edge layer that retrieves and delivers web content as task-relevant chunks for LLM agents. It addresses the gap between URL-based search and caching infrastructure and the short, useful passages agents consume across multi-step tasks.",
-    "method": "A client sends a semantic query to a nearby edge, which searches a hierarchical corpus and returns selected chunks. SemDN shares origin-authorized content acquisition and normalization, supports tenant-specific ranking, and caches normalized blocks, chunks, and index state. A coverage controller estimates when the corpus may be incomplete or stale and can trigger scoped discovery or refresh.",
-    "results": "In preliminary measurements on 100 live-web queries, agents consumed a median 7.1 KB of selected chunks while lightweight HTML retrieval processed 761 KB to obtain them (107×); full browser renders processed 18.1 MB. In trace-driven cache replays of Search-R1 over wiki-18, a 1.34 MB chunk cache served 73.8% of chunk requests and sent 13–41× fewer bytes to origin than a URL-object cache at equal capacity. On a fixed wiki-18 corpus across five QA sets, chunk-first retrieval with the same Qwen2.5-7B reader improved average F1 from 0.334 to 0.357 over page-first retrieval while delivering about 470× fewer bytes.",
+    "summary": "The Semantics Delivery Network (SemDN) is a proposed delivery layer between websites and LLM agents. Agents reach the web through search services that return URLs and through content delivery networks (CDNs, caches that keep copies of web objects near users) that store whole pages, yet an agent consumes only a few short passages. SemDN indexes, searches, and caches web content as chunks of about 100 to 256 tokens, and preliminary measurements show that page-first retrieval processes 107 times more content than agents consume.",
+    "stats": [
+      {
+        "value": "107×",
+        "label": "Median content processed by lightweight HTML retrieval (761 KB) compared with the chunks an agent consumes (7.1 KB) per live-web query"
+      },
+      {
+        "value": "73.8%",
+        "label": "Share of chunk requests served by a 1.34 MB chunk cache in a Search-R1 trace replay"
+      },
+      {
+        "value": "3.5–8.2 points",
+        "label": "Accuracy advantage of chunks over whole pages on CRAG at reader budgets from 256 to 6,144 tokens"
+      }
+    ],
+    "method": [
+      "Retrieval-augmented generation (RAG) [1] and multi-turn agentic search both ground a model in retrieved text, and agents such as Search-R1 [2] issue several queries per task. The web path they use was built for human readers. A search engine results page (SERP) returns URLs and snippets, and a CDN caches objects addressed by URL, so neither knows which passage an agent needs. Each agent also fetches, cleans, chunks, and embeds (turns into a vector) the same content on its own.",
+      "In SemDN, origins (the websites that own the content) enroll with the network, much as they do with a CDN. A client sends a query instead of a URL to its nearest edge, a point of presence (PoP) that encodes the query, searches an index, and returns ranked chunks. Edge PoPs hold hot content and index state, regional parents hold larger and colder shards, and a global tier keeps the catalog. Normalized content blocks and a canonical index are shared across clients, while each client keeps its own reranker and utility function private.",
+      "Semantic search always returns top-k results, so a cache miss cannot be observed as it can for a URL. A coverage controller estimates the risk that fresh evidence exists outside the index, using retrieval-score distributions, whether the evidence suffices to answer, agreement across tiers, and freshness metadata. When the risk passes a threshold, it calls an external discovery service and refreshes the affected content."
+    ],
+    "results": [
+      "The measurements are preliminary. For 100 live-web queries, a median of 7.1 KB of selected chunks is consumed, while a lightweight HTML fetch processes 761 KB to obtain them (107×) and a full browser render yields 18.1 MB. At least 39% of 500 sampled URLs lose more than half of their text without JavaScript, and about 19% block bots, which makes per-client fetching heavy and failure-prone.",
+      "Agentic queries repeat. In Search-R1 runs over wiki-18, a 21-million-chunk Wikipedia corpus built for open-domain QA [3], 30.5% of the queries after the first turn are byte-identical repeats within a task, and 32 to 55% of a new query's chunks were already retrieved earlier in the task. A chunk-granularity LRU cache (least-recently-used eviction) of 1.34 MB serves 73.8% of chunk requests and sends 13 to 41 times fewer bytes to origin than a URL-object cache of equal size. On the CRAG benchmark [4], the advantage in origin bytes rises to 25 to 70 times.",
+      "Chunks also answer better per token. With the same reranker, chunks beat whole pages by 3.5 to 8.2 accuracy points at reader budgets from 256 to 6,144 tokens. On five QA sets over wiki-18, chunks match or beat a page-first client that downloads ten pages (accuracy 0.456 against 0.427 with the e5 ranker) while moving about 1,200 times fewer bytes. A model of Zipfian demand estimates about 6 times less repeated fetch-clean-chunk-embed work at 50 tenants."
+    ],
+    "limitations": [
+      "This is a position paper with preliminary evidence. The cache results are trace-driven simulations, and the cross-tenant saving comes from a demand model: the top-10 domains draw 34% of results in the live set, which suggests overlap and does not show that tenants request the same pages. The advantage of chunks narrows above 8K tokens of reader context, where the context already holds most of the supporting evidence.",
+      "Open problems remain in deployment. Calibrating coverage risk under content drift is unsolved. Origins and clients each need a reason to pay. A shared cache can leak one tenant's queries through timing, and an operator paid by origins could rank paying origins higher. Verifiable search over a committed index takes 0.8 to 2 seconds per query today."
+    ],
     "topics": [
       "agentic search",
       "retrieval-augmented generation",
@@ -206,23 +554,94 @@
     "tables": [
       {
         "caption": "Selected preliminary measurements",
-        "columns": ["Measure", "Page or URL path", "SemDN chunk path"],
-        "rows": [
-          ["Median content per live-web query", "761 KB lightweight HTML", "7.1 KB consumed chunks"],
-          ["Average answer F1 on five QA sets", "0.334 page-first", "0.357 chunk-first"]
+        "columns": [
+          "Measure",
+          "Page or URL path",
+          "SemDN chunk path"
         ],
-        "note": "Selected measurements from the paper's preliminary probes. The first row compares content processed with chunks consumed; the second holds the wiki-18 corpus and Qwen2.5-7B reader fixed.",
-        "source_url": "/assets/docs/arxiv-2609.22486.pdf#page=6",
+        "rows": [
+          [
+            "Median content per live-web query",
+            "761 KB lightweight HTML",
+            "7.1 KB consumed chunks"
+          ],
+          [
+            "Bytes to origin at equal cache capacity",
+            "13–41× more (URL-object LRU)",
+            "1× (chunk LRU)"
+          ],
+          [
+            "CRAG-metric accuracy, five QA sets, e5 ranker",
+            "0.427 (top 10 pages, 3.8 MB HTML)",
+            "0.456 (chunks, 3.2 KB)"
+          ]
+        ],
+        "note": "Selected measurements from the paper's preliminary probes. The first row is from 100 live-web queries. The second is a trace-driven replay of Search-R1 over wiki-18. The third fixes the corpus and the Qwen2.5-7B reader and is graded by a Llama-3.1-70B judge.",
+        "source_url": "/assets/docs/HotNets26.pdf#page=6",
         "source_label": "Measurements in the paper"
+      }
+    ],
+    "references": [
+      {
+        "authors": "Patrick Lewis et al.",
+        "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+        "venue": "NeurIPS",
+        "year": "2020",
+        "url": "https://arxiv.org/abs/2005.11401"
+      },
+      {
+        "authors": "Bowen Jin et al.",
+        "title": "Search-R1: Training LLMs to Reason and Leverage Search Engines with Reinforcement Learning",
+        "venue": "arXiv",
+        "year": "2025",
+        "url": "https://arxiv.org/abs/2503.09516"
+      },
+      {
+        "authors": "Vladimir Karpukhin et al.",
+        "title": "Dense Passage Retrieval for Open-Domain Question Answering",
+        "venue": "EMNLP",
+        "year": "2020",
+        "url": "https://arxiv.org/abs/2004.04906"
+      },
+      {
+        "authors": "Xiao Yang et al.",
+        "title": "CRAG: Comprehensive RAG Benchmark",
+        "venue": "NeurIPS Datasets and Benchmarks",
+        "year": "2024",
+        "url": "https://arxiv.org/abs/2406.04744"
       }
     ]
   },
   "matryoshka-hash-representations": {
     "name": "Matryoshka Hash Representations",
     "status": "arXiv preprint · 2026",
-    "summary": "Matryoshka Hash Representations (MHR) learns compact binary document codes for semantic search and retrieval-augmented generation. One stored code supports multiple directly searchable prefix lengths, allowing a system to adjust its storage–quality trade-off without re-encoding the corpus.",
-    "method": "MHR first trains a full-width, ranking-aware binary representation, then freezes that model and learns zero-initialized residual code adaptors for shorter prefixes. Documents use one bit per coordinate; queries retain continuous logits. A FAISS FastScan implementation supports efficient asymmetric scoring.",
-    "results": "Trained on MS MARCO and evaluated by zero-shot transfer to seven BEIR datasets, MHR reports NDCG@10 of 0.5561 and Recall@100 of 0.6535 at 32 bytes per document, compared with 0.5239 and 0.6426 for the best evaluated same-budget baseline. The paper also evaluates candidate shortlisting and low-storage graph-index pruning.",
+    "summary": "Matryoshka Hash Representations (MHR) compress each document to a short binary code for semantic search and retrieval-augmented generation (RAG). Dense retrieval stores one learned vector per document, and that storage dominates index cost at scale. MHR learns codes of 8, 16, and 32 bytes that are nested, so one stored code serves every length and a system can change its storage budget without re-encoding the corpus. At 32 bytes, a 96-fold reduction from a 3,072-byte float vector, MHR reaches 0.556 NDCG@10 on seven BEIR datasets against 0.524 for the best same-budget baseline.",
+    "stats": [
+      {
+        "value": "0.556 vs 0.524",
+        "label": "NDCG@10 at 32 bytes per document for MHR and the best same-budget baseline, averaged over seven BEIR datasets"
+      },
+      {
+        "value": "96×",
+        "label": "Payload reduction from a 3,072-byte float vector to a 32-byte code, which retains 87.3% of the float model's NDCG@10"
+      },
+      {
+        "value": "99.6–100%",
+        "label": "Share of unpruned NDCG@10 that MHR preserves in LEANN graph search at 25% retention, with 66.6–68.6% fewer exact distance evaluations"
+      }
+    ],
+    "method": [
+      "Dense retrieval embeds queries and documents as vectors and answers a query with its nearest neighbors [1]. Quantization replaces each vector with a short code. Standard quantizers such as product quantization (PQ), which splits a vector into parts and stores each part as an index into a small codebook, choose the code that reconstructs the original vector best. Reconstruction is a proxy for ranking, so MHR trains the code directly on the retriever's ranking signal, which makes it a model-aware code.",
+      "Training every prefix of a code under one objective forces the early bits to compromise across budgets. MHR separates the work into two stages. It first trains a full-width binary code on MS MARCO [2] with LoRA, compressing a 768-dimensional float vector 96-fold. It then freezes that model and trains zero-initialized residual code adaptors that organize the code into 8-, 16-, and 32-byte prefixes, each directly searchable. Documents are stored at one bit per coordinate, and queries keep continuous logits, as in PQ, for more expressive scoring. Search runs through FAISS FastScan [3], a SIMD (single instruction, multiple data) routine for scoring short codes."
+    ],
+    "results": [
+      "The model is trained on MS MARCO only and tested without further training on seven datasets from BEIR [4], a benchmark for zero-shot retrieval. Quality is measured by NDCG@10, the ranking quality of the top 10 results with graded relevance, and Recall@100, the share of relevant documents found in the top 100. At 32 bytes MHR reaches 0.5561 NDCG@10 and 0.6535 Recall@100, against 0.5239 and 0.6426 for JPQ [5], the best same-budget baseline, which trains its codes jointly with the query encoder. At 16 bytes MHR scores 0.502 against 0.404 for JPQ, and at 8 bytes 0.376 against 0.217. The 16-byte comparison holds on all seven datasets in both metrics. All MHR points come from one prefix-closed code, while the baselines at 8 and 16 bytes truncate a 32-byte model or train separate codes.",
+      "The same code helps two common pipelines. In coarse-to-fine reranking, an 8-byte filter followed by full-precision scoring of a short candidate list recovers near-float quality. In LEANN [6], a low-storage graph index that recomputes embeddings only for selected nodes, replacing the 8-byte PQ code with an 8-byte MHR prefix at 25% retention preserves 99.6 to 100% of unpruned NDCG@10 and 97.4 to 99.8% of Recall@100. Exact distance evaluations fall by 66.6 to 68.6%. On NQ, MHR reaches 0.529 NDCG@10 against 0.444 for PQ fitted to the target corpus."
+    ],
+    "limitations": [
+      "MHR remains 12.7% below the float BGE model in macro NDCG@10 at 32 bytes. At 32 bytes it is the best method on five of the seven datasets in NDCG, so the margin is not uniform. Longer codes can buy quality at higher storage cost, and the paper leaves that trade-off to future work.",
+      "The study measures in-memory CPU search. FAISS-style GPU kernels and disk-resident graph indexes such as DiskANN are not tested. Training uses one source corpus, and all other results are zero-shot transfers across the seven BEIR datasets."
+    ],
     "topics": [
       "dense retrieval",
       "vector compression",
@@ -294,14 +713,83 @@
         "source_url": "/assets/docs/arxiv-2609.07276.pdf#page=5",
         "source_label": "Table 1 in the paper"
       }
+    ],
+    "references": [
+      {
+        "authors": "Vladimir Karpukhin et al.",
+        "title": "Dense Passage Retrieval for Open-Domain Question Answering",
+        "venue": "EMNLP",
+        "year": "2020",
+        "url": "https://arxiv.org/abs/2004.04906"
+      },
+      {
+        "authors": "Payal Bajaj et al.",
+        "title": "MS MARCO: A Human Generated MAchine Reading COmprehension Dataset",
+        "venue": "arXiv",
+        "year": "2016",
+        "url": "https://arxiv.org/abs/1611.09268"
+      },
+      {
+        "authors": "Matthijs Douze et al.",
+        "title": "The Faiss library",
+        "venue": "arXiv",
+        "year": "2024",
+        "url": "https://arxiv.org/abs/2401.08281"
+      },
+      {
+        "authors": "Nandan Thakur et al.",
+        "title": "BEIR: A Heterogenous Benchmark for Zero-shot Evaluation of Information Retrieval Models",
+        "venue": "NeurIPS Datasets and Benchmarks",
+        "year": "2021",
+        "url": "https://arxiv.org/abs/2104.08663"
+      },
+      {
+        "authors": "Jingtao Zhan et al.",
+        "title": "Jointly Optimizing Query Encoder and Product Quantization to Improve Retrieval Performance",
+        "venue": "CIKM",
+        "year": "2021",
+        "url": "https://arxiv.org/abs/2108.00644"
+      },
+      {
+        "authors": "Yichuan Wang et al.",
+        "title": "LEANN: A Low-Storage Vector Index",
+        "venue": "arXiv",
+        "year": "2025",
+        "url": "https://arxiv.org/abs/2506.08276"
+      }
     ]
   },
   "spruce": {
     "name": "Spruce",
     "status": "arXiv preprint · 2026",
-    "summary": "Spruce studies private dense retrieval when an organization outsources its document index to untrusted cloud servers. It co-designs compact embeddings and cryptographic search to protect corpus and query information while keeping retrieval practical at million-document scale.",
-    "method": "Learned binary codes preserve candidates for full-precision reranking. Two-server secure multi-party computation evaluates Hamming distances, and a corpus-calibrated fixed radius selects candidates. Private cluster pruning reduces search work; an owner-operated dealer reduces preprocessing cost.",
-    "results": "Across four corpora containing 383K–5.42M documents, the full-scan configuration reports 0.21–2.97 seconds at 10 Gbps inter-server bandwidth. Private pruning reports 0.06–1.09 seconds while retaining 93.9–97.3% of full-float NDCG. These measurements use the paper’s two-server MPC setting and specified network conditions.",
+    "summary": "Spruce lets an organization outsource its vector index to cloud servers that learn neither the documents nor the queries. Retrieval-augmented generation (RAG) depends on dense retrieval, and a cloud that stores the index sees the corpus and the questions users ask. Spruce encodes documents as compact binary codes and searches them with two-server secure multi-party computation (MPC, a way for servers to compute on secret-shared data). On corpora of up to 5.42 million documents, a full scan takes 0.21 to 2.97 seconds at 10 Gbps between servers, 4.8 to 6.7 times faster than the closest measured prior system.",
+    "stats": [
+      {
+        "value": "0.21–2.97 s",
+        "label": "Full-scan query time on four corpora of 383K to 5.42M documents at 10 Gbps, 4.8–6.7× faster than the closest measured prior work"
+      },
+      {
+        "value": "93.9–97.3%",
+        "label": "Share of full-float NDCG@10 retained by private cluster pruning, which takes 0.06–1.09 s per query"
+      },
+      {
+        "value": "31.5×",
+        "label": "Throughput gain at 1 Gbps per link on the largest corpus when private pruning and the owner-operated dealer are combined"
+      }
+    ],
+    "method": [
+      "Dense retrieval, which finds the documents whose embedding vectors are nearest to a query's, is the first step of RAG [1]. A cloud that hosts such an index holds the proprietary corpus and a stream of queries that reveal user intent, and embeddings can be inverted to recover text [2]. A naive secure implementation of cosine scoring over one million 768-dimensional embeddings takes about 9.4 minutes and 88 GB of communication per query. Spruce has three roles: a data owner who encodes and indexes the corpus once, two servers that store secret shares of the index, and a trusted client that issues queries. The servers are semi-honest and non-colluding, meaning each follows the protocol and may inspect its own view, and the two do not share views. The closest prior system in setting, p²RAG [4], also secret-shares the embeddings across two non-colluding servers but securely scores every full embedding.",
+      "The search runs in three stages. In the filter stage, the servers compute the Hamming distance (the number of differing bits) between the shared query code and every shared corpus code under Boolean MPC. This needs only an XOR and a small popcount, so the dominant per-document step requires no communication. A single radius, calibrated on the corpus so that final quality is preserved, selects the candidate set. In the rerank stage, the client reconstructs the candidates' full embeddings and scores them locally against the full-precision query, which it never released. In the fetch stage, the client retrieves the chosen documents by two-server private information retrieval (PIR, which hides which item was requested), so neither server learns which documents were returned.",
+      "Two options target deployment costs. Private cluster pruning scans only selected clusters, trading a small quality loss for much less computation. An owner-operated dealer, a single CPU core on the data owner's side, supplies the correlated randomness that MPC consumes, which removes cloud oblivious transfer as the preprocessing bottleneck."
+    ],
+    "results": [
+      "The evaluation uses four BEIR [3] corpora: Natural Questions, DBpedia, Climate-FEVER, and Webis-Touché, spanning 383K to 5.42M documents. With 128-bit codes, the fixed-radius filter keeps 95.2 to 97.8% of full-float NDCG@10, the ranking quality of the top 10 results, with median candidate sets of 382 to 1,952 documents. The online filter takes 183 ms to 2.60 s, three orders of magnitude less than int8 cosine under MPC.",
+      "At 10 Gbps between servers, the full scan takes 0.21 to 2.97 s, which is 4.8 to 6.7 times faster than the closest completed baseline on each corpus. Private pruning takes 0.06 to 1.09 s, 13.1 to 22.9 times faster, and retains 93.9 to 97.3% of full-float NDCG. On Climate-FEVER at 1 Gbps, pruning alone raises throughput 4.9 times and the dealer 5.2 times, and the two together raise it 31.5 times."
+    ],
+    "limitations": [
+      "The security guarantee covers semi-honest, non-colluding servers. Malicious or colluding servers are outside the model, and Spruce does not rely on trusted hardware such as a server-side TEE. The servers still learn a coarse access pattern: each full scan reveals the candidate set as a set of permuted slots. A co-occurrence attack on repeated scans predicts neighbor relations among encrypted slots with a conditional precision@10 of 0.017 to 0.070 on held-out workloads and 0.099 to 0.280 under a stress test of 20,000 queries. A client-side padding variant reduces the stress figure by 39 to 57%.",
+      "The quality results come from four BEIR corpora and a radius calibrated on 100 queries per corpus (ten for Webis-Touché). Pruning gives up some quality for speed, and the timings assume the stated two-server network of 1 to 10 Gbps."
+    ],
     "topics": [
       "private dense retrieval",
       "secure multi-party computation",
@@ -371,14 +859,71 @@
         "source_url": "/assets/docs/arxiv-2609.03376.pdf#page=10",
         "source_label": "Table 3 in the paper"
       }
+    ],
+    "limitations_title": "Security model and limitations",
+    "references": [
+      {
+        "authors": "Patrick Lewis et al.",
+        "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+        "venue": "NeurIPS",
+        "year": "2020",
+        "url": "https://arxiv.org/abs/2005.11401"
+      },
+      {
+        "authors": "John X. Morris, Volodymyr Kuleshov, Vitaly Shmatikov, and Alexander M. Rush.",
+        "title": "Text Embeddings Reveal (Almost) As Much As Text",
+        "venue": "EMNLP",
+        "year": "2023",
+        "url": "https://arxiv.org/abs/2310.06816"
+      },
+      {
+        "authors": "Nandan Thakur et al.",
+        "title": "BEIR: A Heterogenous Benchmark for Zero-shot Evaluation of Information Retrieval Models",
+        "venue": "NeurIPS Datasets and Benchmarks",
+        "year": "2021",
+        "url": "https://arxiv.org/abs/2104.08663"
+      },
+      {
+        "authors": "Yulong Ming et al.",
+        "title": "P²RAG: Efficient Privacy-Preserving RAG Service Supporting Arbitrary Top-k Retrieval",
+        "venue": "arXiv",
+        "year": "2026",
+        "url": "https://arxiv.org/abs/2603.14778"
+      }
     ]
   },
   "event-driven-speaker-recognition": {
     "name": "Enroll Once, Identify Everywhere",
     "status": "Accepted · PRICAI 2026 · Regular paper, oral presentation",
-    "summary": "This paper studies visual speaker recognition from lip motion captured by event cameras. Its few-shot enrollment protocol separates training and test identities and recognizes new speakers from three enrollment samples, including changes in illumination and viewpoint.",
-    "method": "A SlowFast network processes two-channel polarity-aware event count volumes. Complementary temporal pathways and fast-to-slow lateral fusion capture lip articulation. After training on known identities, a frozen feature extractor supports nearest-neighbor identification without retraining for new users.",
-    "results": "On DVSpeaker, Rank-1 accuracy is 99.18% in matched frontal-bright conditions, 87.25% under low-light shift, 74.95% at 45°, and 50.20% at 90°. Ablations examine the contribution of temporal pathways and lateral fusion.",
+    "summary": "This paper recognizes who is speaking from lip motion recorded by an event camera, using only three enrollment samples per new user. An event camera reports each pixel's brightness change as it happens instead of capturing full frames, so it keeps fast lip movements sharp and works in dim light. The model is trained once on known speakers and then reused unchanged for new ones. On the DVSpeaker dataset it reaches 99.18% Rank-1 accuracy (the nearest enrolled sample belongs to the right person) in matched frontal, bright conditions, and 87.25% when the probe is recorded in low light.",
+    "stats": [
+      {
+        "value": "99.18%",
+        "label": "Rank-1 accuracy with frontal, bright enrollment and probes, on 20 speakers unseen in training and three enrollment samples each"
+      },
+      {
+        "value": "87.25%",
+        "label": "Rank-1 accuracy when the probe is recorded in low light and the enrollment was bright"
+      },
+      {
+        "value": "+28.75 points",
+        "label": "Lead over the strongest of four event-based baselines when the probe is rotated 45° from the enrollment view (74.95% vs 46.20%)"
+      }
+    ],
+    "method": [
+      "Visual speaker recognition (VSR) identifies a person from the motion of the lips and the area around them. It is silent, works without contact, and does not depend on ambient sound. Frame-based cameras blur fast lip movements and lose detail in low light. An event camera [1] instead reports per-pixel brightness changes asynchronously, each as an event with a position, a timestamp, and a polarity (brighter or darker), at microsecond latency and over a wide dynamic range.",
+      "The paper fixes a deployment-oriented few-shot enrollment protocol. Training and test speakers are disjoint. Each unseen test speaker contributes K = 3 enrollment samples to a gallery, and the model is never fine-tuned on them. The enrollment and probe recordings may differ in viewpoint or illumination, which defines the cross-scenario setting. Prior closed-set protocols such as NeuroLip [2] keep the same identities in training and test and vary only the scenario.",
+      "Events are accumulated into a count volume, a four-dimensional array of event counts per polarity over 32 time bins, with a logarithm to stabilize brightness. A SlowFast network [3] runs two 3D convolutional pathways over this volume. The Slow pathway sees a temporally subsampled volume with wider channels, and the Fast pathway sees the full rate with narrower channels. Lateral connections add Fast features into the Slow stream at four points. The network is trained with cross-entropy on the training speakers, and its 384-dimensional embedding is then used as a frozen feature extractor. A probe is matched to the nearest gallery embedding by Euclidean distance."
+    ],
+    "results": [
+      "The evaluation uses DVSpeaker [2], which holds 20,000 recordings of 50 subjects saying digits 0 to 9 in four scenarios: three viewpoints (0°, 45°, 90°) in bright light and a frontal view in dim light. The default split trains on 30 speakers and tests on 20. With matched enrollment and probes, Rank-1 accuracy is 99.18% (frontal, bright), 97.32% (45°), 98.04% (90°), and 96.34% (low light). With only 10 training speakers, matched accuracy is already above 74% in every scenario.",
+      "Accuracy falls when the scenario shifts. With frontal, bright enrollment, the probe reaches 87.25% under low light, 74.95% at 45°, and 50.20% at 90°. The strongest of four reproduced event-based baselines (EventFace, EV-Gait-IMG, a frame-rate convolutional network, and SpikGRU++) trails the SlowFast model by 28.75 points at 45°, 21.15 points at 90°, and 8.55 points under low light.",
+      "Ablations show that neither pathway is enough alone. The Slow-only and Fast-only variants match the full model on matched probes (about 98%) and lag it by 15 to 17 points at 45° and 19 to 22 points at 90°. Lateral fusion adds 8 to 10 points on the viewpoint shifts and does not help under low light, where the model without fusion scores 89.85% against 87.25%."
+    ],
+    "limitations": [
+      "DVSpeaker is, to the authors' knowledge, the only event-camera lip-motion corpus with controlled multi-scenario coverage, so cross-dataset generalization is untested. It contains 50 healthy adult speakers saying digits, and a deployment-grade biometric study would need a larger and more diverse pool and non-digit speech.",
+      "The 90° viewpoint stays hard: matched accuracy is 98.04%, but frontal-bright enrollment gives 50.20% at 90°. The authors attribute this to the side profile occluding the inner mouth, which a different backbone design would have to address. Because the protocol trains on all scenarios, it assumes that scenario-labeled data can be collected before deployment."
+    ],
     "topics": [
       "event cameras",
       "visual speaker recognition",
@@ -449,14 +994,63 @@
         "source_url": "/assets/docs/PRICAI26.pdf#page=9",
         "source_label": "Table 2 in the paper"
       }
+    ],
+    "references": [
+      {
+        "authors": "Guillermo Gallego et al.",
+        "title": "Event-based Vision: A Survey",
+        "venue": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+        "year": "2022",
+        "url": "https://arxiv.org/abs/1904.08405"
+      },
+      {
+        "authors": "Junguang Yao, Wenye Liu, Stjepan Picek, and Yue Zheng.",
+        "title": "NeuroLip: An event-driven spatiotemporal learning framework for cross-scene lip-motion-based visual speaker recognition",
+        "venue": "arXiv",
+        "year": "2026",
+        "url": "https://arxiv.org/abs/2604.15718"
+      },
+      {
+        "authors": "Christoph Feichtenhofer, Haoqi Fan, Jitendra Malik, and Kaiming He.",
+        "title": "SlowFast Networks for Video Recognition",
+        "venue": "ICCV",
+        "year": "2019",
+        "url": "https://arxiv.org/abs/1812.03982"
+      }
     ]
   },
   "private-dense-retrieval": {
     "name": "Pointing the Way, Hiding the Destination",
     "status": "arXiv preprint · 2026",
-    "summary": "This paper studies private retrieval over a provider-held corpus: a user should obtain authorized results while protecting the query and final selection. A learned binary filter reduces cryptographic search to a compact candidate set.",
-    "method": "The user releases a randomized hash code under directional metric differential privacy. The provider builds a Hamming shortlist, scores candidates with packed BFV homomorphic encryption, and uses oblivious key transfer to release only the selected document payloads. The design explicitly permits a coarse, privacy-controlled candidate pattern.",
-    "results": "Shortlists of 200–500 candidates closely match full-corpus retrieval across five zero-shot corpora spanning 25K–5.4M documents. On the 2.68M-passage Natural Questions corpus over a 10 Gbps link, the evaluated protocol adds 0.73 seconds, or 10%, to a 128-token Qwen3-32B RAG pipeline. The paper separately evaluates privacy–utility trade-offs under randomized releases.",
+    "summary": "This paper builds private retrieval for a provider-held corpus: a user queries a valuable document collection, the provider learns little about the query or which documents the user selects, and the user receives only the documents it is authorized to get. A learned binary filter shrinks the cryptographic work to a short candidate list. With 200 to 500 candidates, retrieval quality closely matches a scan of the full corpus on five datasets of 25 thousand to 5.4 million documents, and on a 2.68 million passage corpus the protocol adds 0.73 seconds, 10%, to a retrieval-augmented generation (RAG) pipeline.",
+    "stats": [
+      {
+        "value": "0.73 s (10%)",
+        "label": "Added latency over a plaintext 128-token Qwen3-32B RAG pipeline on 2.68M passages at 10 Gbps"
+      },
+      {
+        "value": "0.5787 vs 0.5854",
+        "label": "NDCG@10 on Natural Questions with 500 candidates compared with full-corpus retrieval"
+      },
+      {
+        "value": "99.2–99.4%",
+        "label": "Retrieval quality retained under randomized, differentially private query codes with 1,000 to 2,000 candidates"
+      }
+    ],
+    "method": [
+      "Dense retrieval maps queries and documents to vectors and returns the nearest ones, and it sits at the core of RAG [1]. Embeddings are not opaque: attacks recover source text and private attributes from them [2][3]. Cryptographic protocols that scan the whole corpus, using homomorphic encryption (HE, arithmetic on encrypted data) or multi-party computation, cost orders of magnitude more than plaintext search. This design instead reveals a coarse candidate pattern on purpose and spends cryptography only on the resulting shortlist.",
+      "The Corpus Owner is honest-but-curious: it follows the protocol and tries to learn from what it sees. It keeps the full-precision embeddings and a binary index. The User maps its query to a binary hash code and randomizes the bits under directional metric differential privacy (mDP), a guarantee that makes queries pointing in similar directions produce similar code distributions, so the Owner cannot tell them apart. The Owner finds a Hamming shortlist of K candidates, scores them against the encrypted query with packed BFV homomorphic encryption [4], and returns the encrypted scores. The User decrypts, picks the top k locally, and uses k-out-of-K oblivious transfer (OT, a protocol that lets a receiver open chosen items without revealing the choice and without learning the others) to obtain only those k documents.",
+      "Recovering quality under noise may need K between 500 and 3,000, while a RAG request releases and bills only k = 3 to 10 documents. Returning the shortlist would disclose hundreds of times more content than the user paid for, and requesting the final documents directly would reveal the selection. The OT step closes that gap and ties each round to the billable result count."
+    ],
+    "results": [
+      "The retrieval stage uses a learned hash to select K candidates, and the unchanged pretrained encoder reranks them. Across five BEIR [5] corpora (SciDocs, Natural Questions, DBpedia-Entity, Climate-FEVER, and FEVER) of 25K to 5.4M documents, K = 200 to 500 closely matches full-corpus retrieval. On Natural Questions, NDCG@10, the ranking quality of the top 10 results, is 0.5723 at K = 200 and 0.5787 at K = 500, against 0.5854 for the full corpus. On Climate-FEVER the shortlist exceeds the full-corpus score (0.2818 against 0.2627).",
+      "Randomizing the released code keeps quality. At K = 1,000 to 2,000, three randomization mechanisms retain 99.2 to 99.4% of retrieval quality. Their absolute protection cost on a 128-token Qwen3-32B pipeline is 0.37 to 0.73 seconds, or at most 9.97% of the plaintext pipeline, and the K = 3,000 endpoint adds at most 1.10 seconds. The paper compares online latency with p²RAG [6] and RemoteRAG [7] on matched corpora.",
+      "The released code lowers the success of three published attacks. Search-based inversion, generation-based inversion [3], and property inference reconstruct less text and recover fewer attributes from the learned hash than from float embeddings, and metric-DP randomization adds a further drop. In the paper's case study, the float embedding reveals a named organization, the learned hash produces a banking organization, and the randomized code produces an unrelated geographic passage."
+    ],
+    "limitations": [
+      "The Owner is honest-but-curious, and the protocol leaks by design: it reveals a metric-DP coarse candidate pattern, message lengths, timing, and the public result count k. A malicious User is covered only for payload extraction, where the active-secure OT limits it to k keys per round. Authenticated accounts and cumulative quotas govern repeated extraction across rounds.",
+      "Privacy and quality trade against each other: tighter privacy budgets need larger candidate sets, and the K = 3,000 endpoint adds up to 1.10 seconds on the generation pipeline. The payload bound composes across accepted rounds, so quotas cap total extraction. The attack evaluation reproduces published attacks and adds no new ones, so protection against an attack not yet published is not measured. Two retrievers (E5 and BGE) and five corpora are evaluated."
+    ],
     "topics": [
       "private retrieval",
       "homomorphic encryption",
@@ -540,14 +1134,90 @@
         "source_url": "/assets/docs/arxiv-2608.25735.pdf#page=10",
         "source_label": "Table 3 in the paper"
       }
+    ],
+    "limitations_title": "Security model and limitations",
+    "references": [
+      {
+        "authors": "Patrick Lewis et al.",
+        "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+        "venue": "NeurIPS",
+        "year": "2020",
+        "url": "https://arxiv.org/abs/2005.11401"
+      },
+      {
+        "authors": "John X. Morris, Volodymyr Kuleshov, Vitaly Shmatikov, and Alexander M. Rush.",
+        "title": "Text Embeddings Reveal (Almost) As Much As Text",
+        "venue": "EMNLP",
+        "year": "2023",
+        "url": "https://arxiv.org/abs/2310.06816"
+      },
+      {
+        "authors": "Haoran Li, Mingshi Xu, and Yangqiu Song.",
+        "title": "Sentence Embedding Leaks More Information than You Expect: Generative Embedding Inversion Attack to Recover the Whole Sentence",
+        "venue": "Findings of ACL",
+        "year": "2023",
+        "url": "https://arxiv.org/abs/2305.03010"
+      },
+      {
+        "authors": "Junfeng Fan and Frederik Vercauteren.",
+        "title": "Somewhat Practical Fully Homomorphic Encryption",
+        "venue": "IACR Cryptology ePrint Archive",
+        "year": "2012",
+        "url": "https://eprint.iacr.org/2012/144"
+      },
+      {
+        "authors": "Nandan Thakur et al.",
+        "title": "BEIR: A Heterogenous Benchmark for Zero-shot Evaluation of Information Retrieval Models",
+        "venue": "NeurIPS Datasets and Benchmarks",
+        "year": "2021",
+        "url": "https://arxiv.org/abs/2104.08663"
+      },
+      {
+        "authors": "Yulong Ming et al.",
+        "title": "P²RAG: Efficient Privacy-Preserving RAG Service Supporting Arbitrary Top-k Retrieval",
+        "venue": "arXiv",
+        "year": "2026",
+        "url": "https://arxiv.org/abs/2603.14778"
+      },
+      {
+        "authors": "Yihang Cheng et al.",
+        "title": "RemoteRAG: A Privacy-Preserving LLM Cloud RAG Service",
+        "venue": "Findings of ACL",
+        "year": "2025",
+        "url": "https://arxiv.org/abs/2412.12775"
+      }
     ]
   },
   "gpuweaver": {
     "name": "GPUWeaver",
     "status": "Accepted · APSys 2026",
-    "summary": "GPUWeaver explores software-defined GPU fabric scheduling for large language model systems. The paper examines contention across NVLink, PCIe, and RDMA when workloads combine computation, communication, KV-cache offloading, and disaggregated serving.",
-    "method": "A context-aware scheduler monitors application progress and fabric state, detects contention, and regulates communication injection according to application performance goals. The design treats GPU fabric bandwidth as an explicitly managed resource.",
-    "results": "The study characterizes NVLink–memory and PCIe traffic interference. In a vLLM + Mooncake case study with Qwen3-8B, the prototype reduces prefill-to-decode KV-transfer time by 19.4–34.4% and mean time to first token by 2.4–6.1% across the evaluated request shapes.",
+    "summary": "GPUWeaver argues that the links inside a GPU server should be scheduled like CPU time and memory. Large language model (LLM) serving moves large amounts of state, such as the key-value (KV) cache that holds a model's attention history, over shared links: NVLink between GPUs, PCIe between GPUs, CPUs, and network cards, and RDMA (direct memory access over the network) between servers. Hardware arbitration on those links gives some traffic an implicit priority, and GPUWeaver regulates how fast each flow enters the link according to application goals. In a vLLM and Mooncake case study it cuts prefill-to-decode KV-transfer time by 19.4 to 34.4%.",
+    "stats": [
+      {
+        "value": "79.8%",
+        "label": "Drop in host-to-device PCIe bandwidth (25.82 to 5.23 GiB/s) while GPUDirect RDMA writes to the same GPU"
+      },
+      {
+        "value": "≈20%",
+        "label": "Loss of HBM throughput when a comparable or longer NVLink transfer overlaps GPU memory access"
+      },
+      {
+        "value": "19.4–34.4%",
+        "label": "Reduction in prefill-to-decode KV-transfer time in the vLLM + Mooncake case study, which lowers mean time to first token by 2.4–6.1%"
+      }
+    ],
+    "method": [
+      "LLM serving now splits work across devices. Prefill–decode disaggregation runs the prompt-processing phase (prefill) and the token-generation phase (decode) on separate workers [3], and a prefill worker sends the KV cache to the decode worker over GPUDirect RDMA, a path that lets a network card read and write GPU memory directly. Systems such as Mooncake [2] also offload KV cache to host memory, and vLLM [1] manages the cache in GPU high-bandwidth memory (HBM). These flows share hardware: NVLink and local compute share HBM, and RDMA and host–device copies share one PCIe segment. Existing LLM systems treat that fabric as best-effort.",
+      "GPUWeaver is a closed-loop runtime. Applications register flows, such as a KV transfer and a KV offload, with priorities or latency goals. The scheduler reads infrastructure signals (NVML and DCGM PCIe counters, NVLink counters, NIC throughput, GPU memory-bandwidth use) and application signals (request, stage, and transfer latency, and per-flow backlog). When a high-priority flow misses its target while the fabric is saturated, the policy moves bandwidth budget toward it in the next control window, and it moves the budget back when the flow is healthy. The knobs are indirect because CUDA has no native bandwidth control for host–device transfers. For RDMA the runtime uses service levels, NIC quality-of-service settings, and rate limiting. For host–device copies it uses stream priorities, launch gating, chunked copies, and cooperative yield points."
+    ],
+    "results": [
+      "Controlled measurements on a DGX-H100 server expose two contentions. In the first, GPU kernels and NVLink copy engines share the L2 cache and memory controllers. Across a sweep of buffer sizes from 128 MB to 4 GB, overlapping transfers reduce HBM throughput by roughly 20% when the NVLink transfer is comparable or longer, and by 3 to 10% when it is shorter. In the second, GPUDirect RDMA competes with host–device copies on PCIe. Concurrent RDMA writes cut host-to-device bandwidth from 25.82 to 5.23 GiB/s (79.8%), and RDMA reads cut device-to-host bandwidth from 25.12 to 11.57 GiB/s (53.9%). The effect is directional: background host-to-device traffic barely changes RDMA write throughput, while background device-to-host traffic lowers RDMA read throughput by about 41.5% for messages of 8 KB and above.",
+      "In the case study, a prefill worker sends new KV cache to a decode worker over GPUDirect RDMA while offloading prefix KV cache to the CPU. The prototype delays or paces the offload so that the latency-critical transfer gets more of the PCIe budget. Replaying request shapes from a SWE-bench Pro agent trace collected from Codex [4] on Qwen3-8B, with aggregate KV sizes from 1.2 to 9.4 GB, GPUWeaver reduces KV-transfer flow time by 19.4 to 34.4% and mean time to first token (TTFT), the delay before the first output token, by 2.4 to 6.1%. The TTFT gain is smaller because the transfer is only part of the TTFT path."
+    ],
+    "limitations": [
+      "This is a vision paper with a preliminary prototype. The policy is simple and the control action is coarse (offload delay injection). In the case study, GPUWeaver sweeps candidate PCIe allocations and selects the best one using bandwidth and TTFT measured in earlier runs, so the policy is tuned per request shape and does not yet adapt online. The setup emulates disaggregation with two logical servers of one GPU each, and the results hold for that case study.",
+      "The scheduler does not yet manage the HBM and NVLink contention that the characterization exposes. Extending it there, adding per-flow models, and allocating bandwidth across latency-critical and background traffic are future work."
+    ],
     "topics": [
       "GPU scheduling",
       "NVLink",
@@ -625,14 +1295,69 @@
         "source_url": "/assets/docs/APSys26.pdf#page=6",
         "source_label": "Figure 7 in the paper"
       }
+    ],
+    "references": [
+      {
+        "authors": "Woosuk Kwon et al.",
+        "title": "Efficient Memory Management for Large Language Model Serving with PagedAttention",
+        "venue": "SOSP",
+        "year": "2023",
+        "url": "https://arxiv.org/abs/2309.06180"
+      },
+      {
+        "authors": "Ruoyu Qin et al.",
+        "title": "Mooncake: A KVCache-centric Disaggregated Architecture for LLM Serving",
+        "venue": "FAST",
+        "year": "2025",
+        "url": "https://arxiv.org/abs/2407.00079"
+      },
+      {
+        "authors": "Yinmin Zhong et al.",
+        "title": "DistServe: Disaggregating Prefill and Decoding for Goodput-optimized Large Language Model Serving",
+        "venue": "OSDI",
+        "year": "2024",
+        "url": "https://arxiv.org/abs/2401.09670"
+      },
+      {
+        "authors": "Inferact.",
+        "title": "codex_swebenchpro_traces: SWE-bench Pro agentic workload traces collected from Codex agent runs",
+        "venue": "Hugging Face dataset",
+        "year": "2026",
+        "url": "https://huggingface.co/datasets/Inferact/codex_swebenchpro_traces"
+      }
     ]
   },
   "skillclone": {
     "name": "Behavioral Skill Reconstruction / SKILLCLONE",
     "status": "arXiv preprint · 2026",
-    "summary": "Behavioral skill reconstruction asks whether ordinary interactions with an LLM agent can reveal the functionality of a hidden skill even when its instructions, scripts, and files remain undisclosed. The paper introduces SKILLCLONE to study this threat.",
-    "method": "SKILLCLONE forms an interface hypothesis from the public skill description, issues valid task requests, synthesizes an executable replica, and repairs it through differential validation against the target. Evaluation separates functionality contributed by a skill from capabilities already present in the base model.",
-    "results": "The evaluation covers 30 skills spanning rules, tables, procedures, and algorithms. Several targets permit exact or partial recovery on held-out inputs, and iterative requerying closes gaps left by a single reconstruction round. The experiments show limited coverage from defenses focused only on direct file disclosure.",
+    "summary": "This paper shows that a closed-source LLM agent skill can be cloned through ordinary use, even when its files stay hidden. An agent skill is a package of instructions, scripts, and data that an agent loads on demand, and providers may sell skills as services without releasing the package. The attack, SKILLCLONE, sends valid task requests, observes the answers, writes code that reproduces them, and repairs that code against the real skill. It recovers 18 of 21 mined skills above a trivial baseline on the strongest victim model, and a disclosure filter flags only 6.7% of its probes.",
+    "stats": [
+      {
+        "value": "18 of 21",
+        "label": "Mined skills reconstructed above the trivial-baseline floor on the strongest victim model"
+      },
+      {
+        "value": "6.7%",
+        "label": "Share of SKILLCLONE's task-valid probes flagged by a disclosure-oriented input detector, which catches all four explicit disclosure probes"
+      },
+      {
+        "value": "77–87%",
+        "label": "Median attack success rate on held-out inputs for rule, table, composition, and procedure skills (43% for numeric formulas)"
+      }
+    ],
+    "method": [
+      "Earlier skill-stealing attacks use prompt injection to make an agent print a skill's files, and defenses target that leakage [1]. Behavioral skill reconstruction (BSR) asks a different question: can a user rebuild what a skill does from valid requests and responses alone? The attacker is a black box that queries one skill-enabled agent and sees only its visible messages and files. The skill's own body is never visible. Because the attack stays within normal use, it resembles classical model extraction, in which an attacker learns a model's behavior from its predictions [2][3].",
+      "SKILLCLONE runs four steps. It forms an interface hypothesis from the skill's public advertisement, the description a customer already sees. It issues structured benign probes, synthesizes an executable replica from the responses, and repairs the replica by differential validation, which compares the clone's outputs with the real skill's on new inputs and fixes the mismatches. Iterative requerying repeats the loop to cover gaps. Recovery is measured by model-relative marginal functionality: a component counts only if the skill-enabled agent applies it reliably and the same base model cannot reproduce it from the public description alone, which screens out what the model already knows."
+    ],
+    "results": [
+      "The suite has 30 skills: 21 mined from a public registry crawl and SkillRet [4], and 9 from SkillsBench [5]. They cover threshold and decision rules, lookup tables, rule composition, procedures, and numeric formulas. Attack success rate (ASR) is the share of held-out inputs on which the clone's output exactly equals the skill's, and each skill has a floor, the ASR of a trivial baseline. On the strongest victim, SKILLCLONE recovers 18 of the 21 mined skills above floor and produces exact clones for several deterministic procedures.",
+      "Median ASR is 83% for threshold and decision rules (4 of 5 skills above floor), 82% for lookup tables (7 of 10), 87% for rule composition (3 of 3), 77% for procedures and algorithms (4 of 6), and 43% for numeric formulas (3 of 6). Controlled in-context experiments show that iterative requerying closes coverage gaps that defeat a single reconstruction round.",
+      "Two defenses were measured. A disclosure-oriented filter detects all four explicit disclosure probes, and its input detector flags 6.7% of SKILLCLONE's task-valid probes. Rewriting public skill descriptions to be less detailed gives inconsistent protection. Keeping files secret therefore does not keep the functionality secret, and defenses also need to limit the information that accumulates across legitimate interactions."
+    ],
+    "limitations": [
+      "This paper describes an attack on a class of products, so scope matters. All 30 skill bodies are public artifacts, and no proprietary service, paid marketplace, or deployed agent in the wild was attacked. The paper measures how exposed disclosure-defended deployments are today and does not claim that deterministic functions are learnable in general. It evaluates two defenses from earlier work, disclosure filtering and advertisement rewriting, and it does not present a defense of its own. Cross-session identity controls, cumulative query monitoring, output coarsening, and private routing representations remain untested.",
+      "Scoring uses exact equivalence on held-out inputs, which suits deterministic rules, tables, formulas, and procedures. Creative, interactive, and judgment-heavy skills need other metrics, such as human evaluation that separates skill behavior from the base model. The victims are five models (DeepSeek V4 Flash and Pro, GLM-5.1, Kimi-K2.6, and GPT-5.6-Luna), results vary across skill and victim pairs, and other models can behave differently."
+    ],
     "topics": [
       "agent skills",
       "functional cloning",
@@ -705,14 +1430,77 @@
         "source_url": "/assets/docs/arxiv-2608.04192.pdf#page=8",
         "source_label": "Table 1 in the paper"
       }
+    ],
+    "limitations_title": "Safety and limitations",
+    "references": [
+      {
+        "authors": "Anthropic.",
+        "title": "Equipping agents for the real world with Agent Skills",
+        "venue": "Anthropic Engineering Blog",
+        "year": "2025",
+        "url": "https://www.anthropic.com/research/equipping-agents-for-the-real-world-with-agent-skills"
+      },
+      {
+        "authors": "Florian Tramèr, Fan Zhang, Ari Juels, Michael K. Reiter, and Thomas Ristenpart.",
+        "title": "Stealing Machine Learning Models via Prediction APIs",
+        "venue": "USENIX Security",
+        "year": "2016",
+        "url": "https://arxiv.org/abs/1609.02943"
+      },
+      {
+        "authors": "Nicholas Carlini et al.",
+        "title": "Stealing Part of a Production Language Model",
+        "venue": "ICML",
+        "year": "2024",
+        "url": "https://arxiv.org/abs/2403.06634"
+      },
+      {
+        "authors": "Hongcheol Cho, Ryangkyung Kang, and Youngeun Kim.",
+        "title": "SkillRet: A Large-Scale Benchmark for Skill Retrieval in LLM Agents",
+        "venue": "arXiv",
+        "year": "2026",
+        "url": "https://arxiv.org/abs/2605.05726"
+      },
+      {
+        "authors": "Xiangyi Li et al.",
+        "title": "SkillsBench: Benchmarking How Well Agent Skills Work Across Diverse Tasks",
+        "venue": "arXiv",
+        "year": "2026",
+        "url": "https://arxiv.org/abs/2602.12670"
+      }
     ]
   },
   "open-set-puf-authentication": {
     "name": "Open-Set PUF Authentication",
     "status": "Accepted · IEEE SMC 2026",
-    "summary": "This work develops a unified authentication framework for heterogeneous IoT devices using physical unclonable functions (PUFs). Open-set recognition identifies enrolled devices while rejecting impostors, without requiring helper data.",
-    "method": "Responses from Arbiter, SRAM, DRAM, and heterogeneous PUFs are encoded as images for an OpenGAN-based classifier. A generic authentication protocol combines the classifier with hybrid encryption and Bloom filter-based replay detection.",
-    "results": "Experiments report 100% closed-set accuracy and near-zero open-set error rates for the evaluated fleets of up to 45 devices. A Raspberry Pi prototype completes an authentication cycle within 0.67 seconds. The local PDF is the public arXiv manuscript; the acceptance status follows the publication record.",
+    "summary": "This paper authenticates Internet of Things (IoT) devices from the physical fingerprint of their hardware, using one classifier for several kinds of fingerprint. A physical unclonable function (PUF) is a circuit whose response to a challenge depends on random manufacturing variation, so each chip answers differently. The framework turns responses from Arbiter, SRAM, DRAM, and mixed PUF fleets into images and trains an open-set classifier, a model that identifies enrolled devices and also rejects devices it has never seen. It reaches 100% closed-set accuracy with up to 45 devices, and a Raspberry Pi server finishes one authentication in 0.67 seconds.",
+    "stats": [
+      {
+        "value": "100%",
+        "label": "Closed-set accuracy on every dataset, with up to 45 enrolled devices, where prior classification-based schemes covered 3 to 5"
+      },
+      {
+        "value": "0.44% / 0.43%",
+        "label": "False acceptance and false rejection rates for a mixed fleet of 20 Arbiter and 25 SRAM PUFs"
+      },
+      {
+        "value": "0.67 s",
+        "label": "End-to-end authentication time on a Raspberry Pi 5 server, about 30× faster than the BCNN baseline and 9× faster than PUF-Phenotype"
+      }
+    ],
+    "method": [
+      "A PUF [1][2] derives a hardware fingerprint from manufacturing variation, and the pairs of challenge and response (CRPs) it produces serve as proof of identity. Strong PUFs such as the Arbiter PUF (APUF, which races two signals through a chain of switches) accept many challenges but return one bit each. Weak PUFs such as SRAM and DRAM PUFs expose the startup state of memory cells. Existing authentication schemes are specific to one PUF type, store large CRP databases, or train a model of the PUF, and modeling invites machine learning attacks.",
+      "The framework encodes any PUF response as a 50 × 50 grayscale image. For an APUF, a linear feedback shift register (LFSR, a cheap pseudorandom sequence generator) expands one stored challenge into 20,000 challenges, and the response bits are packed into 8-bit pixels. For SRAM and DRAM PUFs, the cell array is cropped to the same size. Each device's images are collected repeatedly, so the classifier learns device-specific features that tolerate noise instead of memorizing one noise-free template.",
+      "The classifier is built on OpenGAN [3]. A ResNet-18 first learns a K-way classifier over the K enrolled devices. A generator and discriminator then train on its features, with the generator producing synthetic outliers, so no real impostor images are needed. A device is accepted only if the discriminator's open-set confidence exceeds a threshold and the predicted identity matches the claimed one. In the protocol, the device encrypts its image with a fresh AES session key, wraps the key under the server's public key, and sends both. The server checks the wrapped key against a Bloom filter [4], a compact set-membership structure, to reject replays."
+    ],
+    "results": [
+      "The datasets cover 25 APUFs on FPGA boards, 40 SRAM PUFs from a public set of 144 devices, a noisy DRAM set measured at 20 to 50°C and 1.27 to 1.5 V, and a heterogeneous fleet. Closed-set accuracy is 100% on all of them. For 25 APUFs the false acceptance rate (FAR) is 0.35% and the false rejection rate (FRR) is 0%. For 40 SRAM PUFs against more than 5,000 unauthorized queries, FAR is 0.13% and FRR is 0.62%. On the noisy DRAM set, FAR is 0.33% and FRR is 2.04%, where the BCNN baseline rejects 10.64% of enrolled queries. A single classifier authenticates the heterogeneous fleet of 20 APUFs and 25 SRAM PUFs with 0.44% FAR and 0.43% FRR.",
+      "The prototype uses a Raspberry Pi 5 as the server and two Ultra96-V2 boards with APUFs as a legitimate device and an impostor. One authentication cycle takes about 0.67 s, which includes encryption, communication, and classifier inference of 33.5 GFLOPs, and each request carries 2,958 bytes. A 2.4 MB Bloom filter supports one million sessions at a 0.01% false positive rate."
+    ],
+    "limitations": [
+      "The largest fleet has 45 devices, and the APUF fleet is 36 instances placed on six FPGA boards. Noisy DRAM data comes from three enrolled devices. Fleets of thousands of devices are not tested. Enrollment takes place in a secure environment and trains the classifier on images from every legitimate device, so adding devices requires retraining.",
+      "Response noise is a real constraint: the instability of the public SRAM set averages 5.85% and reaches 26.74%, and the DRAM FRR of 2.04% is the highest of the four datasets. The security argument rests on the encrypted channel, because plaintext PUF images would expose responses to replay and modeling attacks. The prototype runs over Wi-Fi with two boards, not a deployed network."
+    ],
     "topics": [
       "physical unclonable functions",
       "IoT authentication",
@@ -786,14 +1574,70 @@
         "source_url": "/assets/docs/arxiv-2605.07340.pdf#page=7",
         "source_label": "Table II in the paper"
       }
+    ],
+    "references": [
+      {
+        "authors": "Ravikanth Pappu, Ben Recht, Jason Taylor, and Neil Gershenfeld.",
+        "title": "Physical One-Way Functions",
+        "venue": "Science",
+        "year": "2002",
+        "url": "https://doi.org/10.1126/science.1074376"
+      },
+      {
+        "authors": "Yansong Gao, Said F. Al-Sarawi, and Derek Abbott.",
+        "title": "Physical unclonable functions",
+        "venue": "Nature Electronics",
+        "year": "2020",
+        "url": "https://doi.org/10.1038/s41928-020-0372-5"
+      },
+      {
+        "authors": "Shu Kong and Deva Ramanan.",
+        "title": "OpenGAN: Open-Set Recognition via Open Data Generation",
+        "venue": "ICCV",
+        "year": "2021",
+        "url": "https://arxiv.org/abs/2104.02939"
+      },
+      {
+        "authors": "Burton H. Bloom.",
+        "title": "Space/time trade-offs in hash coding with allowable errors",
+        "venue": "Communications of the ACM",
+        "year": "1970",
+        "url": "https://doi.org/10.1145/362686.362692"
+      }
     ]
   },
   "representational-contrastive-scoring": {
     "name": "Representational Contrastive Scoring",
     "status": "Published · ACL 2026 · Main conference, oral presentation",
-    "summary": "Representational Contrastive Scoring (RCS) detects jailbreak attempts against large vision-language models using their internal representations. It addresses over-rejection caused by treating unfamiliar benign inputs as malicious anomalies.",
-    "method": "RCS identifies safety-relevant hidden layers, learns a lightweight projection, and scores inputs by their relative proximity to benign and malicious representations. The paper instantiates the approach as Mahalanobis Contrastive Detection (MCD) and K-nearest Contrastive Detection (KCD).",
-    "results": "Evaluation tests generalization to unseen attack types across mixed sources and modalities. The study compares MCD and KCD with baseline defenses and examines how contrastive representation geometry separates malicious inputs from benign distribution shifts.",
+    "summary": "Representational Contrastive Scoring (RCS) detects jailbreak attempts against large vision-language models (LVLMs) by reading the model's own hidden activations. An LVLM answers questions about images and text, and a jailbreak is an input crafted to make it produce content its safety training should refuse. Detectors that model only benign inputs flag unfamiliar but harmless requests as attacks. RCS instead compares each input's distance to benign and to malicious examples in a learned, low-dimensional space, which reaches 98.6% AUROC on LLaVA at about 4 to 5.5% extra inference time.",
+    "stats": [
+      {
+        "value": "98.6%",
+        "label": "AUROC of Mahalanobis Contrastive Detection (MCD) on LLaVA, on a benchmark with attack types held out of training"
+      },
+      {
+        "value": "0.949 → 0.569",
+        "label": "Precision of the one-class JailDAM detector when unseen benign datasets are added, the over-rejection that RCS targets"
+      },
+      {
+        "value": "≈4.0–5.5%",
+        "label": "Detection time added to the 0.6383 s LVLM forward pass by KCD (0.0260 s) and MCD (0.0355 s)"
+      }
+    ],
+    "method": [
+      "LVLMs inherit text jailbreaks and add visual ones, such as adversarial images that push the model past its alignment [1]. Defenses that fine-tune the model or filter inputs tend to overfit known attacks, and defenses that run several inferences add heavy latency. A lightweight alternative is anomaly detection, which learns what benign inputs look like and flags the rest. JailDAM [2] follows that one-class design, and its weakness is that an unseen benign input, such as a medical image question, also lies outside the benign distribution.",
+      "RCS reads the hidden state at the last input token of a safety-relevant middle layer, before the model generates any output. A three-layer network projects the 4,096-dimensional state to 256 dimensions. It is trained with a dataset-clustering objective, which keeps samples from the same source together, and a separation objective, which pushes malicious sources away from benign ones, in the spirit of supervised contrastive learning [3]. The projection suppresses task-irrelevant variation, so unseen benign inputs stay geometrically distinct from malicious clusters.",
+      "The contrastive score is the distance to the nearest benign cluster minus the distance to the nearest malicious cluster, so a higher score means the input sits closer to attacks. Mahalanobis Contrastive Detection (MCD) models each dataset as a Gaussian and measures Mahalanobis distance, which accounts for the spread of each cluster. K-nearest Contrastive Detection (KCD) uses distances to the 50th nearest benign and malicious neighbors on the unit sphere and assumes no distribution. Both apply one threshold, calibrated on validation data held out from training."
+    ],
+    "results": [
+      "The benchmark balances benign and malicious examples from text-only and multimodal sources and holds attack types out of training to test generalization. Hidden states come from LLaVA-v1.6-Vicuna-7B [4], Qwen2.5-VL-7B, and InternVL3-8B. A one-class detector degrades under distribution shift: when unseen benign datasets are added, JailDAM's AUROC falls from 0.913 to 0.706 and its precision from 0.949 to 0.569.",
+      "Adding a contrastive score to JailDAM raises its AUROC on LLaVA from 78.9% to 91.5%, which shows that modeling both distributions helps by itself. MCD reaches 98.6% AUROC on LLaVA, above the enhanced JailDAM, and KCD achieves lower false positive rates and higher F1. Results are means over 20 runs.",
+      "The cost is small. A standard LLaVA forward pass takes 0.6383 s. KCD adds 0.0260 s (about 4.0%), made of 0.0220 s for the projection and 0.0040 s for the nearest-neighbor search. MCD adds 0.0355 s (about 5.5%), made of 0.0278 s for the projection and 0.0077 s for the distance computation. These figures exclude autoregressive generation."
+    ],
+    "limitations": [
+      "RCS needs the protected model's internal representations. That is a deliberate choice for model serving, and it rules out detection of a model that is reachable only through an API. The projection network has about one million parameters and trains on 2,000 samples, and its results vary across random initializations. The authors expect more training data to reduce that variance but have not tested it. Hyperparameters such as k, the clustering strategy, and the projection settings also need some tuning.",
+      "The benchmark is a proof of concept with a balanced 1:1 split of benign and malicious inputs, whereas real traffic is mostly benign. A deployment would calibrate the threshold on validation data to hold the false positive rate below a target such as 1%. No detector removes false positives, and a flagged benign request costs a user a refusal. The paper does not benchmark streaming defense after decoding starts."
+    ],
     "topics": [
       "multimodal jailbreak detection",
       "vision-language models",
@@ -851,14 +1695,69 @@
         "source_url": "https://aclanthology.org/2026.acl-long.992.pdf#page=9",
         "source_label": "Table 4 in the paper"
       }
+    ],
+    "references": [
+      {
+        "authors": "Xiangyu Qi et al.",
+        "title": "Visual Adversarial Examples Jailbreak Aligned Large Language Models",
+        "venue": "AAAI",
+        "year": "2024",
+        "url": "https://arxiv.org/abs/2306.13213"
+      },
+      {
+        "authors": "Yi Nian et al.",
+        "title": "JailDAM: Jailbreak Detection with Adaptive Memory for Vision-Language Model",
+        "venue": "arXiv",
+        "year": "2025",
+        "url": "https://arxiv.org/abs/2504.03770"
+      },
+      {
+        "authors": "Prannay Khosla et al.",
+        "title": "Supervised Contrastive Learning",
+        "venue": "NeurIPS",
+        "year": "2020",
+        "url": "https://arxiv.org/abs/2004.11362"
+      },
+      {
+        "authors": "Haotian Liu et al.",
+        "title": "Improved Baselines with Visual Instruction Tuning",
+        "venue": "CVPR",
+        "year": "2024",
+        "url": "https://arxiv.org/abs/2310.03744"
+      }
     ]
   },
   "puf-transformer-protection": {
     "name": "Hardware-Bound Transformer Protection",
     "status": "Published · ACSAC 2025",
-    "summary": "This paper studies active intellectual-property protection for transformer models deployed on edge devices. It binds model execution to hardware using physical unclonable functions and reversible weight obfuscation.",
-    "method": "PUF-derived keys control Arnold’s Cat Map-based transformations of model weights. Authorized hardware reverses the transformation for inference, while use with an incorrect key degrades model accuracy. The scheme is applied without retraining the original model.",
-    "results": "The paper evaluates inference overhead and resistance to retraining, random key guessing, and encrypted-layer leakage attacks under its stated threat model. Its software artifact received Available, Reviewed, and Reproducible badges, as recorded on the author’s publication list.",
+    "summary": "This paper keeps a transformer model usable only on the hardware it was sold for. A model deployed on a phone or sensor can be copied from storage, and watermarks only prove ownership after the theft. The scheme derives a key from a physical unclonable function (PUF, a circuit whose response depends on random manufacturing variation) and uses it to scramble selected weight matrices in a reversible way. Without the key, a ViT-B image classifier falls from 80.33% to 0.10% top-1 accuracy on ImageNet, and on the authorized device it keeps its original accuracy without retraining.",
+    "stats": [
+      {
+        "value": "80.33% → 0.10%",
+        "label": "ViT-B top-1 accuracy on ImageNet without the correct key, with 6 layers encrypted; the authorized device keeps 80.33%"
+      },
+      {
+        "value": "56.4%",
+        "label": "Best ViT-B accuracy an attacker reaches by retraining the encrypted model on 20% of the original data"
+      },
+      {
+        "value": "1.119×",
+        "label": "Inference time on CPU with 12 layers encrypted and 3 Arnold's Cat Map iterations (1.58 to 1.67× on GPU)"
+      }
+    ],
+    "method": [
+      "The scheme protects the multi-head attention and feed-forward weights, which hold most of a transformer's parameters [1]. A PUF on the device [2] reproduces a key from silicon variation, so the key is never stored in memory where an attacker could read it. A key derivation function expands it into one key per encrypted layer. Each attention weight matrix is scrambled with Arnold's Cat Map (ACM), a chaotic transposition originally used to shuffle image pixels [3], whose reversibility follows from a determinant of 1 in its 2 × 2 matrix. The feed-forward matrices are not square, so the scheme permutes their rows with a key-dependent permutation instead.",
+      "Authorized hardware decrypts a layer, runs it, and re-encrypts it before the next layer, which limits how long plaintext weights stay in memory. The number of ACM iterations is fixed so that decryption time does not depend on the key, which blocks timing side channels. A selection algorithm encrypts the layers whose obfuscation hurts accuracy most, then adds a few random layers (4 for base-sized models, 6 for large ones) so that guessing one layer's key gives no measurable signal. The method works on the weights alone and needs no retraining or framework-specific features."
+    ],
+    "results": [
+      "The evaluation covers ViT [4], Swin, DeiT, and BEiT models, including larger input resolutions and quantized versions, on ImageNet. The decrypted accuracy equals the original in every case. Without the key, encrypting layers 0 and 10 of ViT-B drops accuracy to 0.08%, and the final set of 6 layers gives 0.10%. For ViT-L, encrypting layer 1 alone gives 0.1%.",
+      "An attacker who retrains the whole encrypted ViT-B on 20% of the original data reaches 56.4% accuracy after 5 epochs, against 80.33% for the original model. Retraining on 10% of the data reaches 47.9%. Retraining only the encrypted layers gives accuracy close to training from scratch. Incorrect keys at any distance from the true key produce severely degraded accuracy, a strong avalanche effect, and decrypting a single layer correctly changes accuracy by at most 0.04%, so a lucky guess confirms nothing.",
+      "On a CPU, encrypting 12 layers with 3 ACM iterations multiplies ViT-B inference time by 1.119 at batch size 64. On a GPU, the forward pass is faster, so the same work is a larger share: 1.671× for 12 iterations and 1.580× for 12 encrypted layers. ACM operations dominate the overhead, and the feed-forward permutations add little."
+    ],
+    "limitations": [
+      "The security argument assumes a robust PUF: tampering destroys it, a fuzzy extractor yields reliable keys across temperature and voltage, and the PUF readout interface is removed after registration. The attacker can read the encrypted model, its architecture, and a subset of the training data, but not runtime memory or PUF keys. An attacker with runtime memory access to an authorized device is outside the model, and plaintext weights exist briefly during each layer's execution.",
+      "The evaluation covers vision transformers. ACM is chaotic in the mathematical sense and the proof ignores finite-precision arithmetic. An attacker who holds both the permuted weights and the original public model, for example after fine-tuning with LoRA, might align columns to recover permutations, and the paper lists this as an open attack surface. The GPU overhead is 58 to 67% in the tested configurations, and the authors treat the scheme as a pilot study for transformer protection."
+    ],
     "topics": [
       "transformer security",
       "hardware binding",
@@ -935,6 +1834,47 @@
             "source_label": "ISCAS 2026, Figure 1 / Table 1"
           }
         ]
+      }
+    ],
+    "figures": [
+      {
+        "src": "/assets/img/projects/puf-transformer-protection/acsac-framework.png",
+        "width": 1570,
+        "height": 690,
+        "alt": "Three stages of hardware-bound model protection: a trainer builds a model from proprietary data, the model is encrypted with a key derived from the purchaser's PUF and identifier, and only the legitimate device with the correct PUF and identifier can run it on the edge.",
+        "caption": "Training, PUF-bound encryption, and deployment: the legitimate device runs the model, and a wrong device or identifier does not.",
+        "source_url": "/assets/docs/ACSAC25.pdf#page=5",
+        "source_label": "Figure 2 in the paper"
+      }
+    ],
+    "references": [
+      {
+        "authors": "Ashish Vaswani et al.",
+        "title": "Attention Is All You Need",
+        "venue": "NeurIPS",
+        "year": "2017",
+        "url": "https://arxiv.org/abs/1706.03762"
+      },
+      {
+        "authors": "Blaise Gassend, Dwaine Clarke, Marten van Dijk, and Srinivas Devadas.",
+        "title": "Silicon physical random functions",
+        "venue": "ACM CCS",
+        "year": "2002",
+        "url": "https://doi.org/10.1145/586110.586132"
+      },
+      {
+        "authors": "Jiri Fridrich.",
+        "title": "Symmetric Ciphers Based on Two-Dimensional Chaotic Maps",
+        "venue": "International Journal of Bifurcation and Chaos",
+        "year": "1998",
+        "url": "https://doi.org/10.1142/S021812749800098X"
+      },
+      {
+        "authors": "Alexey Dosovitskiy et al.",
+        "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale",
+        "venue": "ICLR",
+        "year": "2021",
+        "url": "https://arxiv.org/abs/2010.11929"
       }
     ]
   }
