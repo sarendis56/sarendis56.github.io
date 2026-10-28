@@ -1,5 +1,12 @@
 [
   {
+    "path": "/assets/docs/arxiv-2610.37080.pdf",
+    "source": "https://arxiv.org/pdf/2610.37080",
+    "arxiv_id": "2610.37080",
+    "downloaded": "2026-10-27",
+    "sha256": "c674172008118780e70b67e98626b0942269ead02c60677b887fef6026aa0f76"
+  },
+  {
     "path": "/assets/docs/arxiv-2610.32079.pdf",
     "source": "https://arxiv.org/pdf/2610.32079",
     "arxiv_id": "2610.32079",

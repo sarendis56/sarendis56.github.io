@@ -1,4 +1,40 @@
 {
+  "tessera": {
+    "name": "Tessera",
+    "status": "arXiv preprint · 2026",
+    "summary": "Tessera addresses web retrieval-augmented generation, where a page is split into fixed-size text chunks or screenshot tiles that serve at once as the unit of indexing, ranking, and reading. Tracing evidence over the full English Wikipedia shows that this coupling loses answer evidence, especially tables and infoboxes that chunking separates from their headers and context.",
+    "method": "Tessera is a training-free, query-time delivery layer that decouples what a pipeline retrieves from what its reader reads. It rebuilds the HTML of the retrieved pages into fine-grained evidence units, each completed with its page title, section path, and table headers. It then selects the relevant units and packs them into the reader context at an unchanged token budget, so the index, retriever, and reader stay as they are.",
+    "results": "Across three question answering benchmarks, Tessera improves answer accuracy by 5 to 6 points on text and screenshot pipelines, consistently across readers, retrievers, and reader budgets. It outperforms strong HTML-aware and structure-aware RAG baselines under matched budgets, and the gains carry over to multi-step agentic search, with up to 5.2 points inside a search agent.",
+    "topics": [
+      "retrieval-augmented generation",
+      "web retrieval",
+      "structured evidence",
+      "agentic search"
+    ],
+    "authors": [
+      "Peichun Hua",
+      "He Sun",
+      "Zirui Zhuang",
+      "Qi Qi",
+      "Yiming Qiu",
+      "Shinan Liu",
+      "Yunming Xiao"
+    ],
+    "year": "2026",
+    "published_date": "2026/10/27",
+    "arxiv_id": "2610.37080",
+    "figures": [
+      {
+        "src": "/assets/img/projects/tessera/method-overview.png",
+        "width": 1040,
+        "height": 850,
+        "alt": "Tessera takes the ranked list of any retrieval pipeline, anchors the top pages, builds units from their HTML, selects units with a cross-encoder, and packs them by shared context into one unit block that replaces the last evidence slot of the reader.",
+        "caption": "Tessera rebuilds retrieved pages into structure-completed units and packs them into the last evidence slot at the same budget.",
+        "source_url": "/assets/docs/arxiv-2610.37080.pdf#page=4",
+        "source_label": "Figure 3 in the paper"
+      }
+    ]
+  },
   "label-budgeted-attribute-inference": {
     "name": "Label-Budgeted Attribute Inference",
     "status": "arXiv preprint · 2026",
