@@ -10,4 +10,5 @@ permalink: /sitemap.xml
     {% capture excluded %}{% include project-excluded.html publication=publication project=project %}{% endcapture %}
     {% unless excluded == 'true' %}<url><loc>{{ project.url | absolute_url | xml_escape }}</loc></url>{% endunless %}
   {% endfor %}
+  {% for publication in site.data.publications.main %}{% if publication.demo %}<url><loc>{{ publication.demo | absolute_url | xml_escape }}</loc></url>{% endif %}{% endfor %}
 </urlset>

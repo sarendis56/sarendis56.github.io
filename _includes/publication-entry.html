@@ -24,6 +24,10 @@
         <a href="{{ publication.code }}" class="btn btn-sm z-depth-0" role="button" target="_blank"
           style="font-size:12px;">Code</a>
         {% endif %}
+        {% if publication.demo %}
+        <a href="{{ publication.demo | relative_url }}" class="btn btn-sm z-depth-0" role="button" target="_blank"
+          style="font-size:12px;">Demo</a>
+        {% endif %}
         {% if publication.page %}
         <a href="{{ publication.page }}" class="btn btn-sm z-depth-0" role="button" target="_blank"
           style="font-size:12px;">Project Page</a>

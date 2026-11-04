@@ -1,0 +1,2016 @@
+<!doctype html>
+<html lang="en">
+<title>Decisions at the Edge · SemDN Interactive Demo</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Interactive companion to the HotNets 2026 paper Semantics Delivery Network (SemDN): step through the decisions an edge has to make when it answers agent queries with chunks.">
+<link rel="canonical" href="https://peichun.xyz/papers/semantics-delivery-network/demo/">
+<link rel="icon" href="/assets/img/favicon-h.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: chapters of one shift at a PoP, one visible at a time. Colors reuse the paper's figure palette:
+   blue = request, teal = response, amber = background discovery. */
+:root {
+  --bg: #f4f6fb; --panel: #ffffff; --fg: #1d2333; --muted: #586078; --line: #d3d9e8;
+  --req: #2c5fe0; --resp: #0b8574; --disc: #b76a0d; --bad: #c0362c; --vio: #7c3aed;
+  --req-soft: #e6edfd; --resp-soft: #dff4f0; --disc-soft: #fbeedb; --bad-soft: #fbe6e3;
+  --display: "Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #12162a; --panel: #1b2038; --fg: #e8ebf6; --muted: #a3abc6; --line: #343b5c;
+  --req: #86a6fb; --resp: #4fd0ba; --disc: #eeb05c; --bad: #f58c81; --vio: #b79bfa;
+  --req-soft: #233058; --resp-soft: #173f3f; --disc-soft: #453317; --bad-soft: #4b2526; color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #12162a; --panel: #1b2038; --fg: #e8ebf6; --muted: #a3abc6; --line: #343b5c;
+  --req: #86a6fb; --resp: #4fd0ba; --disc: #eeb05c; --bad: #f58c81; --vio: #b79bfa;
+  --req-soft: #233058; --resp-soft: #173f3f; --disc-soft: #453317; --bad-soft: #4b2526; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; }
+body { background: var(--bg); color: var(--fg); font: 16px/1.55 var(--body); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.gutter { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
+nav .topbar { max-width: 1120px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 6px 16px; padding-top: 8px; font: 500 .8rem var(--body); }
+nav .topbar a { color: var(--muted); text-decoration: none; }
+nav .topbar a:hover { color: var(--req); }
+nav .navrow { max-width: 1120px; margin: 0 auto; display: flex; gap: 8px; align-items: center; }
+nav .inner { flex: 1; min-width: 0; display: flex; gap: 2px; overflow-x: auto; padding-block: 6px; }
+nav button.themebtn { flex: none; border: 1px solid var(--line); background: var(--panel); color: var(--fg); padding: 5px 10px; font: 500 .8rem var(--body); border-radius: 5px; white-space: nowrap; }
+nav button { border: 0; background: none; padding: 7px 10px; font: 500 .85rem var(--body); color: var(--muted); white-space: nowrap; border-radius: 4px; }
+nav button[aria-current="true"] { background: var(--req-soft); color: var(--fg); }
+.wrap { max-width: 1120px; margin: 0 auto; padding-block: 32px 64px; }
+.chapter { display: flex; flex-direction: column; gap: 20px; }
+h1, h2, h3 { font-family: var(--display); line-height: 1.12; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(2.6rem, 8vw, 4.4rem); letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.7rem, 4.4vw, 2.3rem); }
+h3 { font-size: 1.15rem; }
+p { margin: 0; }
+a { color: var(--req); }
+.eyebrow { font: 500 .78rem var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.muted { color: var(--muted); }
+.small { font-size: .875rem; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 18px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+button, select { font: 500 .95rem var(--body); color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 5px; padding: 9px 13px; }
+nav button { border: 0; background: none; }
+nav button[aria-current="true"] { background: var(--req-soft); }
+button { cursor: pointer; }
+button:hover:not(:disabled) { border-color: var(--req); }
+button:disabled { cursor: default; opacity: .55; }
+:focus-visible { outline: 2px solid var(--req); outline-offset: 2px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.spread { justify-content: space-between; }
+button.primary, button.on { background: var(--req); border-color: var(--req); color: var(--bg); }
+.fact { font-size: .9rem; border-left: 3px solid var(--resp); padding-left: 12px; }
+.track { height: 16px; background: var(--bg); border-radius: 3px; overflow: hidden; }
+.panel .track { background: var(--bg); }
+.fill { height: 100%; border-radius: 3px; transition: width .2s ease; }
+.val { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.bar-row { display: grid; grid-template-columns: minmax(0, 11rem) minmax(0, 1fr) 4.4rem; gap: 10px; align-items: center; font-size: .875rem; }
+.bars { display: grid; gap: 8px; }
+.query { font: 500 1rem var(--mono); border-left: 3px solid var(--req); padding-left: 12px; overflow-wrap: anywhere; }
+.chunks { display: grid; gap: 6px; }
+.sample { margin-top: 26px; }
+.sample > .query + p { margin: 10px 0 12px; }
+.sample > .muted { margin-top: 12px; }
+.chunk { display: grid; grid-template-columns: 3.2rem minmax(0, 1fr) 4.6rem; gap: 10px; padding: 8px 10px; background: var(--bg); border-radius: 4px; font-size: .9rem; align-items: baseline; }
+.score { font-family: var(--mono); color: var(--req); font-weight: 500; }
+.age { font-family: var(--mono); color: var(--muted); font-size: .8rem; text-align: right; }
+.src { display: block; font: .75rem var(--mono); color: var(--muted); overflow-wrap: anywhere; }
+button.pick { display: grid; grid-template-columns: 3.2rem minmax(0, 1fr); gap: 10px; text-align: left; font-weight: 400; font-size: .9rem; align-items: baseline; }
+button.pick.right { background: var(--resp-soft); border-color: var(--resp); }
+button.pick.wrong { background: var(--bad-soft); border-color: var(--bad); }
+.opts { display: grid; gap: 6px; }
+.actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px; }
+.actions button { text-align: left; display: flex; flex-direction: column; gap: 2px; }
+.actions .cost { font: .78rem var(--mono); color: var(--muted); }
+.verdict { padding: 12px 14px; border-radius: 5px; display: flex; flex-direction: column; gap: 4px; }
+.verdict.good { background: var(--resp-soft); }
+.verdict.bad { background: var(--bad-soft); }
+.verdict.waste { background: var(--disc-soft); }
+.meters { display: flex; flex-wrap: wrap; gap: 18px; font-size: .875rem; }
+.meters b { font: 500 1.1rem var(--mono); }
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+td.num, th.num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+td.num .sub, th.num .sub { display: block; font-weight: 500; font-size: .78rem; color: var(--muted); }
+tr.you td { font-weight: 600; background: var(--req-soft); }
+.steps { display: grid; gap: 6px; }
+.step { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); gap: 10px; padding: 7px 10px; background: var(--bg); border-radius: 4px; font-size: .9rem; }
+.step .who { font: 500 .75rem var(--mono); color: var(--muted); padding-top: 2px; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(22px, 1fr)); gap: 4px; }
+.tile { aspect-ratio: 1; border-radius: 3px; background: var(--line); display: grid; place-items: center; font: 500 .65rem var(--mono); color: var(--fg); }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: .8rem; color: var(--muted); }
+.legend i { display: inline-block; width: 11px; height: 11px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+.sigfold { margin: 12px 0 4px; }
+.sigfold summary { cursor: pointer; font-weight: 600; }
+.sigfold summary .small { font-weight: 400; color: var(--muted); }
+.siglist { display: grid; gap: 8px; margin: 12px 0 4px; }
+.siglist div { padding: 8px 10px; border-radius: 4px; background: var(--bg); }
+.siglist div.on { outline: 1px solid var(--req); }
+.siglist dt { font-weight: 650; }
+.siglist dd { margin: 2px 0 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: .8rem var(--mono); padding: 3px 9px; border: 1px solid var(--line); border-radius: 99px; }
+.turns { display: grid; gap: 6px; }
+.turn { display: grid; grid-template-columns: 3.2rem minmax(0, 1fr) auto; gap: 10px; align-items: center; font-size: .875rem; padding: 6px 8px; border-radius: 4px; }
+.turn.future { opacity: .35; }
+.turn q { font-family: var(--mono); quotes: none; overflow-wrap: anywhere; }
+.pill { font: 500 .75rem var(--mono); padding: 2px 8px; border-radius: 99px; white-space: nowrap; }
+.pill.hit, .pill.sib { background: var(--resp-soft); color: var(--resp); }
+.pill.miss, .pill.new { background: var(--disc-soft); color: var(--disc); }
+#turns .chunk, .sample .chunk { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+input[type=range] { width: 100%; accent-color: var(--req); }
+.ticks { display: flex; justify-content: space-between; font: .75rem var(--mono); color: var(--muted); }
+label.check { display: inline-flex; gap: 6px; align-items: center; font-size: .9rem; }
+label.slider { display: grid; gap: 2px; font-size: .875rem; }
+label.slider span { display: flex; justify-content: space-between; gap: 10px; }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 22px; }
+.two > * { min-width: 0; }
+.tenants { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+.tenants label { display: grid; gap: 4px; font: 500 .8rem var(--mono); color: var(--muted); }
+.tenants select { width: 100%; }
+.stack { display: grid; gap: 6px; }
+.layer { display: grid; grid-template-columns: minmax(0, 1fr) 6.5rem 6.5rem; gap: 10px; align-items: center; padding: 7px 10px; background: var(--bg); border-radius: 4px; font-size: .9rem; }
+.layer.head { background: none; font: 500 .75rem var(--mono); color: var(--muted); padding-block: 0; }
+.dots { display: flex; flex-wrap: wrap; gap: 3px; align-items: center; }
+.dot { width: 11px; height: 11px; border-radius: 2px; }
+.dot.today { background: var(--disc); }
+.dot.semdn { background: var(--resp); }
+.note { border-left: 3px solid var(--disc); padding-left: 12px; font-size: .925rem; display: grid; gap: 6px; }
+.hier { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 6px; }
+.hier div { background: var(--bg); padding: 8px 10px; border-radius: 4px; font-size: .85rem; display: grid; gap: 2px; }
+.hier b { font-family: var(--display); }
+.rolecol { background: var(--bg); border-radius: 4px; padding: 10px 12px 12px; }
+.rolecol.origin { box-shadow: inset 3px 0 0 var(--disc); }
+.rolecol.client { box-shadow: inset 3px 0 0 var(--req); }
+.rolecol b { font-family: var(--display); }
+.rolecol ul { margin: 6px 0 0; padding-left: 1.15em; }
+.rolecol li { margin: 2px 0; }
+svg text { fill: var(--muted); font: 11px var(--mono); }
+svg { display: block; width: 100%; height: auto; }
+ol.qs { margin: 0; padding-left: 1.3em; display: grid; gap: 12px; }
+.foot { display: flex; justify-content: flex-end; }
+sup.cites { font-size: .72em; font-weight: 650; line-height: 0; margin-left: 1px; white-space: nowrap; }
+sup.cites a { color: var(--req); text-decoration: none; }
+sup.cites a:hover { text-decoration: underline; }
+.reflist { margin: 8px 0 18px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 1rem; line-height: 1.45; }
+.reflist h3 { font-family: var(--display); font-size: 1.15rem; margin: 0 0 10px; }
+.reflist ol { margin: 0; padding-left: 1.6em; display: grid; gap: 8px; }
+.reflist a { color: var(--req); }
+.reflist li { scroll-margin-top: 72px; }
+.reflist details { margin-top: 22px; }
+.reflist summary { cursor: pointer; font-family: var(--display); font-size: 1.15rem; font-weight: 600; }
+.reflist summary .small { font-family: inherit; font-weight: 400; color: var(--muted); }
+.pathfig { margin: 12px 0 4px; }
+.pathfig svg { width: 100%; height: auto; display: block; }
+.pathfig .bx { fill: var(--panel); stroke: var(--line); stroke-width: 1.5; }
+.pathfig .bx.hot { fill: var(--fg); stroke: var(--fg); }
+.pathfig svg text { fill: var(--fg); font-family: var(--body); font-size: 15px; text-anchor: middle; }
+.pathfig svg text.inv { fill: var(--panel); }
+.pathfig svg text.sub { font-size: 13px; fill: var(--muted); }
+.pathfig svg text.inv.sub { fill: var(--panel); opacity: .85; }
+.pathfig svg text.b { font-family: var(--display); font-weight: 700; font-size: 17px; }
+.pathfig svg text.lab { font-size: 13px; font-style: italic; fill: var(--muted); text-anchor: start; }
+.pathfig svg text.lab.ok { fill: var(--resp); }
+.pathfig line { stroke: var(--muted); stroke-width: 1.5; }
+.pathfig line.ok { stroke: var(--resp); }
+.reflist .reading h4 { font-size: .95rem; margin: 14px 0 6px; }
+.reflist .reading ul { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
+.reflist .why { color: var(--muted); }
+@media (max-width: 520px) {
+  .bar-row { grid-template-columns: 1fr 4.4rem; }
+  .bar-row .track { grid-column: 1 / -1; grid-row: 2; }
+  .layer { grid-template-columns: minmax(0, 1fr) 4.8rem 4.8rem; }
+  .chunk { grid-template-columns: 2.9rem minmax(0, 1fr); }
+  .age { grid-column: 2; text-align: left; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+.presFlash { outline: 3px solid var(--vio); outline-offset: 4px; border-radius: 4px; }
+</style>
+
+<nav class="gutter" aria-label="Chapters"><div class="topbar"><a href="https://peichun.xyz/" target="_blank" rel="noopener">Peichun Hua</a><a href="https://yunmingxiao.github.io/" target="_blank" rel="noopener">Yunming Xiao</a><a href="https://arxiv.org/abs/2609.22486v2" target="_blank" rel="noopener">Paper</a></div><div class="navrow"><div class="inner" id="nav"></div><button type="button" id="themeBtn" class="themebtn"></button></div></nav>
+<main class="wrap gutter" id="main">
+
+<section class="chapter" data-ch="start" data-label="Start">
+  <div class="eyebrow">Semantics Delivery Network · HotNets '26</div>
+  <h1>Decisions at the Edge</h1>
+  <p>Agents consume evidence in coherent passages or chunks; however, today the web delivers in pages for human readers. We propose a new network infrastructure serving evidence chunks to answer the query, unifying the utility of traditional search engines and CDNs in one round. Instead of a finer-grained CDN delivering semantic-oblivious bytes, a semantic-aware network infrastructure creates new opportunities as well as challenges. This artifact guides the audience to step through the decisions an edge has to make.</p>
+  <div class="panel">
+    <h3>One request, three paths</h3>
+    <div class="query">Compare the API rate limits of Halden and Quillbase</div>
+    <div class="row" id="pathBtns"></div>
+    <p class="small">The middle path is Cloudflare's per-site AI Index<sup class="cites"><a href="#start-r1">1</a></sup>. AI Search is the query path over that index<sup class="cites"><a href="#start-r2">2</a></sup>. AISTRAL's Agentic Twins<sup class="cites"><a href="#start-r3">3</a></sup> also give each site its own index, and add a resolver that picks which sites to ask. Ranking across sites is still left to the agent.</p>
+    <div class="pathfig" id="pathFig" aria-live="polite"></div>
+    <div class="steps" id="pathSteps"></div>
+    <div class="meters" id="pathMeters"></div>
+  </div>
+  <div class="panel">
+    <h3>What one query costs today</h3>
+    <div class="bars" id="tax"></div>
+    <p class="fact">Median of 100 live queries through a SERP API and its top-5 URLs<sup class="cites"><a href="#start-r4">4</a></sup>. The no-JS fetch moves 107× what the model reads; a full render, 2,532×. Bars use a log scale.</p>
+  </div>
+  <div class="panel">
+    <h3>Two systems, split down the middle</h3>
+    <div class="tablewrap"><table>
+      <thead><tr><th></th><th>Search engine</th><th>CDN</th><th>SemDN</th></tr></thead>
+      <tbody>
+        <tr><td><b>Keyed on</b></td><td>Query</td><td>URL</td><td>Query</td></tr>
+        <tr><td><b>Returns</b></td><td>URLs and snippets</td><td>Whole objects</td><td>Ranked chunks with provenance</td></tr>
+        <tr><td><b>Sees the query</b></td><td>Yes</td><td>No</td><td>Yes</td></tr>
+        <tr><td><b>Serves the origin</b></td><td>No</td><td>Yes</td><td>Yes</td></tr>
+        <tr><td><b>Paid by</b></td><td>Client</td><td>Origin</td><td>Both, for different services</td></tr>
+      </tbody>
+    </table></div>
+    <p>The unit it returns is called a chunk. It can be a text passage<sup class="cites"><a href="#start-r5">5</a></sup>, a table block<sup class="cites"><a href="#start-r6">6</a>, <a href="#start-r7">7</a></sup>, an image region<sup class="cites"><a href="#start-r8">8</a>, <a href="#start-r9">9</a></sup>, or a page screenshot<sup class="cites"><a href="#start-r10">10</a></sup>. We currently focus on passages and tables. Tessera rebuilds a web page into evidence units and completes a table row with its headers<sup class="cites"><a href="#start-r7">7</a></sup>. Other work explores images and screenshots. ColPali and CLIP retrieve image regions<sup class="cites"><a href="#start-r8">8</a>, <a href="#start-r9">9</a></sup>. Computer-use agents operate on the rendered page<sup class="cites"><a href="#start-r11">11</a>, <a href="#start-r12">12</a>, <a href="#start-r13">13</a>, <a href="#start-r14">14</a>, <a href="#start-r15">15</a></sup>, and PixelRAG retrieves from the screenshot itself<sup class="cites"><a href="#start-r10">10</a></sup>. The same idea extends to an audio clip<sup class="cites"><a href="#start-r16">16</a></sup> or a video segment<sup class="cites"><a href="#start-r17">17</a></sup>.</p>
+    <div class="chips"><span class="chip">text passage <sup class="cites"><a href="#start-r5">5</a></sup></span><span class="chip">table block <sup class="cites"><a href="#start-r6">6</a>, <a href="#start-r7">7</a></sup></span><span class="chip">image region <sup class="cites"><a href="#start-r8">8</a>, <a href="#start-r9">9</a></sup></span><span class="chip">page screenshot <sup class="cites"><a href="#start-r10">10</a></sup></span><span class="chip">audio clip <sup class="cites"><a href="#start-r16">16</a></sup></span><span class="chip">video segment <sup class="cites"><a href="#start-r17">17</a></sup></span></div>
+  </div>
+  <div class="reflist">
+    <h3>References</h3>
+    <ol>
+      <li id="start-r1">Cloudflare. <a href="https://blog.cloudflare.com/an-ai-index-for-all-our-customers/" target="_blank" rel="noopener">An AI Index for all our customers</a>. 2025.</li>
+      <li id="start-r2">Cloudflare. <a href="https://developers.cloudflare.com/ai-search/" target="_blank" rel="noopener">AI Search</a>.</li>
+      <li id="start-r3">Yixi Chen, Muhammad Bilal, Tie Ma, Zafar Ayyub Qazi, Marco Canini, and Suhaib Fahmy. <a href="https://arxiv.org/abs/2511.18354v2" target="_blank" rel="noopener">From Crawled to Published: A Publisher-Controlled Web Architecture for an AI-Native Internet</a>. arXiv:2511.18354v2, 2026.</li>
+      <li id="start-r4">Peichun Hua and Yunming Xiao. <a href="https://arxiv.org/abs/2609.22486v2" target="_blank" rel="noopener">Semantics Delivery Network: Rethinking Web Retrieval Infrastructure for LLM Agents</a>. HotNets 2026. The byte measurements.</li>
+      <li id="start-r5">Vladimir Karpukhin et al. <a href="https://aclanthology.org/2020.emnlp-main.550/" target="_blank" rel="noopener">Dense Passage Retrieval for Open-Domain Question Answering</a>. EMNLP 2020.</li>
+      <li id="start-r6">Jonathan Herzig et al. <a href="https://aclanthology.org/2021.naacl-main.43/" target="_blank" rel="noopener">Open Domain Question Answering over Tables via Dense Retrieval</a>. NAACL 2021.</li>
+      <li id="start-r7">Peichun Hua, He Sun, Zirui Zhuang, Qi Qi, Yiming Qiu, Shinan Liu, and Yunming Xiao. <a href="https://arxiv.org/abs/2610.37080" target="_blank" rel="noopener">Tessera: Structure-Completed Evidence Units for Web Retrieval-Augmented Generation</a>. arXiv:2610.37080, 2026.</li>
+      <li id="start-r8">Manuel Faysse et al. <a href="https://arxiv.org/abs/2407.01449" target="_blank" rel="noopener">ColPali: Efficient Document Retrieval with Vision Language Models</a>. arXiv:2407.01449, 2024.</li>
+      <li id="start-r9">Alec Radford et al. <a href="https://arxiv.org/abs/2103.00020" target="_blank" rel="noopener">Learning Transferable Visual Models From Natural Language Supervision</a> (CLIP). ICML 2021.</li>
+      <li id="start-r10">Yichuan Wang et al. <a href="https://arxiv.org/abs/2606.28344" target="_blank" rel="noopener">PixelRAG: Web Screenshots Beat Text for Retrieval-Augmented Generation</a>. arXiv:2606.28344, 2026.</li>
+      <li id="start-r11">Anthropic. <a href="https://www.anthropic.com/news/3-5-models-and-computer-use" target="_blank" rel="noopener">Introducing computer use, a new Claude 3.5 Sonnet, and Claude 3.5 Haiku</a>. 2024.</li>
+      <li id="start-r12">Google DeepMind. <a href="https://blog.google/innovation-and-ai/models-and-research/google-deepmind/google-gemini-ai-update-december-2024/" target="_blank" rel="noopener">Introducing Gemini 2.0: our new AI model for the agentic era</a>. 2024.</li>
+      <li id="start-r13">Jing Yu Koh et al. <a href="https://arxiv.org/abs/2401.13649" target="_blank" rel="noopener">VisualWebArena: Evaluating Multimodal Agents on Realistic Visual Web Tasks</a>. ACL 2024.</li>
+      <li id="start-r14">OpenAI. <a href="https://openai.com/index/computer-using-agent/" target="_blank" rel="noopener">Computer-Using Agent</a>. 2025.</li>
+      <li id="start-r15">OpenAI. <a href="https://openai.com/index/introducing-chatgpt-agent/" target="_blank" rel="noopener">Introducing ChatGPT Agent: Bridging Research and Action</a>. 2025.</li>
+      <li id="start-r16">Yusong Wu et al. <a href="https://arxiv.org/abs/2211.06687" target="_blank" rel="noopener">Large-scale Contrastive Language-Audio Pretraining with Feature Fusion and Keyword-to-Caption Augmentation</a> (CLAP). ICASSP 2023.</li>
+      <li id="start-r17">Huaishao Luo et al. <a href="https://doi.org/10.1016/j.neucom.2022.07.028" target="_blank" rel="noopener">CLIP4Clip: An Empirical Study of CLIP for End to End Video Clip Retrieval and Captioning</a>. Neurocomputing, 2022.</li>
+    </ol>
+    <details>
+      <summary>Further reading <span class="small">(11 papers, click to expand)</span></summary>
+      <div class="reading">
+      <h4>Where this idea comes from</h4>
+      <ul>
+        <li>Patrick S. H. Lewis et al. <a href="https://proceedings.neurips.cc/paper/2020/hash/6b493230205f780e1bc26945df7481e5-Abstract.html" target="_blank" rel="noopener">Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks</a>. NeurIPS 2020. <span class="why">The paper that named retrieval-augmented generation: fetch passages, then let the model answer.</span></li>
+        <li>Reiichiro Nakano et al. <a href="https://arxiv.org/abs/2112.09332" target="_blank" rel="noopener">WebGPT: Browser-assisted question-answering with human feedback</a>. arXiv:2112.09332, 2021. <span class="why">An early agent that browses the live web to answer questions, the workload SemDN serves.</span></li>
+        <li>Jason Wei et al. <a href="https://arxiv.org/abs/2504.12516" target="_blank" rel="noopener">BrowseComp: A Simple Yet Challenging Benchmark for Browsing Agents</a>. arXiv:2504.12516, 2025. <span class="why">A benchmark of hard browsing tasks, showing how many pages agents touch per answer.</span></li>
+        <li>Van Jacobson et al. <a href="https://doi.org/10.1145/1658939.1658941" target="_blank" rel="noopener">Networking named content</a>. CoNEXT 2009. <span class="why">Named-data networking: route requests by what they ask for, not by host. SemDN keys on the query instead.</span></li>
+      </ul>
+      <h4>CDNs and the network side</h4>
+      <ul>
+        <li>Erik Nygren, Ramesh K. Sitaraman, and Jennifer Sun. <a href="https://scholar.google.com/scholar?q=%22The%20Akamai%20Network%3A%20A%20Platform%20for%20High-Performance%20Internet%20Applications%22" target="_blank" rel="noopener">The Akamai Network: A Platform for High-Performance Internet Applications</a>. ACM SIGOPS Operating Systems Review, 2010. <span class="why">How a large CDN is built, the system SemDN is compared against throughout.</span></li>
+        <li>Waris Ali et al. <a href="https://doi.org/10.1016/j.jnca.2025.104106" target="_blank" rel="noopener">A survey on the state-of-the-art CDN architectures and future directions</a>. Journal of Network and Computer Applications, 2025. <span class="why">A recent survey of CDN architectures.</span></li>
+        <li>Yihua Cheng et al. <a href="https://doi.org/10.48550/arXiv.2409.13761" target="_blank" rel="noopener">Do Large Language Models Need a Content Delivery Network?</a>. arXiv:2409.13761, 2024. <span class="why">Proposes a delivery network for LLM knowledge in the form of KV caches, a neighbouring idea.</span></li>
+        <li>Siddhant Ray et al. <a href="https://doi.org/10.48550/arXiv.2608.01526" target="_blank" rel="noopener">An Internet for the KV Cache: Rethinking Classical Infrastructure Boundaries in the LLM Inference Age</a>. arXiv:2608.01526, 2026. <span class="why">Asks which Internet infrastructure should carry KV caches between models.</span></li>
+        <li>Muhammad Bilal et al. <a href="https://doi.org/10.48550/arXiv.2511.18354" target="_blank" rel="noopener">Toward an AI-Native Internet: Rethinking the Web Architecture for Semantic Retrieval</a>. arXiv:2511.18354, 2025. <span class="why">Argues for an AI-native web that serves semantic content, close in spirit to SemDN.</span></li>
+        <li>Yazhuo Zhang et al. <a href="https://doi.org/10.1145/3772052.3772255" target="_blank" rel="noopener">Rethinking Web Cache Design for the AI Era</a>. ACM SoCC 2025. <span class="why">Revisits web cache design when AI crawlers and agents are the clients.</span></li>
+        <li>Cloudflare. <a href="https://scholar.google.com/scholar?q=%22Introducing%20Markdown%20for%20Agents%22" target="_blank" rel="noopener">Introducing Markdown for Agents</a>. Cloudflare blog, 2026. <span class="why">A CDN serving Markdown instead of HTML to agents: the first step from bytes toward text.</span></li>
+      </ul>
+      </div>
+    </details>
+
+  </div>
+  <div class="foot"><button type="button" class="primary" data-next>Start the shift: why the stack misfits</button></div>
+</section>
+
+<section class="chapter" data-ch="mismatch" data-label="Mismatch" hidden>
+  <div class="eyebrow">Four structural mismatches</div>
+  <h2>The stack was built for human readers</h2>
+  <div class="panel">
+    <h3>Similar is not useful</h3>
+    <p>Pick the passage you would hand to the agent. Scores are query-passage similarity.</p>
+    <div id="simGame"></div>
+  </div>
+  <div class="panel">
+    <h3>Chunking is a budget decision</h3>
+    <p>The reader has a context budget. Spend it on chunks or on pages?</p>
+    <label class="slider"><span>Context budget <b class="mono" id="budLabel"></b></span><input id="bud" type="range" min="0" max="11" step="1" value="2" aria-label="Context budget"></label>
+    <p id="budNote"></p>
+    <div id="budChart"></div>
+    <p class="fact">Paper Fig. 3c<sup class="cites"><a href="#mis-r2">2</a></sup>: CRAG Task-3<sup class="cites"><a href="#mis-r1">1</a></sup>, 600 questions, Qwen3-32B reader. With the same LLM reranker, chunks beat pages by 3.5–8.2 accuracy points from 256 to 6,144 tokens.</p>
+    <h3>Same question, same 256 tokens, same reader</h3>
+    <div class="row" id="pairBtns"></div>
+    <div class="query" id="pairQ"></div>
+    <div class="two" id="pair"></div>
+  </div>
+  <div class="panel">
+    <h3>Page-first cannot reach what it never downloads</h3>
+    <p>The tiles are pages in a page ranker's order. Marked tiles hold a chunk from the global top-5. Download more pages and see how far you get.</p>
+    <label class="slider"><span>Pages downloaded <b class="mono" id="pgLabel"></b></span><input id="pg" type="range" min="1" max="30" step="1" value="5" aria-label="Pages downloaded"></label>
+    <div class="tiles" id="pgTiles"></div>
+    <div class="meters" id="pgMeters"></div>
+    <p class="fact">16–29% of the global top-5 chunks lie on pages a whole-page ranker skips, even at 20 pages<sup class="cites"><a href="#mis-r2">2</a></sup>. Chunks match or beat a client that downloads ten pages (0.456 vs. 0.427 accuracy with e5), which moves about 1,200× the bytes.</p>
+  </div>
+  <div class="panel">
+    <h3>Every client runs the same fragile pipeline</h3>
+    <p>Reach, extract, de-boilerplate, segment, embed. Run it on 40 result URLs, then multiply by the number of operators doing the same work.</p>
+    <div class="row" id="fetchBtns"></div>
+    <div class="tiles" id="fetchTiles"></div>
+    <div class="legend" id="fetchLegend"></div>
+    <label class="slider"><span>Operators fetching these URLs <b class="mono" id="opLabel"></b></span><input id="ops" type="range" min="1" max="50" step="1" value="10" aria-label="Operators"></label>
+    <p id="fetchNote"></p>
+    <p class="fact">Over half the text is lost without JavaScript on at least 39% of sampled URLs, and about 19% are bot-blocked. Across 1,430 live URLs, a cloud renderer gets usable clean text from at most 75%<sup class="cites"><a href="#mis-r3">3</a></sup>.</p>
+    <h3>Real queries, real top-5 URLs</h3>
+    <div class="row" id="liveBtns"></div>
+    <div class="tablewrap" id="live"></div>
+    <p id="liveNote"></p>
+  </div>
+  <div class="reflist">
+    <h3>References</h3>
+    <ol>
+      <li id="mis-r1">Xiao Yang et al. <a href="https://arxiv.org/abs/2406.04744" target="_blank" rel="noopener">CRAG — Comprehensive RAG Benchmark</a>. arXiv:2406.04744, 2024.</li>
+      <li id="mis-r2">Peichun Hua and Yunming Xiao. <a href="https://arxiv.org/abs/2609.22486v2" target="_blank" rel="noopener">Semantics Delivery Network</a>. HotNets 2026. Fig. 3c and the page-reach probe.</li>
+      <li id="mis-r3">Cloudflare. <a href="https://developers.cloudflare.com/browser-rendering/rest-api/markdown-endpoint/" target="_blank" rel="noopener">Browser Rendering: Markdown endpoint</a>.</li>
+    </ol>
+    <details>
+      <summary>Further reading <span class="small">(14 papers, click to expand)</span></summary>
+      <div class="reading">
+      <h4>What unit to retrieve</h4>
+      <ul>
+        <li>Tong Chen et al. <a href="https://doi.org/10.18653/v1/2024.emnlp-main.845" target="_blank" rel="noopener">Dense X Retrieval: What Retrieval Granularity Should We Use?</a>. EMNLP 2024. <span class="why">Shows that retrieving smaller units (propositions) can beat passages and documents.</span></li>
+        <li>Zijie Zhong et al. <a href="https://aclanthology.org/2025.coling-main.384/" target="_blank" rel="noopener">Mix-of-Granularity: Optimize the Chunking Granularity for Retrieval-Augmented Generation</a>. COLING 2025. <span class="why">Picks the chunk size per query instead of fixing one size.</span></li>
+        <li>Renyi Qu et al. <a href="https://doi.org/10.18653/v1/2025.findings-naacl.114" target="_blank" rel="noopener">Is Semantic Chunking Worth the Computational Cost?</a>. Findings of NAACL 2025. <span class="why">Finds that semantic chunking often does not pay for its extra compute.</span></li>
+        <li>André V. Duarte et al. <a href="https://doi.org/10.18653/V1/2024.FINDINGS-EMNLP.377" target="_blank" rel="noopener">LumberChunker: Long-Form Narrative Document Segmentation</a>. Findings of EMNLP 2024. <span class="why">Uses an LLM to split long documents where the topic changes.</span></li>
+      </ul>
+      <h4>Similar is not useful</h4>
+      <ul>
+        <li>Orion Weller et al. <a href="https://doi.org/10.48550/arXiv.2508.21038" target="_blank" rel="noopener">On the Theoretical Limitations of Embedding-Based Retrieval</a>. arXiv:2508.21038, 2025. <span class="why">Proves there are relevance patterns a single embedding vector cannot represent.</span></li>
+        <li>Florin Cuconasu et al. <a href="https://doi.org/10.1145/3626772.3657834" target="_blank" rel="noopener">The Power of Noise: Redefining Retrieval for RAG Systems</a>. SIGIR 2024. <span class="why">Shows that a passage that looks relevant but lacks the answer can hurt more than random text.</span></li>
+        <li>Lu Dai et al. <a href="https://openreview.net/forum?id=ixMBnOhFGd" target="_blank" rel="noopener">SePer: Measure Retrieval Utility Through The Lens Of Semantic Perplexity Reduction</a>. ICLR 2025. <span class="why">Measures a passage's value by how much it helps the reader, not by similarity.</span></li>
+        <li>Manish Chandra et al. <a href="https://arxiv.org/abs/2601.19535" target="_blank" rel="noopener">LURE-RAG: Lightweight Utility-driven Reranking for Efficient RAG</a>. arXiv:2601.19535, 2026. <span class="why">Reranks passages by their utility to the answer at low cost.</span></li>
+        <li>Nelson F. Liu et al. <a href="https://doi.org/10.1162/tacl_a_00638" target="_blank" rel="noopener">Lost in the Middle: How Language Models Use Long Contexts</a>. TACL 2024. <span class="why">Models use the start and end of a long context best, so where evidence sits matters.</span></li>
+      </ul>
+      <h4>Cleaning the web for models</h4>
+      <ul>
+        <li>Jiejun Tan et al. <a href="https://doi.org/10.1145/3696410.3714546" target="_blank" rel="noopener">HtmlRAG: HTML is Better Than Plain Text for Modeling Retrieved Knowledge in RAG Systems</a>. WWW 2025. <span class="why">Keeps some HTML structure instead of flattening pages to plain text.</span></li>
+        <li>Feng Wang et al. <a href="https://doi.org/10.48550/arXiv.2503.01151" target="_blank" rel="noopener">ReaderLM-v2: Small Language Model for HTML to Markdown and JSON</a>. arXiv:2503.01151, 2025. <span class="why">A small model that converts HTML to clean Markdown.</span></li>
+        <li>Mengjie Liu et al. <a href="https://doi.org/10.1145/3770855.3817915" target="_blank" rel="noopener">Dripper: Token-Efficient Main HTML Extraction with a Lightweight LM</a>. KDD 2026. <span class="why">Extracts a page's main content with few tokens.</span></li>
+        <li>Murrough Foley. <a href="https://doi.org/10.48550/ARXIV.2605.21097" target="_blank" rel="noopener">WCXB: A Multi-Type Web Content Extraction Benchmark</a>. arXiv:2605.21097, 2026. <span class="why">A benchmark for web content extraction across page types.</span></li>
+        <li>Aaron Steiner et al. <a href="https://doi.org/10.1145/3774904.3792893" target="_blank" rel="noopener">MCP vs RAG vs NLWeb vs HTML: A Comparison of the Effectiveness and Efficiency of Different Agent Interfaces to the Web</a>. WWW 2026. <span class="why">Compares MCP, RAG, NLWeb and raw HTML as ways for agents to read sites.</span></li>
+      </ul>
+      </div>
+    </details>
+
+  </div>
+  <div class="foot"><button type="button" class="primary" data-next>Next: you have no miss signal</button></div>
+</section>
+
+<section class="chapter" data-ch="misses" data-label="Misses" hidden>
+  <div class="eyebrow">Difference 1 · Misses</div>
+  <h2>Your index always answers. Is the answer good enough?</h2>
+  <p>A URL lookup tells you when it misses. Top-<i>k</i> search returns <i>k</i> results even when better evidence exists elsewhere. Thirteen queries arrive at your PoP. Decide what each one gets.</p>
+  <div class="hier">
+    <div><b>Edge PoP</b><span class="muted">Hot content and index state</span></div>
+    <div><b>Regional parent</b><span class="muted">Larger, colder shards</span></div>
+    <div><b>Global tier</b><span class="muted">The distributed catalog</span></div>
+    <div><b>External discovery</b><span class="muted">SERP results, filtered by the enrollment registry</span></div>
+  </div>
+  <div class="panel" id="game"></div>
+  <div class="panel">
+    <h3>More context does not fix old evidence</h3>
+    <p>Correct answers on CRAG<sup class="cites"><a href="#miss-r1">1</a></sup> with reranked chunks, by how fast the truth changes<sup class="cites"><a href="#miss-r2">2</a></sup>. Spending twelve times the budget helps stable questions. Real-time questions barely move, because their answer is missing from the pool.</p>
+    <div class="tablewrap"><table><thead><tr><th>The truth changes</th><th class="num">Questions</th><th class="num">512 tokens</th><th class="num">2,048 tokens</th><th class="num">6,144 tokens</th></tr></thead><tbody>
+      <tr><td>Never</td><td class="num">340</td><td class="num">65.0%</td><td class="num">68.5%</td><td class="num">70.0%</td></tr>
+      <tr><td>Slowly</td><td class="num">135</td><td class="num">57.8%</td><td class="num">56.3%</td><td class="num">60.0%</td></tr>
+      <tr><td>Quickly</td><td class="num">55</td><td class="num">36.4%</td><td class="num">41.8%</td><td class="num">45.5%</td></tr>
+      <tr><td>In real time</td><td class="num">70</td><td class="num">35.7%</td><td class="num">35.7%</td><td class="num">37.1%</td></tr>
+    </tbody></table></div>
+  </div>
+  <div class="panel">
+    <h3>Now hand the job to a controller</h3>
+    <p>A <b>semantic coverage miss</b><sup class="cites"><a href="#miss-r2">2</a></sup> is when the estimated risk that an external search would change the top-<i>k</i> exceeds a threshold. The buttons are the signals that estimate that risk. Each one is imperfect. For example, a sufficiency judgment checks whether the evidence holds enough to answer before any generation<sup class="cites"><a href="#miss-r3">3</a></sup>. Turn them on and move the threshold to see the tradeoff in a simulation of 2,000 queries.</p>
+    <div class="row" id="sigs"></div>
+    <details class="sigfold"><summary>What each signal measures <span class="small">(5 signals, click to expand)</span></summary>
+    <dl class="siglist">
+      <div data-s="score"><dt>Score distribution</dt><dd>The scores on the chunks just returned, and the gap between the first and the rest. A high score with a steep drop is read as confidence. In the queries above, the seat-limit table scores weakly and still holds the answer, and Halden's chunks score 0.91, 0.87, and 0.84 while stating an old limit.</dd></div>
+      <div data-s="coh"><dt>Result coherence</dt><dd>Whether those chunks agree with one another. Agreement is read as a stable answer. For HTTP 429 the chunks agree and the meaning is unchanged. For Halden they agree on the limit from last spring.</dd></div>
+      <div data-s="suff"><dt>Sufficiency judgment</dt><dd>A check that reads the query and the chunks and decides whether they contain enough to answer, before a model generates anything<sup class="cites"><a href="#miss-r3">3</a></sup>. It asks whether the evidence supports an answer, which is separate from how similar a chunk is to the query.</dd></div>
+      <div data-s="tier"><dt>Cross-tier agreement</dt><dd>Whether this edge's top-<i>k</i> matches the regional parent and the global tier. A mismatch means a larger tier may hold chunks this PoP evicted. A match means the gap, if there is one, is outside the network.</dd></div>
+      <div data-s="age"><dt>Freshness metadata</dt><dd>The age and version stored with each block. The same age means different things for different queries. Six hours is stale for a status page, and ordinary for a standards document.</dd></div>
+    </dl>
+    </details>
+    <label class="slider"><span>Risk threshold <b class="mono" id="thLabel"></b></span><input id="th" type="range" min="5" max="95" step="5" value="50" aria-label="Risk threshold"></label>
+    <p>Discovery runs when the combined risk is above this value. Lower it and more real misses get a search. More queries that were already covered get searched too.</p>
+    <label class="check"><input id="drift" type="checkbox"> Content drift: a breaking-news week</label>
+    <p>Pages are changing faster than usual. The same signals then separate covered queries from real misses less cleanly. How to recalibrate when that happens is open.</p>
+    <div class="bars" id="ctl"></div>
+    <p>The first bar counts coverage misses the controller did not search. The second counts searches that would not have changed the top-<i>k</i>. The third is how often an external search is paid for.</p>
+    <p id="ctlNote"></p>
+  </div>
+  <div class="reflist">
+    <h3>References</h3>
+    <ol>
+      <li id="miss-r1">Xiao Yang et al. <a href="https://arxiv.org/abs/2406.04744" target="_blank" rel="noopener">CRAG — Comprehensive RAG Benchmark</a>. arXiv:2406.04744, 2024.</li>
+      <li id="miss-r2">Peichun Hua and Yunming Xiao. <a href="https://arxiv.org/abs/2609.22486v2" target="_blank" rel="noopener">Semantics Delivery Network</a>. HotNets 2026. The coverage miss and the context table.</li>
+      <li id="miss-r3">Suting Chen, Peichun Hua, and Yunming Xiao. <a href="https://arxiv.org/abs/2609.37469" target="_blank" rel="noopener">Relevance Is Not Sufficient Evidence: Detecting Evidence Gaps Before Generation in RAG</a>. arXiv:2609.37469, 2026.</li>
+    </ol>
+    <details>
+      <summary>Further reading <span class="small">(8 papers, click to expand)</span></summary>
+      <div class="reading">
+      <h4>Knowing when the evidence is not enough</h4>
+      <ul>
+        <li>Hailey Joren et al. <a href="https://openreview.net/forum?id=Jjr2Odj8DJ" target="_blank" rel="noopener">Sufficient Context: A New Lens on Retrieval Augmented Generation Systems</a>. ICLR 2025. <span class="why">Defines sufficient context: does the retrieved text actually contain enough to answer?</span></li>
+        <li>Shi-Qi Yan et al. <a href="https://arxiv.org/abs/2401.15884" target="_blank" rel="noopener">Corrective Retrieval Augmented Generation</a>. arXiv:2401.15884, 2024. <span class="why">Corrective RAG: grade the retrieved passages and fall back to web search when they are poor.</span></li>
+        <li>Akari Asai et al. <a href="https://openreview.net/forum?id=hSyW5go0v8" target="_blank" rel="noopener">Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection</a>. ICLR 2024. <span class="why">Trains the model to decide when to retrieve and to critique what it got.</span></li>
+      </ul>
+      <h4>Predicting how good a search was</h4>
+      <ul>
+        <li>Maria Vlachou and Craig Macdonald. <a href="https://doi.org/10.1145/3664190.3672518" target="_blank" rel="noopener">Coherence-based Query Performance Measures for Dense Retrieval</a>. ICTIR 2024. <span class="why">Predicts retrieval quality for dense retrievers without knowing the answers.</span></li>
+        <li>Fangzheng Tian et al. <a href="https://doi.org/10.1007/978-3-032-21289-4_24" target="_blank" rel="noopener">Predicting Retrieval Utility and Answer Quality in Retrieval-Augmented Generation</a>. ECIR 2026. <span class="why">Predicts whether retrieval will help the RAG answer before generating it.</span></li>
+        <li>Aparajita Sinha and Kunal Chakma. <a href="https://doi.org/10.1145/3827605" target="_blank" rel="noopener">Adaptive Query Performance Prediction for Retrieval-Augmented Generation: Bridging Retrieval Quality and Generation Relevance</a>. ACM TOIS 2026. <span class="why">Query performance prediction adapted to retrieval-augmented generation.</span></li>
+        <li>Fangzheng Tian et al. <a href="https://ceur-ws.org/Vol-4199/paper3.pdf" target="_blank" rel="noopener">Am I on the Right Track? What Can Predicted Query Performance Tell Us about the Search Behaviour of Agentic RAG</a>. IR-RAG workshop, 2025. <span class="why">Asks what predicted query performance can tell a search agent about its progress.</span></li>
+        <li>Robin Aly et al. <a href="https://doi.org/10.1145/2484028.2484033" target="_blank" rel="noopener">Taily: Shard Selection Using the Tail of Score Distributions</a>. SIGIR 2013. <span class="why">A classic: decide which index shards to ask from the tail of their score distributions.</span></li>
+      </ul>
+      </div>
+    </details>
+
+  </div>
+  <div class="foot"><button type="button" class="primary" data-next>Next: three kinds of reuse</button></div>
+</section>
+
+<section class="chapter" data-ch="reuse" data-label="Reuse" hidden>
+  <div class="eyebrow">Locality</div>
+  <h2>Three kinds of chunk reuse</h2>
+  <p>A URL cache sees low locality. Within a task, 70–100% of a search agent's URLs are new<sup class="cites"><a href="#reuse-r1">1</a>, <a href="#reuse-r2">2</a></sup>. Chunks are different.</p>
+  <div class="panel">
+    <h3>Already seen, or on a page already opened</h3>
+    <p><b>An exact repeat</b> is a chunk the agent already saw. That is 41% of later chunks on Search-R1 over Wikipedia, and 70% on CRAG<sup class="cites"><a href="#reuse-r2">2</a>, <a href="#reuse-r3">3</a></sup>. Our guess: the first search missed the passage that holds the answer, so the agent only tweaks the query. Most of the same chunks come back, with a few new ones. Exact same queries are removed.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th></th><th class="num">Search-R1 / wiki-18<span class="sub">3,075 traces</span></th><th class="num">CRAG<span class="sub">1,500 tasks</span></th></tr></thead>
+      <tbody>
+        <tr><td>Exact repeat</td><td class="num">41%<span class="sub">32% → 55% by turn</span></td><td class="num">70%</td></tr>
+        <tr class="you"><td>Sibling, on a page already opened</td><td class="num">11%<span class="sub">about 1 in 10, every turn</span></td><td class="num">10%</td></tr>
+        <tr><td>New page</td><td class="num">48%</td><td class="num">20%</td></tr>
+      </tbody>
+    </table></div>
+    <p><b>A sibling</b> is the second kind. The edge has already fetched, cleaned, and chunked the page, so it can keep every chunk on it. About 1 in 10 later chunks is one the agent has not been shown, on a page already opened. The rest are pages the agent has not opened. These traces are Search-R1 with Qwen2.5-7B, an older agent<sup class="cites"><a href="#reuse-r1">1</a></sup>. We expect both effects to be stronger with a better agent and a better retriever.</p>
+  </div>
+  <div class="panel">
+    <h3>The first search missed the answer</h3>
+    <div class="query small">Where was the music festival Billy McFarland was charged with wire fraud for supposed to take place?</div>
+    <div class="turns" id="turns"></div>
+    <div class="row spread">
+      <div class="row"><button id="turnNext" class="primary" type="button">Next turn</button><button id="turnReset" type="button">Restart</button></div>
+      <span class="mono small" id="turnScore"></span>
+    </div>
+    <p class="small muted">The question is where the festival was supposed to be. Turn 1 asks about McFarland and the fraud. The three passages the agent sees are the charge and the guilty plea. None of them says where it was, so the agent tweaks the query and asks for the location. Great Exuma was already on that page, at rank 40 of the first search, and was not sent. Turn 2 is when the agent receives it. That passage is both a sibling and the third kind, below.</p>
+  </div>
+  <div class="panel">
+    <h3>Already retrieved, then cut off</h3>
+    <p><b>The third kind</b> is a chunk an earlier search already returned and did not show. The agent only sees the top 3. If the edge keeps the rest of that list, it can have the next chunk ready before the agent asks, which is the prefetch, or serve it from cache when the agent does ask.</p>
+    <div class="sample">
+      <div class="query small">What sport is played by both Justin Gimelstob and Angelique Kerber?</div>
+      <p class="small">Query: Justin Gimelstob and Angelique Kerber</p>
+      <div class="chunks">
+        <div class="chunk"><span>Justin Jeremy Gimelstob is a retired American tennis player.<span class="src">Justin Gimelstob</span></span><span class="pill new">1</span></div>
+        <div class="chunk"><span>He established himself as a doubles specialist, winning 12 titles.<span class="src">Justin Gimelstob</span></span><span class="pill new">2</span></div>
+        <div class="chunk"><span>Another passage on Justin Gimelstob.<span class="src">Justin Gimelstob</span></span><span class="pill new">3</span></div>
+        <div class="chunk"><span>The 2018 Angelique Kerber tennis season began at the Hopman Cup. She entered the season ranked 21st.<span class="src">Angelique Kerber, not shown</span></span><span class="pill sib">4</span></div>
+      </div>
+      <p class="small muted">Passages like the one just shown are more passages on Justin Gimelstob. The next query adds the word "sport", and the Kerber passage moves into the top 3.</p>
+    </div>
+    <div class="sample">
+      <div class="query small">Between Polytechnic University of the Philippines and California Polytechnic State University, which was founded as a vocational high school?</div>
+      <p class="small">Query: Polytechnic University of the Philippines and California Polytechnic State University founding</p>
+      <div class="chunks">
+        <div class="chunk"><span>Polytechnic University of the Philippines was founded on October 19, 1904 as the Manila Business School.<span class="src">Polytechnic University of the Philippines</span></span><span class="pill new">1</span></div>
+        <div class="chunk"><span>Another passage on the same university.<span class="src">Polytechnic University of the Philippines</span></span><span class="pill new">2</span></div>
+        <div class="chunk"><span>The University of the Philippines was founded by the American colonial government.<span class="src">University of the Philippines</span></span><span class="pill new">3</span></div>
+        <div class="chunk"><span>School was founded as a vocational high school when California Governor Henry Gage signed the Polytechnic School Bill on March 8, 1901.<span class="src">California State Polytechnic University, Pomona, not shown</span></span><span class="pill sib">4</span></div>
+      </div>
+      <p class="small muted">Passages like the one just shown stay on universities in the Philippines. The next query asks for the California founding, and this passage comes back first.</p>
+    </div>
+    <p>Of the chunks that first appear in the next turn's top 3, 25% were already in ranks 4–13 of the search just served. Ranks 4–50 of that same search cover 38.5%. Separately, 12% of those same new chunks are among the ten passages most similar to the single top passage that was sent.</p>
+  </div>
+  <div class="reflist">
+    <h3>References</h3>
+    <ol>
+      <li id="reuse-r1">Bowen Jin et al. <a href="https://arxiv.org/abs/2503.09516" target="_blank" rel="noopener">Search-R1: Training LLMs to Reason and Leverage Search Engines with Reinforcement Learning</a>. arXiv:2503.09516, 2025. The traces use Qwen2.5-7B.</li>
+      <li id="reuse-r2">Peichun Hua and Yunming Xiao. <a href="https://arxiv.org/abs/2609.22486v2" target="_blank" rel="noopener">Semantics Delivery Network</a>. HotNets 2026. The 32–55% repeat metric and the trace replay. The sibling split uses the same cut on those traces.</li>
+      <li id="reuse-r3">Xiao Yang et al. <a href="https://arxiv.org/abs/2406.04744" target="_blank" rel="noopener">CRAG — Comprehensive RAG Benchmark</a>. arXiv:2406.04744, 2024.</li>
+    </ol>
+    <details>
+      <summary>Further reading <span class="small">(10 papers, click to expand)</span></summary>
+      <div class="reading">
+      <h4>Caching for retrieval and LLMs</h4>
+      <ul>
+        <li>László A. Belady. <a href="https://scholar.google.com/scholar?q=%22A%20Study%20of%20Replacement%20Algorithms%20for%20a%20Virtual-Storage%20Computer%22" target="_blank" rel="noopener">A Study of Replacement Algorithms for a Virtual-Storage Computer</a>. IBM Systems Journal, 1966. <span class="why">The classic study of which item a cache should evict, the baseline for any cache policy.</span></li>
+        <li>Chao Jin et al. <a href="https://doi.org/10.1145/3768628" target="_blank" rel="noopener">RAGCache: Efficient Knowledge Caching for Retrieval-Augmented Generation</a>. ACM TOCS 2026. <span class="why">Caches the model's internal state for frequently retrieved documents.</span></li>
+        <li>Fu Bang. <a href="https://aclanthology.org/2023.nlposs-1.24/" target="_blank" rel="noopener">GPTCache: An Open-Source Semantic Cache for LLM Applications Enabling Faster Answers and Cost Savings</a>. NLP-OSS workshop, 2023. <span class="why">A semantic cache that reuses answers to similar prompts.</span></li>
+        <li>Shai Bergman et al. <a href="https://doi.org/10.1145/3721462.3770776" target="_blank" rel="noopener">Leveraging Approximate Caching for Faster Retrieval-Augmented Generation</a>. Middleware 2025. <span class="why">Reuses retrieval results for queries that are close in embedding space.</span></li>
+        <li>Sukjoon Oh et al. <a href="https://arxiv.org/abs/2609.03712" target="_blank" rel="noopener">Aker: Density-Aware Approximate Caching for Vector Search (Extended Version)</a>. arXiv:2609.03712, 2026. <span class="why">Approximate caching for vector search that takes the density of the data into account.</span></li>
+        <li>Peizhen Guo et al. <a href="https://doi.org/10.1145/3241539.3241557" target="_blank" rel="noopener">FoggyCache: Cross-Device Approximate Computation Reuse</a>. MobiCom 2018. <span class="why">Reuses computation across devices when inputs are similar, an early approximate cache.</span></li>
+      </ul>
+      <h4>How agents search</h4>
+      <ul>
+        <li>Seungjin Lee et al. <a href="https://scholar.google.com/scholar?q=%22Characterizing%20Locality%20in%20Large-Scale%20Vector%20Search%20Workloads%20of%20Agentic%20AI%20Systems%22" target="_blank" rel="noopener">Characterizing Locality in Large-Scale Vector Search Workloads of Agentic AI Systems</a>. VLDB 2026 Workshop on Vector Databases. <span class="why">Measures locality in vector-search traces from agentic AI systems.</span></li>
+        <li>Wuyang Zhang and Shichao Pei. <a href="https://doi.org/10.48550/arXiv.2605.17989" target="_blank" rel="noopener">Predictive Prefetching for Retrieval-Augmented Generation</a>. arXiv:2605.17989, 2026. <span class="why">Prefetches retrieval results before the agent asks for them.</span></li>
+        <li>Huatong Song et al. <a href="https://doi.org/10.48550/arXiv.2505.17005" target="_blank" rel="noopener">R1-Searcher++: Incentivizing the Dynamic Knowledge Acquisition of LLMs via Reinforcement Learning</a>. arXiv:2505.17005, 2025. <span class="why">Another RL-trained search agent, alongside Search-R1.</span></li>
+        <li>Wenhan Liu et al. <a href="https://doi.org/10.48550/arXiv.2601.11888" target="_blank" rel="noopener">Agentic-R: Learning to Retrieve for Agentic Search</a>. arXiv:2601.11888, 2026. <span class="why">Trains the retriever for agentic search rather than for one-shot queries.</span></li>
+      </ul>
+      </div>
+    </details>
+
+  </div>
+  <div class="foot"><button type="button" class="primary" data-next>Next: keeping it fresh</button></div>
+</section>
+
+<section class="chapter" data-ch="fresh" data-label="Freshness" hidden>
+  <div class="eyebrow">Refresh under coverage risk</div>
+  <h2>Two days at your PoP</h2>
+  <div class="panel">
+    <h3>Twelve blocks across three documents, 48 hours</h3>
+    <p>The edge is holding chunks it already fetched. The pages they came from keep changing, and serving the old copy gives the agent a stale answer. Each row is one block: four from a status page, four from pricing, and four from documentation. Each column is one hour. Red means the origin changed that block and this PoP still holds the old copy. The last color in the legend is a query that was answered with that old copy. The buttons are three ways to go get a new copy.</p>
+    <div class="row" id="freshBtns"></div>
+    <label class="slider" id="ttlWrap"><span>TTL <b class="mono" id="ttlLabel"></b></span><input id="ttl" type="range" min="1" max="24" step="1" value="12" aria-label="TTL in hours"></label>
+    <div id="freshGrid"></div>
+    <div class="legend"><span><i style="background:var(--resp-soft)"></i>Fresh</span><span><i style="background:var(--bad)"></i>Stale</span><span><i style="background:var(--req)"></i>Query, hit fresh</span><span><i style="background:var(--fg)"></i>Query, got stale evidence</span></div>
+    <div class="meters" id="freshMeters"></div>
+    <p id="freshNote"></p>
+  </div>
+  <div class="panel">
+    <h3>Three ways the query stream misleads placement</h3>
+    <p>The same queries that tell you what to keep at the edge can also push the index the wrong way.</p>
+    <p><b>A page almost nobody asks for.</b> A rare-disease reference gets about one query a month, so it falls out of the edge index. The next question that needs it misses.</p>
+    <p><b>One tenant's queries, every tenant's index.</b> A hedge fund's agents keep requesting chunks on one small biotech. Reweighting the shared index from those queries makes that company faster for everyone, and it shows the other tenants what the fund is working on.</p>
+    <p><b>A chunk that used to be right.</b> Passages that produced correct answers get boosted. A 2024 passage on a tax rule has a long record of being right. The rule changed last week. The boost, and an old benchmark, keep serving that passage.</p>
+    <p>All three are open.</p>
+  </div>
+  <div class="reflist">
+    <details>
+      <summary>Further reading <span class="small">(9 papers, click to expand)</span></summary>
+      <div class="reading">
+      <h4>Keeping copies fresh</h4>
+      <ul>
+        <li>James Gwertzman and Margo Seltzer. <a href="https://scholar.google.com/scholar?q=%22World-Wide%20Web%20Cache%20Consistency%22" target="_blank" rel="noopener">World-Wide Web Cache Consistency</a>. USENIX Annual Technical Conference, 1996. <span class="why">Compares TTLs, polling and server invalidation for web caches, the same three options as this page.</span></li>
+        <li>Junghoo Cho and Hector Garcia-Molina. <a href="https://scholar.google.com/scholar?q=%22Synchronizing%20a%20Database%20to%20Improve%20Freshness%22" target="_blank" rel="noopener">Synchronizing a Database to Improve Freshness</a>. SIGMOD 2000. <span class="why">How a crawler should schedule re-fetches when pages change at different rates.</span></li>
+        <li>Muhammad Mansoor et al. <a href="https://doi.org/10.48550/arXiv.2607.04281" target="_blank" rel="noopener">Risk-Constrained Freshness-Aware Semantic Caching for Open-Web Retrieval-Augmented LLMs</a>. arXiv:2607.04281, 2026. <span class="why">A semantic cache for web RAG that bounds the risk of serving stale results.</span></li>
+        <li>Rui Li et al. <a href="https://doi.org/10.1145/3805636" target="_blank" rel="noopener">EviDex: Provenance-Weighted Evidence-Path Indexing for Fresh and Auditable Retrieval under Continuous Updates</a>. POMACS 2026. <span class="why">Evidence indexing weighted by provenance, aimed at answers that are fresh and auditable.</span></li>
+      </ul>
+      <h4>When answers go stale</h4>
+      <ul>
+        <li>Tu Vu et al. <a href="https://doi.org/10.18653/V1/2024.FINDINGS-ACL.813" target="_blank" rel="noopener">FreshLLMs: Refreshing Large Language Models with Search Engine Augmentation</a>. Findings of ACL 2024. <span class="why">A benchmark of questions whose answers change, and search augmentation to keep up.</span></li>
+        <li>Jie Ouyang et al. <a href="https://doi.org/10.18653/v1/2025.acl-long.301" target="_blank" rel="noopener">HoH: A Dynamic Benchmark for Evaluating the Impact of Outdated Information on Retrieval-Augmented Generation</a>. ACL 2025. <span class="why">Measures how outdated documents in the pool mislead RAG systems.</span></li>
+        <li>Adam Liška et al. <a href="https://proceedings.mlr.press/v162/liska22a.html" target="_blank" rel="noopener">StreamingQA: A Benchmark for Adaptation to New Knowledge over Time in Question Answering Models</a>. ICML 2022. <span class="why">Questions asked over a stream of news, testing adaptation to new facts.</span></li>
+        <li>Angeliki Lazaridou et al. <a href="https://arxiv.org/abs/2102.01951" target="_blank" rel="noopener">Mind the Gap: Assessing Temporal Generalization in Neural Language Models</a>. NeurIPS 2021. <span class="why">Shows that language models degrade on events after their training data.</span></li>
+        <li>Youngeun Nam et al. <a href="https://arxiv.org/abs/2609.11572" target="_blank" rel="noopener">TimelyRAG: Semantic-Temporal Hybrid Retrieval for Time-Critical Question Answering in Overlapping-Evolving Documents</a>. arXiv:2609.11572, 2026. <span class="why">Combines semantic and time-aware retrieval for time-critical questions.</span></li>
+      </ul>
+      </div>
+    </details>
+  </div>
+  <div class="foot"><button type="button" class="primary" data-next>Next: who shares what</button></div>
+</section>
+
+<section class="chapter" data-ch="sharing" data-label="Sharing" hidden>
+  <div class="eyebrow">Differences 2 and 3 · Tenancy and state</div>
+  <h2>Four tenants, one substrate. What can they share?</h2>
+  <p>A cached page serves every client. An index serves only the clients that compute vectors the same way.</p>
+  <div class="panel">
+    <div class="row">
+      <button type="button" data-preset="canon">Everyone canonical</button>
+      <button type="button" data-preset="mix">A realistic mix</button>
+      <button type="button" data-preset="priv">Everyone private</button>
+    </div>
+    <div class="tenants" id="tenants"></div>
+    <div class="stack" id="stack"></div>
+    <div class="meters" id="gpu"></div>
+    <div class="note">
+      <b>The origin's contract stays the same in all of these.</b>
+      <span>Enrollment, permitted transformations, freshness bounds, and purge. A tenant's encoder never appears in it. Its utility function and labels stay private too.</span>
+    </div>
+    <h3>Now scale the tenants</h3>
+    <div class="two">
+      <label class="slider"><span>Tenants <b class="mono" id="tnLabel"></b></span><input id="tn" type="range" min="0" max="8" step="1" value="8" aria-label="Number of tenants"></label>
+      <div class="row" id="alphaBtns"></div>
+    </div>
+    <div class="bars" id="amort"></div>
+    <p class="fact">Our Zipfian tenant model over real task-to-page sets<sup class="cites"><a href="#share-r3">2</a></sup>. Savings track overlap: the top-10 domains draw 34% of live results, while four deliberately diverse benchmarks share only 22 of 4,618 pages.</p>
+  </div>
+  <div class="panel">
+    <h3>Bring your own encoder to a canonical index</h3>
+    <p>The canonical index only has to place a tenant's true top-<i>k</i> inside its top-<i>K</i>. The tenant's encoder then re-encodes those candidates from normalized blocks and ranks them exactly. Hot chunks' vectors get cached and grow into a model-specific index.</p>
+    <div class="two">
+      <label class="slider"><span>Candidates <i>K</i> <b class="mono" id="kLabel"></b></span><input id="bigK" type="range" min="10" max="500" step="10" value="100" aria-label="Candidates K"></label>
+      <label class="slider"><span>Encoder drift from canonical <b class="mono" id="dLabel"></b></span><input id="enc" type="range" min="0" max="100" step="5" value="40" aria-label="Encoder drift"></label>
+      <label class="slider"><span>Re-encoded vectors already cached <b class="mono" id="hLabel"></b></span><input id="hot" type="range" min="0" max="95" step="5" value="50" aria-label="Cached vector share"></label>
+    </div>
+    <div class="bars" id="bridge"></div>
+    <p id="bridgeNote"></p>
+    <p class="fact">Re-encoding cost uses a measured 392 chunks per GPU-second (e5-base-v2 on an A100).</p>
+  </div>
+  <div class="panel">
+    <h3>Store vectors or recompute them?</h3>
+    <p>wiki-18 is 13.4 GB of text and needs a 64.6 GB flat index. Recompute-based indexes such as LEANN<sup class="cites"><a href="#share-r2">1</a></sup> keep the text and materialize vectors during search. Where does your PoP sit?</p>
+    <label class="slider"><span>Embeddings stored at this PoP <b class="mono" id="stLabel"></b></span><input id="st" type="range" min="0" max="100" step="5" value="30" aria-label="Embeddings stored"></label>
+    <div class="bars" id="store"></div>
+    <p id="storeNote"></p>
+  </div>
+  <div class="reflist">
+    <h3>References</h3>
+    <ol>
+      <li id="share-r2">Yichuan Wang et al. <a href="https://arxiv.org/abs/2506.08276" target="_blank" rel="noopener">LEANN: A Low-Storage Vector Index</a>. arXiv:2506.08276, 2025.</li>
+      <li id="share-r3">Peichun Hua and Yunming Xiao. <a href="https://arxiv.org/abs/2609.22486v2" target="_blank" rel="noopener">Semantics Delivery Network</a>. HotNets 2026. The tenant model.</li>
+    </ol>
+    <details>
+      <summary>Further reading <span class="small">(11 papers, click to expand)</span></summary>
+      <div class="reading">
+      <h4>Sharing one index across encoders</h4>
+      <ul>
+        <li>Yantao Shen et al. <a href="https://doi.org/10.1109/CVPR42600.2020.00640" target="_blank" rel="noopener">Towards Backward-Compatible Representation Learning</a>. CVPR 2020. <span class="why">Trains a new embedding model so its vectors stay comparable with the old index.</span></li>
+        <li>Vivek Ramanujan et al. <a href="https://doi.org/10.1109/CVPR52688.2022.01878" target="_blank" rel="noopener">Forward Compatible Training for Large-Scale Embedding Retrieval Systems</a>. CVPR 2022. <span class="why">Prepares today's embeddings to be compatible with future models.</span></li>
+        <li>Harshil Vejendla. <a href="https://doi.org/10.18653/v1/2025.emnlp-main.805" target="_blank" rel="noopener">Drift-Adapter: A Practical Approach to Near Zero-Downtime Embedding Model Upgrades in Vector Databases</a>. EMNLP 2025. <span class="why">Maps new embeddings onto an old index to upgrade without re-embedding everything.</span></li>
+        <li>Rishi Jha et al. <a href="https://arxiv.org/abs/2505.12540" target="_blank" rel="noopener">Harnessing the Universal Geometry of Embeddings</a>. arXiv:2505.12540, 2025. <span class="why">Translates between embedding spaces of different models without paired data.</span></li>
+        <li>Jun Woo Chung and Weijie Zhao. <a href="https://doi.org/10.1145/3773078.3831781" target="_blank" rel="noopener">On Reranking Space for Multi-Tenant Retrieval with Adapted Queries</a>. RecSys 2026. <span class="why">Studies reranking when many tenants with adapted queries share one retrieval system.</span></li>
+        <li>Aditya Kusupati et al. <a href="http://papers.nips.cc/paper_files/paper/2022/hash/c32319f4868da7613d78af9993100e42-Abstract-Conference.html" target="_blank" rel="noopener">Matryoshka Representation Learning</a>. NeurIPS 2022. <span class="why">Embeddings that can be cut to shorter lengths, trading accuracy for storage.</span></li>
+      </ul>
+      <h4>Vector indexes and their cost</h4>
+      <ul>
+        <li>Yury A. Malkov and Dmitry A. Yashunin. <a href="https://scholar.google.com/scholar?q=%22Efficient%20and%20robust%20approximate%20nearest%20neighbor%20search%20using%20hierarchical%20navigable%20small%20world%20graphs%22" target="_blank" rel="noopener">Efficient and robust approximate nearest neighbor search using hierarchical navigable small world graphs</a>. IEEE TPAMI, 2018. <span class="why">HNSW, the graph index most vector databases use.</span></li>
+        <li>Hervé Jégou et al. <a href="https://doi.org/10.1109/TPAMI.2010.57" target="_blank" rel="noopener">Product Quantization for Nearest Neighbor Search</a>. IEEE TPAMI, 2011. <span class="why">Product quantization: compress vectors so the index fits in memory.</span></li>
+        <li>Suhas Jayaram Subramanya et al. <a href="https://proceedings.neurips.cc/paper/2019/hash/09853c7fb1d3f8ee67a61b6bf4a7f8e6-Abstract.html" target="_blank" rel="noopener">Rand-NSG: Fast Accurate Billion-point Nearest Neighbor Search on a Single Node</a>. NeurIPS 2019. <span class="why">DiskANN: billion-scale search from SSD on one machine.</span></li>
+        <li>Matthijs Douze et al. <a href="https://doi.org/10.1109/TBDATA.2025.3618474" target="_blank" rel="noopener">The Faiss Library</a>. IEEE Transactions on Big Data, 2026. <span class="why">The library behind many of these indexes, including ours.</span></li>
+        <li>Niklas Muennighoff et al. <a href="https://aclanthology.org/2023.eacl-main.148" target="_blank" rel="noopener">MTEB: Massive Text Embedding Benchmark</a>. EACL 2023. <span class="why">The standard benchmark for comparing embedding models.</span></li>
+      </ul>
+      </div>
+    </details>
+
+  </div>
+  <div class="foot"><button type="button" class="primary" data-next>Next: who pays for all this</button></div>
+</section>
+
+<section class="chapter" data-ch="market" data-label="Market" hidden>
+  <div class="eyebrow">A two-sided service</div>
+  <h2>A reverse proxy and a forward proxy in one</h2>
+  <div class="panel">
+    <h3>Whose decision is it?</h3>
+    <p>An origin pays a CDN so requests for its pages do not all land on its own servers. The list on the left is the condition for holding that copy. The client pays for retrieval.</p>
+    <div class="two" id="roleSplit">
+      <div class="rolecol origin"><b>Origin contract</b><ul>
+        <li>Enrollment</li>
+        <li>Permitted transformations</li>
+        <li>Freshness and version bounds</li>
+        <li>Purge and invalidation</li>
+        <li>Access control</li>
+        <li>Provenance</li>
+      </ul></div>
+      <div class="rolecol client"><b>Settled with each client</b><ul>
+        <li>Encoder</li>
+        <li>Chunking policy</li>
+        <li>Utility reranker</li>
+        <li>Outcome labels</li>
+      </ul></div>
+    </div>
+    <div class="stack">
+      <div class="note" id="roleEncoder"><b>Open: can the origin refuse embedding?</b><span>If the origin says no, a client can still fetch the page the way the web works today. A CDN serves the bytes, and the client embeds them. If SemDN refuses, the client leaves and does that, and SemDN serves less. The origin cannot enforce the ban, and honoring it inside SemDN hurts the service.</span></div>
+      <div class="note" id="roleFresh"><b>Pushback: freshness is the client's problem.</b><span>The client knows when a question is time-sensitive. The Halden limit changed, and an origin bound can still serve the old number. The client can refuse those chunks and pay for a search. Only the origin knows the page changed, so the bound stays with the origin.</span></div>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>Pricing steers architecture</h3>
+    <p>Charge a registered representation at its unshared cost and discount the canonical one, and tenants have a reason to use shareable state. Set a month's bill.</p>
+    <div class="two">
+      <div class="tenants"><label for="billRep">Representation<select id="billRep"><option value="canon">Canonical index, 200 tenants</option><option value="rerank">Canonical + own reranker</option><option value="shared">Registered encoder, 20 tenants</option><option value="private">Private encoder, alone</option></select></label></div>
+      <label class="slider"><span>Chunks consumed per month <b class="mono" id="billLabel"></b></span><input id="billN" type="range" min="1" max="100" step="1" value="20" aria-label="Millions of chunks consumed"></label>
+    </div>
+    <div class="bars" id="bill"></div>
+    <p class="small muted">A sample price sheet: $0.10 per 1,000 chunks delivered, plus each representation's share of a $4,000 monthly index and re-embedding cost.</p>
+  </div>
+  <div class="panel">
+    <h3>Neither side pays merely because the other uses SemDN</h3>
+    <p>Will anyone show up? Over 36 months, the origins line is how many origins have enrolled, out of all origins. The clients line is how many clients have shown up, out of all clients. Up the side, zero is none of that group and 100 percent is all of it.</p>
+    <div class="two">
+      <label class="slider"><span>Origins enrolled at launch <b class="mono" id="seedLabel"></b></span><input id="seed" type="range" min="0" max="50" step="1" value="5" aria-label="Origins enrolled at launch"></label>
+      <label class="slider"><span>Clients' discovery fallback <b class="mono" id="fbLabel"></b></span><input id="fb" type="range" min="0" max="40" step="1" value="3" aria-label="Coverage from discovery fallback"></label>
+    </div>
+    <div id="adopt"></div>
+    <p id="adoptNote"></p>
+  </div>
+  <div class="reflist">
+    <details>
+      <summary>Further reading <span class="small">(8 papers, click to expand)</span></summary>
+      <div class="reading">
+      <h4>Who pays</h4>
+      <ul>
+        <li>Jean-Charles Rochet and Jean Tirole. <a href="https://scholar.google.com/scholar?q=%22Platform%20Competition%20in%20Two-Sided%20Markets%22" target="_blank" rel="noopener">Platform Competition in Two-Sided Markets</a>. Journal of the European Economic Association, 2003. <span class="why">The economics of platforms that charge two sides, like SemDN charging origins and clients.</span></li>
+        <li>Cloudflare. <a href="https://developers.cloudflare.com/ai-crawl-control/features/pay-per-crawl/what-is-pay-per-crawl/" target="_blank" rel="noopener">What is Pay Per Crawl?</a>. Cloudflare docs, 2025. <span class="why">Lets sites charge AI crawlers per request, one existing settlement model.</span></li>
+        <li>The Associated Press. <a href="https://www.ap.org/media-center/press-releases/2023/ap-openai-agree-to-share-select-news-content-and-technology-in-new-collaboration/" target="_blank" rel="noopener">AP, OpenAI Agree to Share Select News Content and Technology in New Collaboration</a>. AP press release, 2023. <span class="why">A direct content licence between a publisher and an AI company.</span></li>
+      </ul>
+      <h4>What crawling costs origins today</h4>
+      <ul>
+        <li>Wikimedia Foundation. <a href="https://diff.wikimedia.org/2025/04/01/how-crawlers-impact-the-operations-of-the-wikimedia-projects/" target="_blank" rel="noopener">How Crawlers Impact the Operations of the Wikimedia Projects</a>. Wikimedia Diff blog, 2025. <span class="why">Wikimedia on how AI crawlers drive up its bandwidth and operations load.</span></li>
+        <li>Fastly. <a href="https://www.fastly.com/blog/ai-bots-q2-2025-trends-fastlys-threat-insights-report" target="_blank" rel="noopener">Q2 2025 Threat Insights Report: The Rise of AI Crawlers and Fetchers</a>. Fastly, 2025. <span class="why">CDN data on the growth of AI crawlers and fetchers.</span></li>
+        <li>Shayne Longpre et al. <a href="http://papers.nips.cc/paper_files/paper/2024/hash/c3738949a80306cc48a8ea8ba0560f9d-Abstract-Datasets_and_Benchmarks_Track.html" target="_blank" rel="noopener">Consent in Crisis: The Rapid Decline of the AI Data Commons</a>. NeurIPS 2024. <span class="why">Documents sites restricting AI crawlers through robots.txt and terms.</span></li>
+        <li>Taein Kim et al. <a href="https://doi.org/10.1145/3730567.3764471" target="_blank" rel="noopener">Scrapers Selectively Respect robots.txt Directives: Evidence From a Large-Scale Empirical Study</a>. IMC 2025. <span class="why">Measures which scrapers actually obey robots.txt.</span></li>
+        <li>Enze Liu et al. <a href="https://doi.org/10.1145/3730567.3732913" target="_blank" rel="noopener">Somesite I Used To Crawl: Awareness, Agency and Efficacy in Protecting Content Creators From AI Crawlers</a>. IMC 2025. <span class="why">Asks whether site owners know about AI crawlers and can block them.</span></li>
+      </ul>
+      </div>
+    </details>
+  </div>
+  <div class="foot"><button type="button" class="primary" data-next>Next: why anyone would trust you</button></div>
+</section>
+
+<section class="chapter" data-ch="trust" data-label="Trust" hidden>
+  <div class="eyebrow">Trust</div>
+  <h2>Why would anyone trust this edge?</h2>
+  <div class="panel">
+    <h3>A courier versus a librarian</h3>
+    <p>A CDN is a courier. It delivers the site's page sealed, and HTTPS shows the seal is intact. SemDN is a librarian. It cuts pages into passages, picks which ones you read, and is paid by both the site and you. An intact seal says nothing about whether the librarian picked fairly. So a client should be able to ask three questions.</p>
+    <div class="stack">
+      <div class="note" id="trustSaid"><b>1. Is this really what the site said?</b><span>The site signs what it publishes, so every passage traces back to the site's own text, at a stated version. This catches made-up and outdated passages.</span></div>
+      <div class="note" id="trustBest"><b>2. Did I get the best passages, or the ones someone paid for?</b><span>The edge commits to its index and proves that what it returned really is the top of that index. This catches paid ranking and passages quietly dropped. A courier never had to answer this, because it never chose anything.</span></div>
+      <div class="note" id="trustAll"><b>3. Was anyone left out?</b><span>A ranking can be honest over an index that silently dropped a site. So the list of sites that joined is public, the way browsers check a public log of certificates<sup class="cites"><a href="#trust-r3">3</a></sup>.</span></div>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>Spot checks, like a ticket inspector</h3>
+    <p>Proving a ranking takes about a second per query<sup class="cites"><a href="#trust-r1">1</a></sup>. No agent will wait for that every time. So check a random sample<sup class="cites"><a href="#trust-r2">2</a></sup>: if the edge cannot tell which answers will be checked, cheating is still caught. But every answer that is checked waits for its proof.</p>
+    <div class="two">
+      <label class="slider"><span>Answers checked <b class="mono" id="auLabel"></b></span><input id="au" type="range" min="0" max="100" step="1" value="5" aria-label="Answers checked"></label>
+      <label class="slider"><span>Proof time <b class="mono" id="prLabel"></b></span><input id="pr" type="range" min="8" max="20" step="1" value="14" aria-label="Proof time"></label>
+      <label class="slider"><span>Answers the edge cheats on <b class="mono" id="taLabel"></b></span><input id="ta" type="range" min="1" max="100" step="1" value="10" aria-label="Answers the edge cheats on"></label>
+    </div>
+    <div class="bars" id="audit"></div>
+    <p id="auditNote"></p>
+  </div>
+  <div class="reflist">
+    <h3>References</h3>
+    <ol>
+      <li id="trust-r1">Nikolay Avramov et al. <a href="https://arxiv.org/abs/2609.11841" target="_blank" rel="noopener">Atlas: Efficient Verifiable Semantic Search</a>. arXiv:2609.11841, 2026.</li>
+      <li id="trust-r2">Zipeng Qiu et al. <a href="https://arxiv.org/abs/2603.03065" target="_blank" rel="noopener">V3DB: Audit-on-Demand Zero-Knowledge Proofs for Verifiable Vector Search over Committed Snapshots</a>. arXiv:2603.03065, 2026.</li>
+      <li id="trust-r3">Ben Laurie, Adam Langley, and Emilia Kasper. <a href="https://www.rfc-editor.org/rfc/rfc9162" target="_blank" rel="noopener">Certificate Transparency</a>. RFC 9162, 2021.</li>
+    </ol>
+    <details>
+      <summary>Further reading <span class="small">(9 papers, click to expand)</span></summary>
+      <div class="reading">
+      <h4>Proving where content came from</h4>
+      <ul>
+        <li>Ralph C. Merkle. <a href="https://scholar.google.com/scholar?q=%22A%20Digital%20Signature%20Based%20on%20a%20Conventional%20Encryption%20Function%22" target="_blank" rel="noopener">A Digital Signature Based on a Conventional Encryption Function</a>. CRYPTO 1987. <span class="why">Merkle trees: prove one piece belongs to a signed whole without sending the whole.</span></li>
+        <li>Annabelle Backman et al. <a href="https://doi.org/10.17487/RFC9421" target="_blank" rel="noopener">HTTP Message Signatures</a>. RFC 9421, 2024. <span class="why">A standard way for a site to sign HTTP messages, one way to sign what it publishes.</span></li>
+        <li>Richard Barnes et al. <a href="https://www.rfc-editor.org/info/rfc9345" target="_blank" rel="noopener">Delegated Credentials for TLS and DTLS</a>. RFC 9345, 2023. <span class="why">Lets a CDN serve TLS on a site's behalf, which is why HTTPS alone cannot vouch for the content.</span></li>
+      </ul>
+      <h4>Proving a search result is honest</h4>
+      <ul>
+        <li>Roberto Tamassia. <a href="https://scholar.google.com/scholar?q=%22Authenticated%20Data%20Structures%22" target="_blank" rel="noopener">Authenticated Data Structures</a>. European Symposium on Algorithms (ESA), 2003. <span class="why">A survey of data structures whose answers come with proofs anyone can check.</span></li>
+        <li>HweeHwa Pang and Kian-Lee Tan. <a href="https://scholar.google.com/scholar?q=%22Authenticating%20Query%20Results%20in%20Edge%20Computing%22" target="_blank" rel="noopener">Authenticating Query Results in Edge Computing</a>. ICDE 2004. <span class="why">Proves that answers from an untrusted edge server are correct and complete, the closest older idea to this page.</span></li>
+        <li>Qian Chen et al. <a href="https://doi.org/10.14778/2732219.2732224" target="_blank" rel="noopener">Authenticating Top-k Queries in Location-based Services with Confidentiality</a>. PVLDB 2013. <span class="why">Proofs that a top-k answer is really the top k.</span></li>
+        <li>Rosario Gennaro, Craig Gentry, and Bryan Parno. <a href="https://scholar.google.com/scholar?q=%22Non-interactive%20Verifiable%20Computing%3A%20Outsourcing%20Computation%20to%20Untrusted%20Workers%22" target="_blank" rel="noopener">Non-interactive Verifiable Computing: Outsourcing Computation to Untrusted Workers</a>. CRYPTO 2010. <span class="why">General proofs that outsourced computation was done right, and why they are expensive.</span></li>
+      </ul>
+      <h4>What can still go wrong</h4>
+      <ul>
+        <li>Wei Zou et al. <a href="https://www.usenix.org/conference/usenixsecurity25/presentation/zou-poisonedrag" target="_blank" rel="noopener">PoisonedRAG: Knowledge Corruption Attacks to Retrieval-Augmented Generation of Large Language Models</a>. USENIX Security 2025. <span class="why">Planting a few crafted passages is enough to steer a RAG system's answers.</span></li>
+        <li>Chenchen Gu et al. <a href="https://proceedings.mlr.press/v267/gu25b.html" target="_blank" rel="noopener">Auditing Prompt Caching in Language Model APIs</a>. ICML 2025. <span class="why">Detects shared prompt caches from response timing, the same side channel as on this page.</span></li>
+      </ul>
+      </div>
+    </details>
+
+  </div>
+  <div class="foot"><button type="button" class="primary" data-next>End of shift</button></div>
+</section>
+
+<section class="chapter" data-ch="argue" data-label="Argue" hidden>
+  <div class="eyebrow">At the poster</div>
+  <h2>Concluding remarks. Come and provide your ideas, suggestions, and comments!</h2>
+  <p>Our preliminary experiments show promising results, but an end-to-end implementation is not complete yet. In principle, SemDN could sit on top of an existing CDN or be a separate infrastructure. Either way, keying delivery on queries changes three things: (1) misses must be estimated instead of keying on exact URL matches; (2) clients choose representations that origins do not see; and (3) acquisition and normalization are shared by all, creating opportunities for cache reuse via locality.</p>
+  <ol class="qs">
+    <li><b>When is cached evidence good enough to serve?</b> Two things decide it: timeliness (is the chunk still current?) and coverage (does the evidence hold everything the query needs?). A coverage miss leaves no trace in a URL or a timestamp. How can an edge estimate both, cheaply, before it answers?</li>
+    <li><b>Why not keep the cache on the client?</b> A session cache on the client catches much of what one task re-reads. But a larger cache works better and costs the client more, and a client-side cache exposes how the provider indexes, chunks, and embeds, which may be what it competes on. Clients still need to see enough to trust the results. What belongs on the client, what belongs in the network, and what must be shared across clients to justify a network?</li>
+    <li><b>Where should the encoder boundary sit?</b> When does re-encoding stop paying off, and when do you materialize a model-specific index?</li>
+    <li><b>How much query state can tenants safely share?</b> Reweighting from one tenant's trajectories can expose its task structure to others.</li>
+    <li><b>Why would anyone join first?</b> Origins gain offloaded traffic and fresher copies at the edge. Clients gain one round instead of many. How do you get origins and clients to enroll while the network is still small? And when an origin refuses, how does the edge still serve its content well to clients?</li>
+    <li><b>Why trust the edge?</b> A client sees the chunks the edge returns, not the index behind them. Can the edge show that it returned the best chunks its index holds, without revealing the index? A simpler version, and maybe not an easy one either: can it show that each chunk is a faithful, processed copy of the origin page, with no injected misinformation, bias, hidden instructions, or ads?</li>
+    <li><b>How does one query find its sources across the web?</b> Cloudflare's AI Index<sup class="cites"><a href="#argue-r1">1</a>, <a href="#argue-r2">2</a></sup> and AISTRAL's Agentic Twins<sup class="cites"><a href="#argue-r3">3</a></sup> give each site its own index. AISTRAL adds a resolver that picks which sites to ask. Its evaluation uses 10 sites, and the authors leave routing at web scale open. An answer may come from one source or need several together, and the web has millions of sites. Should a query be routed to sites one by one, or should one shared index rank chunks across sites in the client's representation? What does each cost at web scale?</li>
+  </ol>
+  <div class="reflist">
+    <h3>References</h3>
+    <ol>
+      <li id="argue-r1">Cloudflare. <a href="https://blog.cloudflare.com/an-ai-index-for-all-our-customers/" target="_blank" rel="noopener">An AI Index for all our customers</a>. 2025.</li>
+      <li id="argue-r2">Cloudflare. <a href="https://developers.cloudflare.com/ai-search/" target="_blank" rel="noopener">AI Search</a>.</li>
+      <li id="argue-r3">Yixi Chen, Muhammad Bilal, Tie Ma, Zafar Ayyub Qazi, Marco Canini, and Suhaib Fahmy. <a href="https://arxiv.org/abs/2511.18354v2" target="_blank" rel="noopener">From Crawled to Published: A Publisher-Controlled Web Architecture for an AI-Native Internet</a>. arXiv:2511.18354v2, 2026.</li>
+    </ol>
+  </div>
+  <p class="small muted">Peichun Hua and Yunming Xiao, CUHK-Shenzhen. <a href="https://arxiv.org/abs/2609.22486v2" target="_blank" rel="noopener">Paper on arXiv</a> · <a href="https://github.com/sarendis56/SemDN_HotNets26" target="_blank" rel="noopener">Code on GitHub</a></p>
+  <div class="foot"><button type="button" id="restart">Back to the start</button></div>
+</section>
+
+</main>
+
+<script type="text/plain" id="talkScript">
+## Start
+
+(about 1.5 minutes)
+
+This is a companion to our HotNets paper, Semantics Delivery Network. Agents consume evidence in passages or chunks, but today the web delivers pages written for human readers. We propose a new network infrastructure that answers the query directly with evidence chunks. It does the jobs of a search engine and a CDN in one round. A CDN moves bytes without knowing what they mean. This network is aware of semantics, and that creates new opportunities as well as new challenges. I will operate one edge and walk through the decisions it has to make.
+
+The request is to compare the API rate limits of Halden and Quillbase.
+
+[do] Show "One request, three paths", with "Today" selected.
+
+Today, the agent sends the query to a search API such as SERP and gets a list of URLs. It fetches five or 10 pages, cleans them, chunks them, embeds them, and ranks them. If, for example, Quillbase's limits are still missing from the evidence, it rewrites the query and starts again, in what we call agentic RAG. The origins serve the whole page to every operator who asks.
+
+[do] Select "Cloudflare AI Index".
+
+Cloudflare AI Index gives each site its own index. The agent asks Halden and Quillbase separately. Quillbase has not enabled one, and the agent falls back to fetching pages, parsing and ranking manually. Halden's index uses chunking and encoder at Halden's choosing, so the two rankings are not comparable. Agents cannot tell which passage better answers the question, so it embeds both lists again and ranks them itself.
+
+[do] Select "SemDN".
+
+With SemDN, the agent sends one query to the nearest edge and names its chunking policy and its encoder. The edge returns one unified ranked list, with chunks from Halden and from Quillbase together, in that representation.
+
+[do] Scroll to "What one query costs today".
+
+At the median, over 100 live queries we tested, the model reads 7 kilobytes. A plain fetch moves 761 kilobytes, 107 times as much. A full render moves 18 megabytes, which is significantly more, and in typical text pipelines, the full render will not help the agents.
+
+[do] Scroll to the table, "Two systems, split down the middle".
+
+Our first insight is that the job today is split across two systems. The search engine sees the query and returns URLs that might contain relevant information. The CDN serves the origin and caches web objects, but it is not aware of the query. SemDN does both in one unified infrastructure and answer the semantic query in one search round. The unit it returns is called chunk, but it can be a passage, a table block, an image region, a page screenshot, and so on. We currently focus on passages and tables while some papers are exploring images and screenshots. Please feel free to check out these papers.
+
+## Mismatch
+
+(about 2.5 minutes)
+
+There are four mismatches between the current stack and what the agent actually consumes. The first is that a similar passage is not always a useful one.
+
+[do] Show the first round of "Similar is not useful".
+
+The first three questions are from CRAG. Which passage would you hand to the agent?
+
+[do] Reveal the answer to the skyscraper round.
+
+For the skyscraper, the embedding model's top chunk is about UK skyscrapers in general, and the reader answers Landmark Pinnacle. The reranker's chunk says The Shard, and the reader answers The Shard.
+
+[do] Jump to the first of the two tenant rounds.
+
+The last two rounds are the same query and the same three passages, for two tenants. Do they want the same chunk?
+
+The support bot wants the procedure, open Billing and end the plan. The compliance agent wants section 9.2, termination for breach. The passages can be shared. The ranking stays with the tenant, because the two are scoring different things.
+
+[do] Sweep "Context budget" from 256 to 6,144 tokens.
+
+The second mismatch is the context budget. This is Figure 3c. From 256 tokens to 6,144, with the same reranker, chunks beat pages by 3.5 to 8.2 accuracy points. The page spends that budget on text that happens to come first, and many actual answers are cut off.
+
+[do] Show "Best actor".
+
+Here is the question, at the oscars, who won best actor in 2000? The answer is Kevin Spacey. If we choose to deliver in whole pages, the page starts with the winner from 1929 and runs out of budget before the year 2000. The chunk names Kevin Spacey correctly by finding the correct chunk among the long page.
+
+[do] Move "Pages downloaded" from 5 to 20.
+
+The third mismatch is reach. A client that ranks pages can only use the pages it downloaded. But for correct chunks that aren't in those pages, these answers are lost. In our study, we find that if we rank by pages, 16 to 29 percent of the global top-five chunks sit on pages that would be skipped, and that remains true at 20 pages because one golden chunk is of lower rank compared to the others. If you drag it towards more pages you are also dealing with more bytes and waste your time and bandwidth.
+
+[do] Scroll to "Real queries, real top-5 URLs".
+
+The fourth is that every operator runs the pipeline separately. On this query when we do the experiments, Stack Overflow and Server Fault return 403 to a plain fetch due to unknown reasons, and sometimes they respond, and many websites are deploying more laborious CAPTCHA systems to defend such traffic, because it's simply too much. Also we find that the YouTube page is 1.4 megabytes of HTML, of which 147 bytes are clean text. Another operator who wants the same chunks does the extraction again, and this part of the work can actually be shared if we were to have a unified infrastructure.
+
+## Misses
+
+(about 2.5 minutes)
+
+The main difference from a CDN is the miss. A URL lookup has one. Top-k search returns k results even when better evidence is somewhere else, so there is no miss bit.
+
+There are three actions, and the buttons show their costs. Serving the chunks on hand costs 0. Asking the regional parent costs 1. Searching externally costs 5, which is a SERP call plus the fetches.
+
+[do] Show the first query, "Halden API".
+
+The first question is the current free-tier rate limit for the Halden API. The scores are 0.91, 0.87, and 0.84, and all three chunks say 60 requests per minute. Would you serve these?
+
+[do] Serve the Halden chunks.
+
+If you choose to serve these because they agree with each other, that would be the wrong answer. The limit dropped to 30 per minute nine days ago. The chunks are four to seven months old, and while they agree with each other, all of them are oudated.
+
+[do] Show the HTTP 429 query.
+
+Second question: What does HTTP status 429 mean? The chunks are two and three years old, and they agree. 429 still means too many requests. Serving them is the right action.
+
+[do] Serve the HTTP 429 chunks.
+
+Age is not the miss. The meaning has not changed.
+
+[do] Go to the Impinj query.
+
+Third question: can you tell me the opening stock price of impinj for today? And if you notice "today", you would immediately know that although these chunks are 2-3 days old, we should still search externally.
+
+[do] Serve the Impinj chunks.
+
+The right answer is 102.87. All these chunks would be wrong evidence.
+
+[do] Jump to the grade.
+
+If you do all the problems here you will get an actual grade transcript. Always serving is wrong 9 times, at cost 0. Always searching is wrong 0 times, at cost 65. There are some other reasonable heuristics, but none of them approaches the oracle with minimal bad evidence and low cost at the same time,.
+
+[do] Scroll to "More context does not fix old evidence".
+
+More context does not repair a missing answer. On CRAG benchmark we test, twelve times the budget, from 512 tokens to 6,144, moves the score from 65 percent to 70. For many that remain incorrect, the current answer is simply not in the pool, so a longer context does not help.
+[do] Turn on "Sufficiency judgment" in the controller.
+
+The edge needs a controller for this risk. A semantic coverage miss is when the estimated chance that an external search would change the answer exceeds a threshold. Basically we need to come up with a set of rules that would reduce the needed evidence not gotten while keeping the yellow one "searching for nothing" as low as possible. I will not go over details here, but we have a recent paper investigates this idea and you are welcome to take a look.
+
+[do] Lower "Risk threshold" to 30%.
+
+The threshold is the other half. At 30 percent, more of the real misses get a search, and more queries that were already covered get searched too.
+
+[do] Tick "Content drift".
+
+Content drift moves the calibration. This switch is a breaking-news week: evidence goes stale faster, and the old signals carry less. How to calibrate the controller under drift is open.
+
+## Reuse
+
+(about 2 minutes)
+
+A URL cache sees low locality if people are browsing different pages. But for agents and RAG, this is a bit different. Within a task, 70 to 100 percent of a search agent's URLs are unseen. Chunks are a bit different. We discover three modes of potential reuse.
+
+An exact repeat is a chunk the agent already saw. That is 41 percent on Search-R1 over Wikipedia, and 70 percent on CRAG, two different benchmarks. Our guess is that the first search missed the passage with the answer, so the agent only tweaks the query a little bit. Most of the same chunks come back, with a few new ones.
+
+The second kind is a sibling. The edge has already fetched, cleaned, and chunked the page, so it can keep every chunk on it, even if that chunk is not selected. About 1 in 10 chunks after the first turn is one of these. We expect it to be stronger with a better agent and a better retriever.
+
+[do] Play every turn of the agent task.
+
+This task is multi-hop question. Where was the music festival Billy McFarland was charged with wire fraud for supposed to take place? You need to first figure out which festival is that. So the first query is Billy McFarland, wire fraud, music festival, and top-1 chunks correctly identifies that he is the founder of Fyre Festival. But the chunks do not show where it is, so the agent tweaks the query and asks for the location. The query is "Fyre Festival, location". This time the correct answer Great Exuma pops up in the top chunks and agents answer it correctly.
+
+The third kind is a chunk an earlier search already returned and then cut off. The agent only saw the top 3. If the edge keeps the rest of that list such as top-10, it can have these chunks ready if they are selected later. That is the prefetch, and it is also a cache of results you already paid to retrieve.
+
+[do] Scroll to the two searches under "Already retrieved, then cut off".
+
+Take the tennis one. The question asks what sport these two guys play. The three passages shown are all about the first guy. The second's top chunk was rank 4 of that same search, and it was not shown. The next query adds the word "sport", and the second guy's passage moves into the top 3.
+
+The California one is the same shape, and I will not go over details.
+
+Of the chunks that first appear in the next turn's top 3, 25 percent were already in ranks 4 through 13 of the search just served. If we save top-50, such chunks would be around 40%.
+
+## Freshness
+
+(about 1.5 minutes)
+
+The edge is holding chunks it already fetched. The pages they came from keep changing, and serving the old copy gives the agent a stale answer. This grid is 48 hours at one PoP. Twelve blocks: four from a status page, four from pricing, and four from the documentation. Each column is one hour. Red means the origin changed that block and you still hold the old copy. The last color in the legend is a query that was answered with that old copy. The buttons are three ways to go get a new copy.
+
+[do] Select "Per-block TTL".
+
+A per-block TTL leaves a stale window between refreshes. It also spends the same fetches on the documentation, which rarely changes. This requires setting different TTLs for different kinds of websites.
+
+[do] Select "Query piggyback".
+
+Refreshing when a query arrives spends fewer fetches, because one query can refresh the other blocks of its document. A block nobody queries stays cold.
+
+[do] Select "Origin purge feed".
+
+If the origin enrolls like it does for CDN, it can send a purge and this leads to no stale window, and the fetches match real changes. However, in real world, this is hardly the case for most websites. Therefore, I would expect that a hybrid mode of TTL, piggyback, and origin purge to work the best.
+
+[do] Scroll to "Three ways the query stream misleads placement".
+
+There are three open problems. A rare-disease reference gets about one query a month, so it falls out of the edge index and may induce high latency for that query.
+Second, a finnancial company's agents might keep requesting a small portion of the index heavily. This part can increase cache hit and resue, but it might also leak what other clients sharing the index are doing because of the timing difference. We call it side-channels in security literature.
+And lastly, a 2024 passage on a tax rule has a long record of correct answers, so it gets boosted. The rule changed last week, and if we believe that it's stable and set a long TTL, the queries will get stale answers.
+
+## Sharing
+
+(about 2 minutes)
+
+The second and third differences from our proposed SemDN to a CDN are tenancy and state. A cached page can be served to any client. An index serves the clients that embed passages in the same way.
+
+[do] Select "Everyone canonical".
+
+When every tenant uses the index that we call canonical index. The fetch, the cleaning, the embeddings, and the index can all be shared. This is perfect, and SemDN has the best reuse and saves a lot of resources.
+
+[do] Select "Everyone private".
+
+When every tenant wants to use a different encoder or different index method, the fetch and the cleaning are still one copy, and the embeddings go back to four copies, one per tenant. But we note that this view is invisible to the origins.
+
+[do] Select "A realistic mix".
+
+In reality you may experience a mixture of them. For example, two tenants from the same company stay on the canonical index, one uses a registered encoder the others can share, and one brings a private encoder, so the fetch and the cleaning stay one copy and the embeddings are three copies. Only one is shared.
+
+[do] Sweep "Tenants" from 1 to 50.
+
+At fifty tenants, fetching and cleaning once for everyone is 5.87 times less work than each tenant doing it alone. Embedding with one shared encoder is 6.01 times less work. If every tenant brings its own encoder, the embeddings are not shared, and that work is not reduced.
+
+[do] Move "Encoder drift" to 80% and "Candidates K" to 300.
+
+In reality, we might have thousands of clients and maybe hundreds of embeddings and indexes, It would be not realistic to store and serve them at the same time because of the memory and storage cost. We propose that many indexes can still share a canonical index to propose a candidate list, then rerank them based on the clients' needs by re-encoding those candidates with its own encoder. For example, if the candidate set is larger, the recall will be higher, but the computation will also be higher. There are some research targeting this frontier and I would not go into details.
+
+[do] Move "Embeddings stored" to 80%.
+
+If we hold 80 percent of the embeddings stored, this edge holds more than 60 gigabytes for just one representation. Storing less means more recomputing for each client, so this is a trade-off between storage and compute.
+
+## Market
+
+(about 1.5 minutes)
+
+Who pays follows from SemDN being both of the systems it joins, because we hope that it can be a combination of search engine and CDN. A CDN is a reverse proxy, and the origin pays. And the search engine is kind of a forward proxy, and the client pays. SemDN charges each side for a different service.
+
+[do] Show "Whose decision is it?".
+
+An origin pays a CDN because requests for its pages would otherwise land on its own servers; a CDN would help take traffic spikes and save network resources. In our proposal we let the origin to have some additional controls. For example: which transformations are permitted, how old a copy may be, how to wipe it, and maybe provenance for the content.
+
+The client pays for a different service. It wants retrieval, so the encoder, the chunking and the reranker are settled between the client and SemDN. This functionality does not hinge on the origin's decision.
+
+[do] Show the pushback on the encoder.
+
+(skip) I do not have a clean answer on the encoder. It looks like the origin's choice, because embedding turns the page into vectors and the origin already decides which transformations are allowed.
+
+(skip) Refusal does not hold. If the origin says no, a client can still fetch the page the way the web works today. A CDN serves the bytes, and the client embeds them. If SemDN is the one that refuses, the client leaves and does that, and SemDN is less useful. The origin cannot enforce a ban on embedding, and honoring one inside SemDN hurts the service.
+
+[do] Show the pushback on freshness.
+
+(skip) The client knows when a question is time-sensitive. The Halden limit changed, and an origin bound can still serve the old number. The client can refuse those chunks and pay for a search. Only the origin knows the page changed, so the bound stays with the origin.
+
+[do] Show "Pricing steers architecture".
+
+The price sheet can push a tenant toward a representation that other tenants can share.
+
+[do] Set "Representation" to the private encoder.
+
+A private encoder has one tenant on the index, so it pays the full 4,000 dollars of monthly index cost. At 20 million chunks, delivery adds the same 2,000 dollars either way.
+
+[do] Set "Representation" to canonical.
+
+Split across the 200 tenants on the canonical index, that index cost is 20 dollars. The tenant pays for delivery, and almost nothing extra for the index. The discount is on the part that can be shared.
+
+[do] Show the adoption chart at 5 percent enrolled.
+
+This figure asks whether SemDN ever gets going. It follows two groups for 36 months. The origins line is how many origins have enrolled, out of all origins. The clients line is how many clients have shown up, out of all clients. Up the side of the figure, zero means none of that group and 100 percent means all of it.
+
+Origins enroll when agents are already arriving. Agents arrive when the content is covered and can be delivered efficiently. At 5 percent of origins enrolled at launch, both shares stay low. An origin has nothing to offload, and a client does not have enough coverage to switch.
+
+[do] Move "Origins enrolled at launch" to 15 percent.
+
+At 15 percent enrolled before anyone is asking, clients show up, and their traffic gives the remaining origins a reason to enroll. The hard part is convincing that many sites with no traffic to show them.
+
+[do] Set "Origins enrolled at launch" to 0 and "Clients' discovery fallback" to 8%.
+
+The other opening does not wait for origins. A client already fetches, cleans, chunks, and embeds. SemDN can do that acquisition on the public web and return the chunks. In this model, coverage of about 8 percent from that fallback, with no origins enrolled, is enough for clients to arrive. Their traffic then marks the domains worth an enrollment pitch: these fetches are landing on you.
+
+This still fails if no client will send the query, because then there is no traffic to take to an origin.
+
+## Trust
+
+(about 1.5 minutes)
+
+Last, why would anyone trust this edge? A CDN is like a courier. It delivers the site's page sealed, and HTTPS shows the seal was not broken. SemDN is more like a librarian. It cuts pages into passages and picks which ones you read, and both the site and you pay it. An intact seal cannot tell you whether the librarian picked fairly and faithfully. So a client should be able to ask three questions.
+
+[do] Show "Is this really what the site said?".
+
+First, is this really what the site said? The site signs what it publishes, so each passage traces back to the site's own text and version. That catches made-up or outdated passages.
+
+[do] Show "Did I get the best passages?".
+
+Second, did I get the best passages, or the ones someone paid for? The edge has to commit to its index and prove that what it returned really is the top of its index. Think of it as a receipt anyone can check. A CDN never needed this, because it never chose anything.
+
+[do] Show "Was anyone left out?".
+
+Third, was anyone left out? A ranking can be honest over an index that quietly dropped a site. So the list of sites that joined has to be public, the same way browsers check a public log of certificates.
+
+[do] Move "Answers checked" to 20%.
+
+The catch is cost. Proving one answer takes about a second. So clients check a random few, like a ticket inspector on a train. If clients check one answer in five and the edge cheats on one in ten, it gets caught after about fifty queries. But the average answer still waits almost 300 milliseconds more, and an agent searches several times per task. Making this check cheap enough to use is still open. There are some references on this topic and you are welcome to take a look.
+
+## Argue
+
+(about 30 seconds)
+
+That is the end of the demo.
+
+SemDN could be built on an existing CDN, or run as its own infrastructure. The questions on the screen are the ones we leave open. But I would appreciate your new ideas, comments, and questions as well. Thank you very much.
+</script>
+
+<script>
+window.__boot = function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+  function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function bar(label, pct, text, color) {
+    return '<div class="bar-row"><span>' + label + '</span><div class="track"><div class="fill" style="width:' + Math.max(0, Math.min(100, pct)).toFixed(1) + '%;background:' + color + '"></div></div><span class="val">' + text + '</span></div>';
+  }
+  function fmtBytes(kb) { return kb >= 1000 ? (kb / 1000).toFixed(1) + " MB" : Math.round(kb) + " KB"; }
+
+  /* Light and dark switch, for whatever the room's lighting is */
+  var root = document.documentElement;
+  function isDark() { return root.dataset.theme ? root.dataset.theme === "dark" : !!(window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches); }
+  function labelTheme() { $("themeBtn").textContent = isDark() ? "Light mode" : "Dark mode"; }
+  try { var savedTheme = localStorage.getItem("edge-theme"); if (savedTheme) root.dataset.theme = savedTheme; } catch (e) {}
+  $("themeBtn").addEventListener("click", function () {
+    root.dataset.theme = isDark() ? "light" : "dark";
+    try { localStorage.setItem("edge-theme", root.dataset.theme); } catch (e) {}
+    labelTheme();
+    presPaint();
+  });
+  labelTheme();
+
+  /* Chapter navigation */
+  var chapters = [].slice.call(document.querySelectorAll("[data-ch]"));
+  function show(name, scroll) {
+    chapters.forEach(function (c) { c.hidden = c.dataset.ch !== name; });
+    if (name !== curCh) clock.chAt = clockNow();
+    curCh = name;
+    presPaint();
+    [].forEach.call($("nav").children, function (b) { b.setAttribute("aria-current", b.dataset.go === name); if (b.dataset.go === name && b.scrollIntoView) b.scrollIntoView({ block: "nearest", inline: "center" }); });
+    if (scroll) window.scrollTo(0, 0);
+  }
+  $("nav").innerHTML = chapters.map(function (c) { return '<button type="button" data-go="' + c.dataset.ch + '">' + c.dataset.label + '</button>'; }).join("");
+  $("nav").addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) show(b.dataset.go, true); });
+  document.querySelectorAll("[data-next]").forEach(function (b) {
+    b.addEventListener("click", function () { var i = chapters.indexOf(b.closest("[data-ch]")); show(chapters[i + 1].dataset.ch, true); });
+  });
+  $("restart").addEventListener("click", function () { show("start", true); });
+
+  /* Generic segmented control */
+  function seg(host, opts, cur, cb) {
+    function draw() {
+      $(host).innerHTML = opts.map(function (o) { return '<button type="button" data-v="' + o[0] + '" class="' + (o[0] === cur ? "on" : "") + '" aria-pressed="' + (o[0] === cur) + '">' + o[1] + '</button>'; }).join("");
+    }
+    $(host).addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) { cur = b.dataset.v; draw(); cb(cur); } });
+    draw(); cb(cur);
+  }
+
+  /* Generic pick-one quiz: each case has prompt html, options [{html, right}], why */
+  function quiz(host, cases, endHtml, optClass) {
+    var i = 0, right = 0, picked = null;
+    function draw() {
+      var el = $(host);
+      if (i >= cases.length) {
+        el.innerHTML = '<div class="meters"><span>Score <b>' + right + '/' + cases.length + '</b></span></div><div style="height:10px"></div>' + endHtml +
+          '<div style="height:10px"></div><button type="button" data-again>Play again</button>';
+        return;
+      }
+      var k = cases[i];
+      var h = '<div class="meters"><span>' + (i + 1) + ' of ' + cases.length + '</span><span>Right <b>' + right + '</b></span></div><div style="height:10px"></div>' + k.prompt + '<div style="height:10px"></div><div class="opts">';
+      k.options.forEach(function (o, n) {
+        var cls = "pick" + (picked === null ? "" : o.right ? " right" : picked === n ? " wrong" : "");
+        h += '<button type="button" class="' + cls + '" data-o="' + n + '"' + (o.right ? " data-r" : "") + (picked === null ? "" : " disabled") + '>' + o.html + '</button>';
+      });
+      h += '</div>';
+      if (picked !== null) {
+        var ok = k.options[picked].right;
+        h += '<div style="height:10px"></div><div class="verdict ' + (ok ? "good" : "bad") + '"><span>' + k.why + '</span></div><div style="height:10px"></div><button type="button" class="primary" data-nx>' + (i === cases.length - 1 ? "Finish" : "Next") + '</button>';
+      }
+      el.innerHTML = h;
+    }
+    $(host).addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      if (b.dataset.o !== undefined) { picked = +b.dataset.o; if (cases[i].options[picked].right) right++; draw(); }
+      else if (b.hasAttribute("data-nx")) { i++; picked = null; draw(); }
+      else if (b.hasAttribute("data-again")) { i = 0; right = 0; picked = null; draw(); }
+    });
+    draw();
+  }
+  function sc(score, text) { return '<span class="score">' + score + '</span><span>' + text + '</span>'; }
+
+  /* START: three paths */
+  var PATHS = {
+    today: { steps: [["Agent", "Sends the query to a SERP API and gets back URLs and snippets."], ["Agent", "Fetches five pages, past bot walls and JavaScript shells."], ["Agent", "Cleans, chunks, embeds, and ranks them on its own GPU."], ["Agent", "Finds Quillbase's limits missing, rewrites the query, and starts again."], ["Origins", "Serve whole pages to every operator asking the same thing."]], m: [["Requests per turn", "6"], ["Bytes per turn", "761 KB"], ["Model reads", "7 KB"], ["Runs the pipeline", "Every client"]] },
+    index: { steps: [["Agent", "Works out which sites to ask, then queries Halden's AI Index and Quillbase's separately."], ["Halden", "Answers from its own index, with the chunking and encoder Halden picked."], ["Quillbase", "Has not enabled one, so the agent falls back to fetching pages."], ["Agent", "Merges two rankings that were never in the same representation."]], m: [["Requests per turn", "2 + fallback"], ["Rankings", "One per site"], ["Representation", "The site's choice"], ["Runs the pipeline", "Each site"]] },
+    semdn: { steps: [["Agent", "Sends the query to its nearest edge, naming its chunking policy and encoder."], ["Edge", "Searches enrolled origins in that representation and ranks across them."], ["Edge", "Returns one ranked list with chunks from both Halden and Quillbase."], ["Origins", "Get offload, freshness control, and aggregate demand statistics."]], m: [["Requests per turn", "1"], ["Bytes per turn", "7 KB"], ["Rankings", "One list, both sites"], ["Runs the pipeline", "Once per content version"]] }
+  };
+  function pathFig(v) {
+    function box(x, y, w, hgt, lines, hot) {
+      var s = '<rect class="bx' + (hot ? ' hot' : '') + '" x="' + x + '" y="' + y + '" width="' + w + '" height="' + hgt + '" rx="6"/>';
+      var y0 = y + hgt / 2 - (lines.length - 1) * 10 + 5;
+      lines.forEach(function (l, i) { s += '<text x="' + (x + w / 2) + '" y="' + (y0 + i * 20) + '" class="' + (i ? 'sub' : 'b') + (hot ? ' inv' : '') + '">' + l + '</text>'; });
+      return s;
+    }
+    function arr(x1, y1, x2, y2, lab, lx, ly, ok) {
+      return '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" class="' + (ok ? 'ok' : '') + '" marker-end="url(#pf' + (ok ? 'ok' : 'a') + ')"/>' + (lab ? '<text x="' + lx + '" y="' + ly + '" class="lab' + (ok ? ' ok' : '') + '">' + lab + '</text>' : '');
+    }
+    var defs = '<defs><marker id="pfa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--muted)"/></marker><marker id="pfok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--resp)"/></marker></defs>';
+    var g = {
+      today: box(40, 95, 190, 90, ["Agent", "cleans, chunks,", "embeds, ranks"]) +
+        box(420, 15, 330, 64, ["Search API", "sees the query, returns URLs"]) + box(420, 120, 330, 64, ["CDN", "never sees the query"]) + box(420, 220, 330, 50, ["Origins: Halden, Quillbase"]) +
+        arr(230, 115, 418, 52, "query, then URLs", 280, 56) + arr(230, 160, 418, 152, "fetch 5–10 pages", 262, 178) + arr(585, 184, 585, 218),
+      index: box(40, 95, 190, 90, ["Agent", "merges, re-embeds,", "re-ranks both lists"]) +
+        box(420, 30, 330, 64, ["Halden's AI Index", "Halden's chunking and encoder"]) + box(420, 180, 330, 64, ["Quillbase: no index", "the agent fetches and parses pages"]) +
+        arr(230, 118, 418, 66, "query", 280, 80) + arr(230, 162, 418, 210, "fetch pages", 270, 212),
+      semdn: box(40, 40, 190, 90, ["Agent", "names its chunking", "and encoder"]) +
+        box(420, 30, 330, 110, ["Nearest edge", "encode · search · cache"], true) + box(420, 220, 330, 50, ["Enrolled origins: Halden, Quillbase"]) +
+        arr(230, 66, 418, 66, "one query", 270, 58) + arr(418, 108, 232, 108, "one ranked list of chunks", 248, 130, true) + arr(585, 218, 585, 142, "offload, freshness", 595, 186)
+    }[v];
+    var labels = { today: "Today: the agent does the work", index: "Per-site AI Index: one index per site", semdn: "SemDN: one edge, both roles" };
+    $("pathFig").innerHTML = '<svg viewBox="0 0 790 285" role="img" aria-label="' + labels[v] + '">' + defs + g + '</svg>';
+  }
+  seg("pathBtns", [["today", "Today"], ["index", "Cloudflare AI Index"], ["semdn", "SemDN"]], "today", function (v) {
+    pathFig(v);
+    $("pathSteps").innerHTML = PATHS[v].steps.map(function (s) { return '<div class="step"><span class="who">' + s[0] + '</span><span>' + s[1] + '</span></div>'; }).join("");
+    $("pathMeters").innerHTML = PATHS[v].m.map(function (m) { return '<span>' + m[0] + ' <b>' + m[1] + '</b></span>'; }).join("");
+  });
+  $("tax").innerHTML = [["SERP snippets", .731, "731 B", "var(--line)"], ["Chunks the model reads", 7.1, "7.1 KB", "var(--resp)"], ["HTML, no JavaScript", 761, "761 KB", "var(--req)"], ["Full render, decompressed", 18100, "18.1 MB", "var(--disc)"]].map(function (r) {
+    return bar(r[0], (Math.log10(r[1]) + 1) / (Math.log10(18100) + 1) * 100, r[2], r[3]);
+  }).join("");
+
+  /* MISMATCH: similarity vs utility */
+  quiz("simGame", [
+    { prompt: '<div class="query">what is the tallest skyscraper in the uk?</div>',
+      options: [{ html: sc("A", "The UK had not been noted historically for its abundance of skyscrapers, with the taller structures throughout the country tending to be cathedrals, church spires…") },
+                { html: sc("B", "The Shard, with a height of 309.6 meters, is the tallest skyscraper in the UK."), right: true }],
+      why: "A real CRAG question<sup class=\"cites\"><a href=\"#mis-r1\">1</a></sup> at a 128-token budget. A was e5's top chunk, and the reader then answered \"Landmark Pinnacle\". With B, the LLM reranker's pick, it answered \"The Shard\"." },
+    { prompt: '<div class="query">does manning or brady have more touchdowns?</div>',
+      options: [{ html: sc("A", "Tom Brady breaks Peyton Manning record for NFL touchdown passes. New England Patriots quarterback Tom Brady has broken the record…"), right: true },
+                { html: sc("B", "He had 403 passing yards, five touchdowns, and two interceptions in the victory. He followed that up with 397 passing yards…") }],
+      why: "B was e5's top chunk. It is full of the right words, and the reader concluded \"Manning has more touchdowns\". With A it answered correctly." },
+    { prompt: '<div class="query">how many grammys did beyoncé win at the 52nd annual grammy awards?</div>',
+      options: [{ html: sc("A", "Beyoncé made history at the 65th annual Grammy Awards, presented on Feb. 5 in Los Angeles. She won four awards…") },
+                { html: sc("B", "Competitors: Lizzo (2), Kendrick Lamar (3), Coldplay (0)… Beyoncé (4), Bad Bunny (1), Adele (2), Abba (0). But at the 52nd Annual…"), right: true }],
+      why: "A reads like the better passage and describes the wrong ceremony, so the reader found no answer. B looks messy and led to the correct answer: six." },
+    { prompt: '<div class="query">Can I cancel Halden mid-contract?</div><div style="height:6px"></div><span class="small muted">Tenant: a customer support bot</span>',
+      options: [{ html: sc("0.88", "To cancel, open Billing and choose End plan. Access continues until the period ends."), right: true },
+                { html: sc("0.86", "Section 9.2: either party may terminate for material breach on 30 days' written notice.") },
+                { html: sc("0.60", "Many customers pause rather than cancel their plans.") }],
+      why: "A support bot needs the procedure." },
+    { prompt: '<div class="query">Can I cancel Halden mid-contract?</div><div style="height:6px"></div><span class="small muted">Tenant: a compliance review agent</span>',
+      options: [{ html: sc("0.88", "To cancel, open Billing and choose End plan. Access continues until the period ends.") },
+                { html: sc("0.86", "Section 9.2: either party may terminate for material breach on 30 days' written notice."), right: true },
+                { html: sc("0.60", "Many customers pause rather than cancel their plans.") }],
+      why: "Same query, same passages, different right answer. So content and candidates can be shared while utility ranking stays with the tenant." }
+  ], '<p>Search-R1 adapts its policy to a fixed retriever, and Agentic-R trains the retriever itself on answer correctness. SemDN shares content and canonical candidates, and leaves utility functions and outcome labels private.</p>');
+
+  /* MISMATCH: budget. Values read from the vector data of paper Fig. 3c. */
+  var BUD = [128, 256, 512, 768, 1024, 1536, 2048, 3072, 4096, 6144, 8192, 12288];
+  var ISO = [
+    ["chunk, LLM rerank", "var(--resp)", [.4817,.5333,.5733,.5750,.5717,.5867,.5950,.6200,.6217,.6167,.6100,.6250]],
+    ["chunk, e5", "var(--req)", [.4233,.4233,.4800,.5200,.5083,.5517,.5567,.5733,.5850,.5867,.5850,.6050]],
+    ["page, LLM rerank", "var(--disc)", [.4450,.4683,.4933,.4933,.5083,.5300,.5600,.5650,.5783,.5700,.5967,.6150]],
+    ["page, e5", "var(--vio)", [.3967,.4133,.4400,.4600,.4733,.4933,.5017,.5250,.5583,.5650,.5500,.5817]],
+    ["snippet", "var(--muted)", [.3833,.4233,.4417,.4600,.4917,.5133,.5167,.5250,.5383,.5650,.5700,.5750]]
+  ];
+  function renderBud() {
+    var i = +$("bud").value, b = BUD[i], W = 640, H = 270, L = 40, R = 16, T = 12, B = 30;
+    function x(n) { return L + n / 11 * (W - L - R); }
+    function y(v) { return T + (.65 - v) / .30 * (H - T - B); }
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Answer accuracy against context budget">';
+    [.35, .45, .55, .65].forEach(function (v) { s += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(v) + '" y2="' + y(v) + '" stroke="var(--line)"/><text x="4" y="' + (y(v) + 4) + '">' + v.toFixed(2) + '</text>'; });
+    [0, 2, 6, 11].forEach(function (n) { s += '<text x="' + x(n) + '" y="' + (H - 10) + '" text-anchor="' + (n === 11 ? "end" : "middle") + '">' + BUD[n] + '</text>'; });
+    s += '<line x1="' + x(i) + '" x2="' + x(i) + '" y1="' + T + '" y2="' + (H - B) + '" stroke="var(--fg)" stroke-dasharray="3 3"/>';
+    ISO.forEach(function (a) {
+      s += '<polyline fill="none" stroke="' + a[1] + '" stroke-width="2.2" points="' + a[2].map(function (v, n) { return x(n).toFixed(1) + "," + y(v).toFixed(1); }).join(" ") + '"/>';
+      s += '<circle cx="' + x(i) + '" cy="' + y(a[2][i]) + '" r="4" fill="' + a[1] + '"/>';
+    });
+    s += '</svg><div class="legend">' + ISO.map(function (a) { return '<span><i style="background:' + a[1] + '"></i>' + a[0] + ' <b class="mono">' + a[2][i].toFixed(3) + '</b></span>'; }).join("") + '</div>';
+    $("budChart").innerHTML = s;
+    $("budLabel").textContent = b.toLocaleString("en-US") + " tokens";
+    var chunks = Math.floor(b / 170), frac = b / 1500;
+    $("budNote").textContent = "That buys about " + chunks + " chunk" + (chunks === 1 ? "" : "s") + " from anywhere in the corpus, or " +
+      (frac < 1 ? "the first " + Math.round(frac * 100) + "% of one typical page, most of it unrelated text." : "about " + frac.toFixed(1) + " typical pages, with budget spent on whatever they happen to contain.");
+  }
+  $("bud").addEventListener("input", renderBud); renderBud();
+
+  /* MISMATCH: real b256 pairs from data/e4 pools, preds and judge labels */
+  var PAIRS = {
+    oscar: { q: "at the oscars, who won best actor in 2000?", gold: "Kevin Spacey",
+      c: ["The winners were announced during the awards ceremony on March 26, 2000. Sam Mendes was the sixth person to win Best Director… Best Actor winner Kevin Spacey became the tenth performer to win acting Oscars…", "Kevin Spacey", "Perfect", 1],
+      p: ["Emil Jannings (1929): The first best actor Oscar went to Emil Jannings at the academy's inaugural ceremony held in 1929… Warner Baxter (1930): Warner Baxter, right, earned the best actor Oscar…", "The context provided does not include information about the 2000 Oscars.", "Missing, until 6,144 tokens", 0] },
+    swift: { q: "how many songs are on taylor swift's 1989 (taylor's version) album?", gold: "21 songs",
+      c: ["1989 (Taylor's Version) will consist of 21 songs, with the main album including the same 16 songs that featured on the original deluxe version…", "21 songs.", "Perfect", 1],
+      p: ["Taylor Swift 1989 (Taylor's Version): Release date, track list, vault songs, features and theories. Taylor Swift reveals collage board full of 1989 easter eggs…", "16 songs.", "Incorrect, until 1,024 tokens", 0] },
+    tax: { q: "how much is income tax in california?", gold: "1% to 12.3%",
+      c: ["There are nine income tax brackets in California: 1%, 2%, 4%, 6%, 8%, 9.3%, 10.3%, 11.3%, and 12.3%. Each one corresponds to a bracket of income…", "California income tax ranges from 1% to 12.3%.", "Correct", 1],
+      p: ["Our experts answer readers' tax questions and write unbiased product reviews (here's how we assess tax products). In some cases, we receive a commission from our partners…", "California's income tax ranges from 1% to 13.3%, with nine graduated tax brackets…", "Incorrect", 0] }
+  };
+  function pairCard(title, a) {
+    return '<div class="bars"><b>' + title + '</b><div class="chunk" style="grid-template-columns:minmax(0,1fr)"><span>' + esc(a[0]) + '</span></div><div class="verdict ' + (a[3] ? "good" : "bad") + '"><b>' + a[2] + '</b><span>' + esc(a[1]) + '</span></div></div>';
+  }
+  seg("pairBtns", [["oscar", "Best actor"], ["swift", "1989 tracks"], ["tax", "California tax"]], "oscar", function (v) {
+    var p = PAIRS[v];
+    $("pairQ").textContent = p.q + "  (gold: " + p.gold + ")";
+    $("pair").innerHTML = pairCard("Reranked chunks", p.c) + pairCard("Reranked pages", p.p);
+  });
+
+  /* MISMATCH: real rows from data/e1/measure.jsonl: host, HTTP status, html, clean, render bytes, requests */
+  var LIVE = {
+    nginx: { q: "how to configure nginx reverse proxy with ssl", used: 7944, rows: [["stackoverflow.com", "403", 5817, 41, 6874881, 141], ["serverfault.com", "403", 5905, 41, 5169675, 85], ["docs.nginx.com", "200", 134719, 6030, 2608306, 93], ["community.letsencrypt.org", "200", 273808, 3350, 9036487, 77], ["youtube.com", "200", 1365304, 147, 20147038, 194]] },
+    crispr: { q: "how does crispr gene editing work", used: 7918, rows: [["medlineplus.gov", "200", 29766, 5133, 3612523, 54], ["crisprtx.com", "200", 24680, 3441, 6014925, 45], ["pmc.ncbi.nlm.nih.gov", "failed", 0, 0, null, 1], ["youtube.com", "200", 1103725, 147, 19265440, 189], ["news.stanford.edu", "403", 8095, 41, 8184817, 59]] },
+    china: { q: "latest developments US-China trade negotiations 2026", used: 5925, rows: [["weforum.org", "403", 449, 103, 14639539, null], ["bbc.com", "200", 325635, 8268, 1149610, null], ["npr.org", "200", 85198, 5247, 14610021, null], ["uschina.org", "403", 5875, 41, 1011462, null], ["youtube.com", "200", 1267593, 147, 20660811, null]] }
+  };
+  function b(n) { return n === null ? "–" : n >= 1e6 ? (n / 1e6).toFixed(1) + " MB" : n >= 1000 ? (n / 1000).toFixed(1) + " KB" : n + " B"; }
+  seg("liveBtns", [["nginx", "nginx setup"], ["crispr", "CRISPR"], ["china", "Trade news"]], "nginx", function (v) {
+    var d = LIVE[v], rend = 0, html = 0;
+    d.rows.forEach(function (r) { rend += r[4] || 0; html += r[2]; });
+    $("live").innerHTML = '<table><thead><tr><th>Result</th><th>Plain GET</th><th class="num">HTML</th><th class="num">Clean text</th><th class="num">Full render</th></tr></thead><tbody>' +
+      d.rows.map(function (r) { return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td class="num">' + b(r[2]) + '</td><td class="num">' + b(r[3]) + '</td><td class="num">' + b(r[4]) + '</td></tr>'; }).join("") + '</tbody></table>';
+    $("liveNote").textContent = '"' + d.q + '": ' + b(html) + " of HTML and " + b(rend) + " of rendered content, for " + b(d.used) + " of selected chunks.";
+  });
+
+  /* MISMATCH: page-first reach */
+  var GOLD = [1, 2, 4, 9, 27];
+  function renderPg() {
+    var n = +$("pg").value, h = "", got = 0;
+    for (var p = 1; p <= 30; p++) {
+      var g = GOLD.indexOf(p) >= 0, dl = p <= n; if (g && dl) got++;
+      h += '<div class="tile" style="background:' + (g && dl ? "var(--resp)" : dl ? "var(--req-soft)" : "var(--bg)") + ';' + (g && !dl ? "outline:2px solid var(--disc);" : "") + (g && dl ? "color:var(--bg);" : "") + '">' + (g ? "★" : "") + '</div>';
+    }
+    $("pgTiles").innerHTML = h;
+    $("pgLabel").textContent = n;
+    $("pgMeters").innerHTML = '<span>Global top-5 reached <b>' + got + '/5</b></span><span>Page-first moves <b>' + fmtBytes(n * 380) + '</b></span><span>SemDN moves <b>3.2 KB</b></span>';
+  }
+  $("pg").addEventListener("input", renderPg); renderPg();
+
+  /* MISMATCH: fragile pipeline */
+  var FETCH = { nojs: [["Usable", 16, "var(--resp)"], ["JavaScript shell, most text lost", 16, "var(--disc)"], ["Bot-blocked", 8, "var(--bad)"]],
+                cloud: [["Usable", 30, "var(--resp)"], ["Failed or unusable", 10, "var(--bad)"]] };
+  var fetchMode = "nojs";
+  function renderFetch() {
+    var f = FETCH[fetchMode], tiles = [], r = rng(7);
+    f.forEach(function (k) { for (var i = 0; i < k[1]; i++) tiles.push(k[2]); });
+    for (var i = tiles.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)), t = tiles[i]; tiles[i] = tiles[j]; tiles[j] = t; }
+    $("fetchTiles").innerHTML = tiles.map(function (c) { return '<div class="tile" style="background:' + c + '"></div>'; }).join("");
+    $("fetchLegend").innerHTML = f.map(function (k) { return '<span><i style="background:' + k[2] + '"></i>' + k[0] + '</span>'; }).join("");
+    var n = +$("ops").value;
+    $("opLabel").textContent = n;
+    $("fetchNote").textContent = n * 40 + " fetches hit origins in one freshness window, and " + n + " separate pipelines clean and embed the same text. SemDN does this once per content version.";
+  }
+  seg("fetchBtns", [["nojs", "Plain HTTP GET"], ["cloud", "Cloud renderer"]], "nojs", function (v) { fetchMode = v; renderFetch(); });
+  $("ops").addEventListener("input", renderFetch);
+
+  /* MISSES: the game */
+  var COST = { serve: 0, parent: 1, discover: 5 };
+  var CASES = [
+    { q: "Current free-tier rate limit for the Halden API?", need: "discover", ageDays: 120,
+      c: [[.91, "Free tier: 60 requests per minute per key.", "docs.halden.example/limits", "4 mo"], [.87, "Halden's free plan allows 60 rpm, which is enough for prototypes.", "blog.acme.example", "5 mo"], [.84, "We hit the 60 rpm limit on the free tier last spring.", "forum.devs.example", "7 mo"]],
+      why: "The limit dropped to 30 rpm nine days ago. All three chunks predate that, and they agree with each other." },
+    { q: "What does HTTP status 429 mean?", need: "serve", ageDays: 1100,
+      c: [[.93, "429 Too Many Requests: the client has sent too many requests in a given time.", "rfc.example/6585", "3 yr"], [.86, "Servers may include Retry-After with a 429 response.", "docs.web.example/429", "2 yr"], [.80, "Handle 429 by backing off and retrying.", "blog.ops.example", "2 yr"]],
+      why: "Old, and still right. Nothing external would change this answer." },
+    { q: "can you tell me the opening stock price of impinj for today?", need: "discover", ageDays: 2,
+      c: [[.90, "Impinj is trading at 104.33 as of the 28th of February 2024… The stock's open price was 104.25.", "finance.example/pi", "2 days"], [.74, "Impinj has less than a 11% chance of experiencing some financial distress in the next two years.", "finance.example/pi", "2 days"], [.71, "Impinj Inc Stock Price Forecast for 2024 | April 2024 | Open: 98.260", "forecast.example/pi", "3 days"]],
+      why: "A real CRAG question. The chunk names the exact field and the reader answered 104.25. The right answer was $102.87: the evidence was on topic and about the wrong day." },
+    { q: "how many hardware units has nintendo sold?", need: "discover", ageDays: 2000,
+      c: [[.92, "Nintendo has sold a total of 727.65 million hardware units.", "games.example/nintendo", "6 yr"], [.89, "Nintendo has sold over 700 million total hardware units. Switch sales inch closer to 20 million.", "news.games.example", "6 yr"], [.80, "Recent data has revealed that the Kyoto-based company has shifted over 700 million hardware units.", "blog.games.example", "6 yr"]],
+      why: "Real CRAG again. Every source agrees and every source is old, since the Switch was nearing 20 million. At 6,144 tokens of context the reader still answered 727.65 million. The right answer was 863.07 million. Agreement measured staleness here, not truth." },
+    { q: "what was the average daily high of ficvu this week?", need: "discover", ageDays: 5,
+      c: [[.71, "Earth hit an unofficial record high temperature this week – and stayed there.", "news.climate.example", "5 days"], [.68, "List of cities by average temperature. The temperatures listed are averages of the daily highs and lows.", "encyclopedia.example", "1 yr"], [.61, "This week's highs across the region stayed above average.", "weather.example", "2 days"]],
+      why: "FICVU is a ticker, and the index has only words that look like it. At 1,024 tokens the reader reported a temperature for Suva. The right answer was $10.70." },
+    { q: "How do seat limits differ between Halden Pro and Team?", need: "serve", ageDays: 6,
+      c: [[.63, "Pro | 5 seats | SSO no. Team | 50 seats | SSO yes.", "halden.example/pricing", "6 days"], [.61, "Team adds seats in blocks of ten past the first 50.", "halden.example/pricing", "6 days"], [.55, "Upgrading from Pro to Team keeps your projects.", "docs.halden.example/billing", "6 days"]],
+      why: "The answer is right here. Tables embed poorly, so the scores look weak. A sufficiency judgment would have caught this where a score cannot." },
+    { q: "Does Marrow CLI 3.2 support Python 3.13?", need: "unenrolled", ageDays: 400,
+      c: [[.59, "Marrow CLI 2.8 requires Python 3.9 or later.", "docs.tools.example/marrow", "1 yr"], [.52, "Installing command-line tools with pipx.", "docs.tools.example/pipx", "1 yr"], [.50, "Python 3.13 removes several deprecated modules.", "docs.python.example", "1 yr"]],
+      why: "The release notes exist only on an origin that never enrolled. Discovery finds them, the registry filters them out, and the client at least learns about the gap. Serving or asking your parent hides it." },
+    { q: "How does TCP slow start grow the congestion window?", need: "serve", ageDays: 1800,
+      c: [[.90, "The window grows by up to one segment per ACK, roughly doubling per RTT.", "rfc.example/5681", "5 yr"], [.83, "Slow start ends at ssthresh or on loss.", "notes.net.example", "4 yr"], [.79, "Initial windows are commonly ten segments.", "rfc.example/6928", "5 yr"]],
+      why: "Stable knowledge, well covered. Anything more is wasted." },
+    { q: "Maximum upload size for Quillbase storage?", need: "parent", ageDays: 11,
+      c: [[.72, "Quillbase storage: getting started with buckets.", "docs.quill.example/storage", "11 days"], [.60, "Uploads over a slow link can be resumed.", "docs.quill.example/resume", "11 days"], [.58, "Comparing object stores for small teams.", "blog.acme.example", "2 mo"]],
+      why: "An edge miss, and no coverage miss. Your regional parent holds the limits page, which this PoP evicted." },
+    { q: "Steps to rotate Verrin signing keys?", need: "parent", ageDays: 90,
+      c: [[.69, "v2 guide: rotate keys with verrin keys rotate --all.", "docs.verrin.example/v2", "3 mo"], [.66, "Rotation requires an admin token.", "docs.verrin.example/v2", "3 mo"], [.64, "Key rotation is recommended every 90 days.", "blog.sec.example", "6 mo"]],
+      why: "You cached the v2 guide. Your parent already has the current v3 guide, so a cheap internal lookup is enough." },
+    { q: "Is Halden's EU region down right now?", need: "discover", ageDays: 0.25,
+      c: [[.85, "EU region: all systems operational.", "status.halden.example", "6 hr"], [.79, "The March EU outage lasted 40 minutes.", "halden.example/postmortems", "8 mo"], [.70, "How to read the status page.", "docs.halden.example/status", "1 yr"]],
+      why: "Six hours is ancient for a status page. How fast evidence decays depends on the query, which a TTL set on the object cannot express." },
+    { q: "How much is Verrin's Team plan per seat?", need: "parent", ageDays: 10,
+      c: [[.88, "Verrin Team: $49 per seat per month.", "verrin.example/pricing@v7", "10 days"], [.86, "Verrin Team: $59 per seat per month.", "verrin.example/pricing@v8", "2 days"], [.71, "Verrin raised prices this quarter.", "news.tech.example", "3 days"]],
+      why: "Your cache mixes two versions, and stale evidence beside current evidence degrades answers. The parent's catalog knows v8 is current. Versioned blocks make this cheap to resolve." },
+    { q: "What does Quillbase's architecture diagram show for replication?", need: "serve", ageDays: 20,
+      c: [[.66, "[image region] Three replicas across zones, with quorum writes.", "docs.quill.example/arch#fig2", "20 days"], [.58, "Replication is configured per bucket.", "docs.quill.example/replication", "20 days"], [.53, "Durability targets for storage classes.", "docs.quill.example/durability", "20 days"]],
+      why: "The answer is an image region. Modest cross-modal scores do not mean the evidence is missing." }
+  ];
+  function outcome(need, act) {
+    if (need === "unenrolled") return act === "discover" ? "flagged" : "wrong";
+    if (act === "serve") return need === "serve" ? "ok" : "wrong";
+    if (act === "parent") return need === "discover" ? "wrong" : "ok";
+    return "ok";
+  }
+  function bestAct(need) { return need === "serve" ? "serve" : need === "parent" ? "parent" : "discover"; }
+  function tally(policy) {
+    var wrong = 0, cost = 0;
+    CASES.forEach(function (k) { var a = policy(k); cost += COST[a]; if (outcome(k.need, a) === "wrong") wrong++; });
+    return { wrong: wrong, cost: cost };
+  }
+  var BASELINES = [
+    ["Always serve", function () { return "serve"; }],
+    ["Always search externally", function () { return "discover"; }],
+    ["Discover if top score below 0.70", function (k) { return k.c[0][0] >= .7 ? "serve" : "discover"; }],
+    ["Same, and also if older than 30 days", function (k) { return k.c[0][0] >= .7 && k.ageDays <= 30 ? "serve" : "discover"; }],
+    ["Oracle", function (k) { return bestAct(k.need); }]
+  ];
+  var idx = 0, choices = [];
+  function meters() {
+    var wrong = 0, cost = 0;
+    choices.forEach(function (a, i) { cost += COST[a]; if (outcome(CASES[i].need, a) === "wrong") wrong++; });
+    return { wrong: wrong, cost: cost };
+  }
+  function renderCase(answered) {
+    var k = CASES[idx], m = meters();
+    var h = '<div class="meters"><span>Query <b>' + (idx + 1) + '/' + CASES.length + '</b></span><span>Bad evidence served <b>' + m.wrong + '</b></span><span>Cost <b>' + m.cost + '</b></span></div>' +
+      '<div class="query">' + esc(k.q) + '</div><div class="chunks">' + k.c.map(function (c) {
+        return '<div class="chunk"><span class="score">' + c[0].toFixed(2) + '</span><span>' + esc(c[1]) + '<span class="src">' + esc(c[2]) + '</span></span><span class="age">' + esc(c[3]) + '</span></div>';
+      }).join("") + '</div>';
+    if (!answered) {
+      h += '<div class="actions"><button type="button" data-act="serve">Serve these<span class="cost">cost 0</span></button><button type="button" data-act="parent">Ask regional parent<span class="cost">cost 1</span></button><button type="button" data-act="discover">Search externally<span class="cost">cost 5, SERP plus fetch</span></button></div>';
+    } else {
+      var a = choices[idx], o = outcome(k.need, a);
+      var cls = o === "wrong" ? "bad" : (o === "ok" && a !== bestAct(k.need)) ? "waste" : "good";
+      var head = o === "wrong" ? "Bad evidence reached the agent, and no one was told." : o === "flagged" ? "You paid, and surfaced a coverage gap." : cls === "waste" ? "Correct, but you paid for nothing." : "Good call.";
+      h += '<div class="verdict ' + cls + '"><b>' + head + '</b><span>' + esc(k.why) + '</span></div><div class="row"><button type="button" class="primary" id="nextCase">' + (idx === CASES.length - 1 ? "See how you did" : "Next query") + '</button></div>';
+    }
+    $("game").innerHTML = h;
+  }
+  function renderEnd() {
+    var me = meters();
+    var rows = BASELINES.map(function (b) { var t = tally(b[1]); return [b[0], t.wrong, t.cost, false]; });
+    rows.splice(4, 0, ["You", me.wrong, me.cost, true]);
+    $("game").innerHTML = '<h3>You against the obvious policies</h3><div class="tablewrap"><table><thead><tr><th>Policy</th><th class="num">Bad evidence</th><th class="num">Cost</th></tr></thead><tbody>' +
+      rows.map(function (r) { return '<tr' + (r[3] ? ' class="you"' : '') + '><td>' + r[0] + '</td><td class="num">' + r[1] + '</td><td class="num">' + r[2] + '</td></tr>'; }).join("") +
+      '</tbody></table></div><p>You never saw a miss bit. You had scores, ages, and your own judgment, and in deployment the threshold runs without you. False confidence hides fresh evidence, and a conservative threshold restores the redundant search and origin load you were built to remove.</p><div class="row"><button type="button" id="againGame">Play again</button></div>';
+  }
+  $("game").addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.act) { choices[idx] = b.dataset.act; renderCase(true); }
+    else if (b.id === "nextCase") { idx++; if (idx >= CASES.length) renderEnd(); else renderCase(false); }
+    else if (b.id === "againGame") { idx = 0; choices = []; renderCase(false); }
+  });
+  renderCase(false);
+
+  /* MISSES: controller. Signals add discriminating power to a noisy risk estimate. */
+  var SIGS = [["score", "Score distribution", .7], ["coh", "Result coherence", .3], ["suff", "Sufficiency judgment", .9], ["tier", "Cross-tier agreement", .5], ["age", "Freshness metadata", .6]];
+  var sigOn = { score: true, coh: false, suff: false, tier: false, age: false };
+  function renderSigs() {
+    $("sigs").innerHTML = SIGS.map(function (s) { return '<button type="button" data-s="' + s[0] + '" class="' + (sigOn[s[0]] ? "on" : "") + '" aria-pressed="' + sigOn[s[0]] + '">' + s[1] + '</button>'; }).join("");
+    document.querySelectorAll(".siglist [data-s]").forEach(function (el) { el.classList.toggle("on", !!sigOn[el.dataset.s]); });
+  }
+  function renderCtl() {
+    var th = +$("th").value / 100, drift = $("drift").checked, power = 0;
+    SIGS.forEach(function (s) { if (sigOn[s[0]]) power += s[2]; });
+    if (drift) power *= .6;
+    var base = drift ? .35 : .15, r = rng(42), n = 2000, need = 0, missed = 0, wasted = 0, disc = 0;
+    function gauss() { return Math.sqrt(-2 * Math.log(r() + 1e-9)) * Math.cos(6.283 * r()); }
+    for (var i = 0; i < n; i++) {
+      var y = r() < base, z = (y ? power : 0) - power / 2 + gauss();
+      var risk = 1 / (1 + Math.exp(-1.6 * z));
+      var d = risk > th;
+      if (y) need++;
+      if (d) disc++;
+      if (y && !d) missed++;
+      if (!y && d) wasted++;
+    }
+    $("thLabel").textContent = th.toFixed(2);
+    $("ctl").innerHTML = bar("Needed discovery, did not get it", missed / need * 100, (missed / need * 100).toFixed(0) + "%", "var(--bad)") +
+      bar("Searched for nothing", wasted / (n - need) * 100, (wasted / (n - need) * 100).toFixed(0) + "%", "var(--disc)") +
+      bar("External search rate", disc / n * 100, (disc / n * 100).toFixed(0) + "%", "var(--req)");
+    $("ctlNote").textContent = power === 0 ? "With no signals you are guessing, and the threshold only sets how often you pay." :
+      drift ? "Drift moved the ground under your calibration. Evidence goes stale faster. Calibrating under workload and content drift is the open problem." :
+      "Each signal is imperfect. Ideally a judgment can be made based only on the query and existing evidence and, therefore, before generation.";
+  }
+  $("sigs").addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) { sigOn[b.dataset.s] = !sigOn[b.dataset.s]; renderSigs(); renderCtl(); } });
+  $("th").addEventListener("input", renderCtl); $("drift").addEventListener("change", renderCtl);
+  renderSigs(); renderCtl();
+
+  /* REUSE: trace */
+  var TURNS = [
+    { q: "Billy McFarland, wire fraud, music festival", chunks: [
+      ["new", "William Z. McFarland (born 1991) is a convicted felon charged with defrauding investors out of $27.4 million. He was the founder and CEO of Fyre Media, which promoted the Fyre Festival.", "Billy McFarland"],
+      ["new", "Admitted to using fake documents to attract investors to put more than $26 million into his company.", "Billy McFarland"],
+      ["new", "In March 2018, he pled guilty to one count of wire fraud to defraud investors and a second count to defraud a ticket vendor.", "Fyre Festival"]
+    ]},
+    { q: "Fyre Festival, location", chunks: [
+      ["sibling", "Fyre Festival was a music festival scheduled to take place on the Bahamian island of Great Exuma over two weekends in April and May 2017.", "Fyre Festival"],
+      ["sibling", "Settlement without admitting or denying the charges.", "Fyre Festival"],
+      ["sibling", "Stopped on Great Exuma island in the Bahamas to refuel, and the two conceived the festival after taking the island in.", "Fyre Festival"]
+    ]}
+  ];
+  var tShown = 1;
+  function renderTurns() {
+    $("turns").innerHTML = TURNS.map(function (t, i) {
+      var seen = i < tShown;
+      var chunks = seen ? '<div class="chunks">' + t.chunks.map(function (c) {
+        return '<div class="chunk"><span>' + esc(c[1]) + '<span class="src">' + esc(c[2]) + '</span></span><span class="pill ' + c[0] + '">' + c[0] + '</span></div>';
+      }).join("") + '</div>' : '';
+      return '<div class="' + (seen ? '' : 'future') + '"><div class="turn"><span class="mono muted">turn ' + (i + 1) + '</span><q>' + (seen ? esc(t.q) : '…') + '</q></div>' + chunks + '</div>';
+    }).join("");
+    var sib = 0;
+    if (tShown > 1) TURNS[1].chunks.forEach(function (c) { if (c[0] === "sibling") sib++; });
+    $("turnScore").textContent = tShown < 2 ? "None of these three say where the festival was." : "The agent asked for the location. Great Exuma was rank 40 of the first search, on this same page.";
+    $("turnNext").disabled = tShown >= TURNS.length;
+  }
+  $("turnNext").addEventListener("click", function () { tShown++; renderTurns(); });
+  $("turnReset").addEventListener("click", function () { tShown = 1; renderTurns(); });
+  renderTurns();
+
+  /* FRESHNESS: block timeline */
+  var DOCS = ["Status", "Status", "Status", "Status", "Pricing", "Pricing", "Pricing", "Pricing", "Docs", "Docs", "Docs", "Docs"];
+  var CH = [[2,9,14,22,31,40], [5,18,33], [11,27,44], [7,36], [20], [20,41], [], [30], [], [15], [], []];
+  var QS = (function () { var r = rng(11), q = []; for (var i = 0; i < 70; i++) { var rw = Math.floor(Math.pow(r(), 1.8) * 12); q.push([rw, Math.floor(r() * 48)]); } return q; })();
+  var freshMode = "ttl";
+  function renderFresh() {
+    var ttl = +$("ttl").value, grid = [], fetches = 0, i, t;
+    for (i = 0; i < 12; i++) grid.push([]);
+    var last = []; for (i = 0; i < 12; i++) last[i] = 0;
+    var qByT = {}; QS.forEach(function (q) { (qByT[q[1]] = qByT[q[1]] || []).push(q[0]); });
+    var changed = []; for (i = 0; i < 12; i++) changed[i] = -1;
+    var servedStale = 0, servedFresh = 0, cellsStale = 0;
+    function refreshDoc(row) { for (var j = 0; j < 12; j++) if (DOCS[j] === DOCS[row]) { changed[j] = -1; last[j] = t; } }
+    for (t = 0; t < 48; t++) {
+      for (i = 0; i < 12; i++) if (CH[i].indexOf(t) >= 0) {
+        changed[i] = t;
+        if (freshMode === "purge") { changed[i] = -1; fetches++; }
+      }
+      if (freshMode !== "purge") {
+        for (i = 0; i < 12; i++) if ((t + i * 3) % ttl === 0 && t > 0) {
+          if (freshMode === "ttl") { changed[i] = -1; last[i] = t; fetches++; }
+        }
+        if (freshMode === "piggy") {
+          for (i = 0; i < 12; i++) if (t - last[i] >= ttl && (qByT[t] || []).indexOf(i) >= 0) { refreshDoc(i); fetches += 4; }
+        }
+      }
+      for (i = 0; i < 12; i++) {
+        var stale = changed[i] >= 0, q = (qByT[t] || []).indexOf(i) >= 0;
+        if (stale) cellsStale++;
+        if (q) { if (stale) servedStale++; else servedFresh++; }
+        grid[i][t] = stale ? (q ? 3 : 1) : (q ? 2 : 0);
+      }
+    }
+    var C = 13, L = 56, W = L + 48 * C, H = 12 * C + 20;
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Block freshness over 48 hours">';
+    var fills = ["var(--resp-soft)", "var(--bad)", "var(--req)", "var(--fg)"];
+    for (i = 0; i < 12; i++) {
+      if (i % 4 === 0) s += '<text x="0" y="' + (i * C + 11) + '">' + DOCS[i] + '</text>';
+      for (t = 0; t < 48; t++) s += '<rect x="' + (L + t * C) + '" y="' + (i * C) + '" width="' + (C - 1) + '" height="' + (C - 1) + '" fill="' + fills[grid[i][t]] + '"/>';
+    }
+    [0, 12, 24, 36].forEach(function (x) { s += '<text x="' + (L + x * C) + '" y="' + (H - 4) + '">' + x + ' h</text>'; });
+    $("freshGrid").innerHTML = '<div class="tablewrap">' + s + '</svg></div>';
+    $("ttlLabel").textContent = ttl + " h"; $("ttlWrap").hidden = freshMode === "purge";
+    $("freshMeters").innerHTML = '<span>Stale block-hours <b>' + (cellsStale / 576 * 100).toFixed(0) + '%</b></span><span>Queries given stale evidence <b>' + servedStale + '/' + (servedStale + servedFresh) + '</b></span><span>Origin fetches <b>' + fetches + '</b></span>';
+    $("freshNote").textContent = freshMode === "ttl" ? "Periodic TTL refresh always leaves stale windows, and it spends the same fetches on Docs as on Status. Shorten the TTL and watch origin fetches climb." :
+      freshMode === "piggy" ? "One query's re-fetch refreshes its neighbors in the same document, and content warmed by one tenant serves the cohort. Cold content never gets warmed this way, and hot content still waits for someone to ask." :
+      "An enrolled origin pushes changes, so nothing goes stale and fetches match real changes. Only enrolled origins can do this, which is why the origin contract includes purge and invalidation.";
+  }
+  seg("freshBtns", [["ttl", "Per-block TTL"], ["piggy", "Query piggyback"], ["purge", "Origin purge feed"]], "ttl", function (v) { freshMode = v; renderFresh(); });
+  $("ttl").addEventListener("input", renderFresh);
+
+  /* SHARING: tenants */
+  var OPTS = [["canon", "Canonical index"], ["rerank", "Canonical + own reranker"], ["shared", "Registered encoder X"], ["private", "Private fine-tuned encoder"]];
+  var tenants = ["rerank", "canon", "shared", "private"];
+  var PRESETS = { canon: ["canon", "canon", "canon", "canon"], mix: ["rerank", "canon", "shared", "private"], priv: ["private", "private", "private", "private"] };
+  function repCount() {
+    var reps = {};
+    tenants.forEach(function (t, i) { if (t === "canon" || t === "rerank") reps.canon = 1; else if (t === "shared") reps.shared = 1; else reps["p" + i] = 1; });
+    return Object.keys(reps).length;
+  }
+  function dots(n, cls) {
+    var s = ""; for (var i = 0; i < n; i++) s += '<span class="dot ' + cls + '"></span>';
+    return '<span class="dots" aria-label="' + n + ' copies">' + (n ? s : '<span class="mono small muted">0</span>') + '</span>';
+  }
+  function renderStack() {
+    var r = repCount(), rr = tenants.filter(function (t) { return t === "rerank"; }).length;
+    var rows = [["Fetches per content version", 4, 1], ["Cleaning and normalized blocks", 4, 1], ["Embeddings", 4, r], ["Vector indexes", 4, r], ["Private rerankers and labels", rr, rr]];
+    $("stack").innerHTML = '<div class="layer head"><span>Copies of each layer</span><span>Today</span><span>SemDN</span></div>' +
+      rows.map(function (x) { return '<div class="layer"><span>' + x[0] + '</span>' + dots(x[1], "today") + dots(x[2], "semdn") + '</div>'; }).join("");
+    $("gpu").innerHTML = '<span>GPU-hours to embed a 21M-chunk corpus <b>' + 15 * r + '</b></span><span>Today <b>60</b></span>';
+  }
+  function renderTenants() {
+    $("tenants").innerHTML = tenants.map(function (t, i) {
+      return '<label for="tenant' + i + '">Tenant ' + "ABCD"[i] + '<select id="tenant' + i + '" data-i="' + i + '">' +
+        OPTS.map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === t ? " selected" : "") + '>' + o[1] + '</option>'; }).join("") + '</select></label>';
+    }).join("");
+    renderStack();
+  }
+  $("tenants").addEventListener("change", function (e) { tenants[+e.target.dataset.i] = e.target.value; renderStack(); });
+  document.querySelectorAll("[data-preset]").forEach(function (b) { b.addEventListener("click", function () { tenants = PRESETS[b.dataset.preset].slice(); renderTenants(); }); });
+  renderTenants();
+
+  /* SHARING: amortization curves from outputs/e3_stats.json */
+  var TS = [1, 2, 3, 5, 8, 13, 21, 34, 50];
+  var AM = { "0.6": { f: [1, 1.12, 1.23, 1.46, 1.79, 2.28, 3.12, 4.66, 6.6], e: [1, 1.13, 1.25, 1.47, 1.82, 2.36, 3.23, 4.87, 6.75] },
+             "0.8": { f: [1, 1.16, 1.29, 1.51, 1.81, 2.28, 3.08, 4.24, 5.87], e: [1, 1.18, 1.3, 1.53, 1.83, 2.33, 3.22, 4.4, 6.01] },
+             "1.0": { f: [1, 1.2, 1.36, 1.57, 1.88, 2.34, 3.01, 4.05, 5.2], e: [1, 1.21, 1.34, 1.55, 1.92, 2.33, 3.03, 4.23, 5.5] } };
+  var alpha = "0.8";
+  function renderAmort() {
+    var i = +$("tn").value, a = AM[alpha];
+    $("tnLabel").textContent = TS[i];
+    $("amort").innerHTML = bar("Fetch, clean, chunk", a.f[i] / 7 * 100, a.f[i].toFixed(2) + "×", "var(--resp)") + bar("Embed, shared encoder", a.e[i] / 7 * 100, a.e[i].toFixed(2) + "×", "var(--req)") + bar("Embed, private encoders", 1 / 7 * 100, "1.00×", "var(--disc)");
+  }
+  seg("alphaBtns", [["0.6", "Zipf 0.6"], ["0.8", "Zipf 0.8"], ["1.0", "Zipf 1.0"]], "0.8", function (v) { alpha = v; renderAmort(); });
+  $("tn").addEventListener("input", renderAmort);
+
+  /* SHARING: encoder bridge */
+  function renderBridge() {
+    var K = +$("bigK").value, d = +$("enc").value / 100, h = +$("hot").value / 100;
+    var recall = 1 - Math.exp(-K / (8 + 220 * d * d));
+    var gpu = K * (1 - h) / 392;
+    $("kLabel").textContent = K; $("dLabel").textContent = Math.round(d * 100) + "%"; $("hLabel").textContent = Math.round(h * 100) + "%";
+    $("bridge").innerHTML = bar("Tenant's top-k recalled", recall * 100, (recall * 100).toFixed(0) + "%", "var(--resp)") +
+      bar("Re-encoding per query", gpu / 1.3 * 100, gpu.toFixed(2) + " GPU-s", "var(--disc)");
+    $("bridgeNote").textContent = gpu > .5 && recall < .9 ? "High drift and a big re-encode bill. This tenant has outgrown the canonical index and is due a model-specific one." :
+      recall < .8 ? "The canonical index is losing this tenant's true results. Raise K, add a lexical index alongside, or accept that this encoder is too far away." :
+      "Decoupling recall from ranking keeps the tenant's fine-tuning. A query adapter fit to the canonical space can undo it.";
+  }
+  ["bigK", "enc", "hot"].forEach(function (id) { $(id).addEventListener("input", renderBridge); }); renderBridge();
+
+  /* SHARING: storage vs compute */
+  function renderStore() {
+    var f = +$("st").value / 100, gb = 13.4 + 64.6 * f, gpu = 600 * (1 - f) / 392;
+    $("stLabel").textContent = Math.round(f * 100) + "%";
+    $("store").innerHTML = bar("Storage at this PoP", gb / 78 * 100, gb.toFixed(1) + " GB", "var(--req)") + bar("Recompute per query", gpu / 1.54 * 100, gpu.toFixed(2) + " GPU-s", "var(--disc)");
+    $("storeNote").textContent = f > .8 ? "Your disk fills up with one representation, and each extra encoder multiplies it." : f < .2 ? "Cheap to hold many representations, and every query burns GPU. Does this PoP have one?" :
+      "Hot vectors stored, cold ones recomputed. Where a real edge sits on this surface is open.";
+  }
+  $("st").addEventListener("input", renderStore); renderStore();
+
+  /* MARKET: bill */
+  function renderBill() {
+    var m = +$("billN").value, rep = $("billRep").value, sharers = { canon: 200, rerank: 200, shared: 20, private: 1 }[rep];
+    var deliver = m * 1000 * .10, index = 4000 / sharers + (rep === "rerank" ? 150 : 0), total = deliver + index;
+    $("billLabel").textContent = m + "M";
+    function usd(v) { return "$" + Math.round(v).toLocaleString("en-US"); }
+    $("bill").innerHTML = bar("Delivery", deliver / 14000 * 100, usd(deliver), "var(--resp)") + bar("Index and embedding share", index / 14000 * 100, usd(index), "var(--disc)") + bar("Total", total / 14000 * 100, usd(total), "var(--req)");
+  }
+  $("billRep").addEventListener("change", renderBill); $("billN").addEventListener("input", renderBill); renderBill();
+
+  /* MARKET: adoption */
+  function renderAdopt() {
+    var o = +$("seed").value / 100, fb = +$("fb").value / 100, c = 0, Oh = [o], Ch = [c];
+    function s(x) { return x * x / (x * x + .09); }
+    for (var t = 0; t < 36; t++) {
+      var cov = Math.min(1, o + fb), nc = c + .2 * (s(cov) - c), no = o + .15 * (Math.max(s(c), +$("seed").value / 100) - o);
+      c = nc; o = no; Oh.push(o); Ch.push(c);
+    }
+    $("seedLabel").textContent = $("seed").value + "%"; $("fbLabel").textContent = $("fb").value + "%";
+    var W = 640, H = 200, L = 86, B = 24;
+    function x(i) { return L + i / 36 * (W - L - 12); }
+    function y(v) { return 10 + (1 - v) * (H - 10 - B); }
+    var line = function (a, col) { return '<polyline fill="none" stroke="' + col + '" stroke-width="2.4" points="' + a.map(function (v, i) { return x(i).toFixed(1) + "," + y(v).toFixed(1); }).join(" ") + '"/>'; };
+    var g = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Share of origins enrolled and share of clients arrived, over 36 months">';
+    g += '<text transform="rotate(-90 18 ' + (H / 2) + ')" x="18" y="' + (H / 2) + '" text-anchor="middle">Percent of the group</text>';
+    [0, .5, 1].forEach(function (v) { g += '<line x1="' + L + '" x2="' + (W - 12) + '" y1="' + y(v) + '" y2="' + y(v) + '" stroke="var(--line)"/><text x="' + (L - 8) + '" y="' + (y(v) + 4) + '" text-anchor="end">' + (v * 100) + '%</text>'; });
+    [0, 12, 24, 36].forEach(function (m) { g += '<text x="' + x(m) + '" y="' + (H - 6) + '" text-anchor="' + (m === 36 ? "end" : "middle") + '">' + m + ' mo</text>'; });
+    g += line(Oh, "var(--resp)") + line(Ch, "var(--req)") + '</svg><div class="legend"><span><i style="background:var(--resp)"></i>Origins enrolled, 36 mo: ' + Math.round(o * 100) + '%</span><span><i style="background:var(--req)"></i>Clients arrived, 36 mo: ' + Math.round(c * 100) + '%</span></div>';
+    $("adopt").innerHTML = g;
+    $("adoptNote").textContent = c > .6 ? "It tips. Coverage draws clients, and their traffic makes offload worth buying. Settlement is the main adoption hurdle, and this is what clearing it looks like." :
+      c > .25 ? "It grows, then stalls on a niche of early enrollees." : "Stuck. Clients see poor coverage and origins see no agents worth offloading. An operator that already holds origins, or a discovery fallback that gives clients value on day one, can break this.";
+  }
+  $("seed").addEventListener("input", renderAdopt); $("fb").addEventListener("input", renderAdopt); renderAdopt();
+
+  /* TRUST: audit */
+  function renderAudit() {
+    var f = +$("au").value / 100, p = +$("pr").value / 10, ta = +$("ta").value / 100;
+    var added = f * p * 1000, catchAfter = Math.round(1 / (f * ta));
+    $("auLabel").textContent = Math.round(f * 100) + "%"; $("prLabel").textContent = p.toFixed(1) + " s"; $("taLabel").textContent = Math.round(ta * 100) + "%";
+    $("audit").innerHTML = bar("Added wait per answer, average", added / 2000 * 100, Math.round(added) + " ms", "var(--disc)");
+    $("auditNote").textContent = f === 0 ? "No checks means nothing is ever caught, and a cheating edge knows it." :
+      "Checked: " + Math.round(f * 100) + "% of answers. The edge cheats on " + Math.round(ta * 100) + "%. On average it is caught after about " + catchAfter.toLocaleString("en-US") + " queries. But the average answer now waits " + Math.round(added) + " ms more, and an agent searches several times per task. Making the check cheap enough to run is open.";
+  }
+  ["au", "pr", "ta"].forEach(function (id) { $(id).addEventListener("input", renderAudit); }); renderAudit();
+
+  /* Presenter window: press P to open the script on a second monitor */
+  var talk = {}, curCh, pres = null, presTick = null, presSize = 22;
+  var clock = { run: false, total: 0, since: 0, chAt: 0 };
+  function parseChapter(raw) {
+    var t = { time: "", blocks: [], steps: [], raw: raw };
+    raw.split("\n").forEach(function (line) {
+      var l = line.trim();
+      if (!l) return;
+      if (/^\(about .*\)$/.test(l)) { t.time = l.slice(1, -1); }
+      else if (l.slice(0, 4) === "[do]") { t.blocks.push({ act: true, step: t.steps.length, text: l.slice(4).trim() }); t.steps.push(l.slice(4).trim()); }
+      else { t.blocks.push({ act: false, text: l }); }
+    });
+    return t;
+  }
+  var talkSaved = {};
+  try { talkSaved = JSON.parse(localStorage.getItem("edge-script-v3")) || {}; presSize = +localStorage.getItem("edge-pres-size") || presSize; } catch (e) {}
+  /* One script: the copy you saved. A fix is applied onto that copy, not a second text. */
+  function patchSaved(raw, kind) {
+    if (!raw) return raw;
+    if (kind === "sharing") {
+      raw = raw.split("A cached page can be served to any client. An index serves the clients that embed the same way. An HNSW graph stores neighbors in one embedding space, and those neighbors are not the neighbors for a different encoder.").join("");
+      var oldNum = "At fifty tenants and a shared encoder, the chart reads 5.87 times for fetch and cleaning, and 6.01 times for embedding. With a private encoder per tenant, embedding stays at 1.00 times. The saving follows overlap in the pages they request.";
+      var newNum = "At fifty tenants, fetching and cleaning once for everyone is 5.87 times less work than each tenant doing it alone. Embedding with one shared encoder is 6.01 times less work. If every tenant brings its own encoder, the embeddings are not shared, and that work is not reduced.";
+      if (raw.indexOf(oldNum) >= 0) raw = raw.split(oldNum).join(newNum);
+      if (!/\[do\][^\n]*mix/i.test(raw)) {
+        var block = '[do] Select "A realistic mix".\n\nTwo tenants stay on the canonical index, one uses a registered encoder the others can share, and one brings a private encoder, so the fetch and the cleaning stay one copy and the embeddings are three copies.\n\n';
+        var sweep = raw.match(/\[do\][^\n]*[Tt]enant[^\n]*\n/);
+        if (sweep) raw = raw.replace(sweep[0], block + sweep[0]);
+      }
+    }
+    if (kind === "fresh") {
+      raw = raw.replace(/\[do\][^\n]*January[^\n]*\n+(?:(?!\[do\])[\s\S])*/i, "");
+      raw = raw.replace(/\[do\][^\n]*March[^\n]*\n+(?:(?!\[do\])[\s\S])*/i, "");
+    }
+    if (kind === "market") {
+      var oldPay = "The origin pays for offload, freshness, and protection, so its contract is about the content: enrollment, which transformations are permitted, freshness, purge, access control, and provenance. The client pays for retrieval, so the encoder, the chunking, the reranker, and the outcome labels are settled with the network. The origin's contract does not contain them.";
+      var newPay = "An origin pays a CDN because requests for its pages would otherwise land on its own servers. The CDN keeps a copy and answers from close by, so the origin spends less bandwidth and stays up when the traffic spikes. Freshness, purge, and provenance are not what it is buying. They are the terms of letting the network hold that copy: which transformations are permitted, how old a copy may be, how to wipe it, who may receive it, and that a chunk can be traced back. Without those, it is no longer the origin's page.\n\nThe client pays for a different service. It wants retrieval, so the encoder, the chunking, the reranker, and the outcome labels are settled with the network. The origin's contract does not contain them.";
+      if (raw.indexOf(oldPay) >= 0) raw = raw.split(oldPay).join(newPay);
+      var oldEnc = "Embedding is a transformation of the origin's text, so it looks like the origin's setting. The origin can forbid embedding. It does not pick the encoder. Two clients of the same page want different rankings, and the origin does not see those queries.";
+      var saidEnc = "Someone will say the encoder belongs to the origin. Embedding turns the page into vectors, and the origin already decides which transformations are allowed.\n\nWhat the origin decides is the permission. It can refuse to have its pages embedded. It does not choose which encoder a client ranks with. Earlier, the support bot and the compliance agent wanted different chunks of the same page. The origin never sees either query, so it cannot make that choice.";
+      var newEnc = "I do not have a clean answer on the encoder. It looks like the origin's choice, because embedding turns the page into vectors and the origin already decides which transformations are allowed.\n\nRefusal does not hold. If the origin says no, a client can still fetch the page the way the web works today. A CDN serves the bytes, and the client embeds them. If SemDN is the one that refuses, the client leaves and does that, and SemDN is less useful. The origin cannot enforce a ban on embedding, and honoring one inside SemDN hurts the service.";
+      if (raw.indexOf(oldEnc) >= 0) raw = raw.split(oldEnc).join(newEnc);
+      if (raw.indexOf(saidEnc) >= 0) raw = raw.split(saidEnc).join(newEnc);
+      if (/\[do\][^\n]*Sort four items/i.test(raw)) {
+        var roles = '[do] Show "Whose decision is it?".\n\n' + newPay + '\n\n[do] Show the pushback on the encoder.\n\n' + newEnc + '\n\n[do] Show the pushback on freshness.\n\nThe client knows when a question is time-sensitive. The Halden limit changed, and an origin bound can still serve the old number. The client can refuse those chunks and pay for a search. Only the origin knows the page changed, so the bound stays with the origin.\n\n';
+        raw = raw.replace(/\[do\][^\n]*Sort four items[^\n]*\n+(?:(?!\[do\])[\s\S])*/i, roles);
+      }
+      if (/\[do\][^\n]*adoption chart/i.test(raw)) {
+        var adopt = '[do] Show the adoption chart at 5 percent enrolled.\n\nThis figure asks whether SemDN ever gets going. It follows two groups for 36 months. The origins line is how many origins have enrolled, out of all origins. The clients line is how many clients have shown up, out of all clients. Up the side of the figure, zero means none of that group and 100 percent means all of it. One line is a fraction of origins. The other is a fraction of clients.\n\nOrigins enroll when agents are already arriving. Agents arrive when the content is covered and can be delivered efficiently. At 5 percent of origins enrolled at launch, both shares stay low. An origin has nothing to offload, and a client does not have enough coverage to switch.\n\n[do] Move "Origins enrolled at launch" to 15 percent.\n\nAt 15 percent enrolled before anyone is asking, clients show up, and their traffic gives the remaining origins a reason to enroll. The hard part is convincing that many sites with no traffic to show them.\n\n[do] Set "Origins enrolled at launch" to 0 and "Clients\' discovery fallback" to 8%.\n\nThe other opening does not wait for origins. A client already fetches, cleans, chunks, and embeds. SemDN can do that acquisition on the public web and return the chunks. In this model, coverage of about 8 percent from that fallback, with no origins enrolled, is enough for clients to arrive. Their traffic then marks the domains worth an enrollment pitch: these fetches are landing on you.\n\nTwo ways this still fails. If no client will send the query, there is no traffic to take to an origin. If SemDN waits for enrollment before it will fetch, the client fetches the page itself and SemDN serves less. An operator that already sits in front of origins can start from that side, and it still has to get clients to send the query to the edge.';
+        raw = raw.replace(/\[do\][^\n]*adoption chart[\s\S]*$/i, adopt);
+      }
+    }
+    return raw.replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
+  }
+  var savedDirty = false;
+  ["sharing", "fresh", "market", "trust"].forEach(function (k) {
+    if (!talkSaved[k]) return;
+    var next = patchSaved(talkSaved[k], k);
+    if (next !== talkSaved[k]) { talkSaved[k] = next; savedDirty = true; }
+  });
+  if (savedDirty) { try { localStorage.setItem("edge-script-v3", JSON.stringify(talkSaved)); } catch (e) {} }
+  $("talkScript").textContent.split(/^## /m).slice(1).forEach(function (part) {
+    var cut = part.indexOf("\n"), label = part.slice(0, cut).trim(), raw = part.slice(cut + 1).trim();
+    var c = chapters.filter(function (x) { return x.dataset.label === label; })[0].dataset.ch;
+    talk[c] = parseChapter(talkSaved[c] || raw);
+  });
+  function mmss(ms) { var s = Math.floor(ms / 1000); return ("0" + Math.floor(s / 60)).slice(-2) + ":" + ("0" + s % 60).slice(-2); }
+  function clockNow() { return clock.total + (clock.run ? Date.now() - clock.since : 0); }
+  function presOpen() { return pres && !pres.closed; }
+  function presNotice(msg) {
+    var n = document.createElement("div");
+    n.textContent = msg;
+    n.style.cssText = "position:fixed;left:16px;right:16px;bottom:16px;padding:12px 16px;background:var(--panel);color:var(--fg);border:1px solid var(--bad);border-radius:6px;z-index:99";
+    document.body.appendChild(n);
+    setTimeout(function () { n.remove(); }, 7000);
+  }
+  function presPaintClock() {
+    if (!presOpen()) { clearInterval(presTick); return; }
+    var d = pres.document, now = clockNow();
+    d.getElementById("total").textContent = mmss(now);
+    d.getElementById("chapter").textContent = mmss(now - clock.chAt);
+    d.getElementById("toggle").textContent = clock.run ? "Pause" : (now ? "Resume" : "Start");
+  }
+  function presPaint() {
+    if (!presOpen()) return;
+    var d = pres.document, i = chapters.map(function (c) { return c.dataset.ch; }).indexOf(curCh), t = talk[curCh];
+    d.documentElement.dataset.mode = isDark() ? "dark" : "light";
+    if (presEdit && presEdit === curCh) return;
+    if (presEdit) { editCommit(); editClose(); }
+    d.title = "Presenter: " + chapters[i].dataset.label;
+    d.getElementById("chs").innerHTML = chapters.map(function (c) { return '<button type="button" data-go="' + c.dataset.ch + '"' + (c.dataset.ch === curCh ? ' class="on"' : "") + ">" + c.dataset.label + "</button>"; }).join("");
+    d.getElementById("allot").textContent = t.time;
+    d.getElementById("text").innerHTML = t.blocks.map(function (b) { return b.act ? '<p class="act" data-step="' + b.step + '">' + esc(b.text) + "</p>" : "<p>" + esc(b.text) + "</p>"; }).join("");
+    d.getElementById("text").style.fontSize = presSize + "px";
+    d.getElementById("text").scrollTop = 0;
+    presMark(false);
+    presPaintClock();
+  }
+  function presenter(attached) {
+    pres = attached || window.open("", "edgePresenter", "popup,width=1100,height=800");
+    if (!pres) { presNotice("The browser blocked the presenter window. Allow pop-ups for this page, then press P again."); return; }
+    var d;
+    /* After a browser reload the old window belongs to the old page and cannot be reused */
+    try { d = pres.document; d.body.id; }
+    catch (e) {
+      pres.close();
+      pres = null;
+      presNotice("The page was reloaded, so the old script window closed. Press P to open it again.");
+      return;
+    }
+    window.__presWin = pres;
+    d.documentElement.replaceChild(d.createElement("body"), d.body);
+    d.head.innerHTML = '<meta charset="utf-8"><title>Presenter</title><style>' +
+      'html{--bg:#f4f6fb;--panel:#fff;--fg:#1d2333;--muted:#586078;--line:#d3d9e8;--act:#0b8574}' +
+      'html[data-mode=dark]{--bg:#12162a;--panel:#1b2038;--fg:#e8ebf6;--muted:#a3abc6;--line:#343b5c;--act:#4fd0ba}' +
+      'body{margin:0;height:100vh;display:flex;flex-direction:column;background:var(--bg);color:var(--fg);font:16px "Helvetica Neue",Arial,sans-serif}' +
+      'header{flex:none;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel)}' +
+      '.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.row+.row{margin-top:10px}' +
+      'button{font:inherit;font-size:14px;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:5px 10px;cursor:pointer}' +
+      'button.on{background:var(--act);border-color:var(--act);color:var(--bg);font-weight:600}' +
+      '.time{font:600 26px ui-monospace,Menlo,monospace;margin-right:4px}.lab{color:var(--muted);font-size:14px}.gap{flex:1}' +
+      '#text{flex:1;overflow-y:auto;padding:16px;line-height:1.5}#text p{margin:0 0 .8em}' +
+      '#text p.act{color:var(--act);font-weight:600;font-size:.82em;border-left:4px solid var(--act);padding-left:10px}#text p.act::before{content:"DO  ";white-space:pre}' +
+      '#text p.done{opacity:.5}#text p.done::before{content:"DONE  "}#text p.up{background:var(--panel);outline:2px solid var(--act);padding:6px 10px}#text::after{content:"";display:block;height:60vh}' +
+      'footer{flex:none;padding:10px 16px;border-top:1px solid var(--line);background:var(--panel);display:flex;gap:10px;align-items:center}' +
+      '#fwd{flex:1;text-align:left;font-size:18px;font-weight:600;padding:12px 14px;background:var(--act);border-color:var(--act);color:var(--bg)}#back{padding:12px 14px}#status{font-size:14px;color:var(--muted);padding:0 16px 8px;background:var(--panel)}</style>';
+    d.body.innerHTML = '<header><div class="row" id="chs"></div><div class="row"><span class="lab">Total</span><span class="time" id="total"></span><span class="lab">Chapter</span><span class="time" id="chapter"></span><span class="lab" id="allot"></span><span class="gap"></span><button type="button" id="toggle"></button><button type="button" id="reset">Reset timer</button><button type="button" id="smaller">A-</button><button type="button" id="larger">A+</button><button type="button" id="edit">Edit</button><button type="button" id="cancel" hidden>Cancel</button><button type="button" id="export">Export .md</button><button type="button" id="over">Start over</button></div></header><div id="text"></div><footer><button type="button" id="back">Back</button><button type="button" id="fwd"></button></footer><div id="status"></div>';
+    d.body.addEventListener("click", function (e) {
+      var b = e.target.closest("button");
+      if (!b) return;
+      b.blur();
+      if (b.dataset.go) { if (!presEdit || editCommit()) { editClose(); show(b.dataset.go, true); } return; }
+      if (b.id === "edit") { if (!presEdit) editOpen(); else if (editCommit()) { editClose(); presPaint(); } return; }
+      if (b.id === "cancel") { editClose(); presPaint(); return; }
+      if (b.id === "export") { exportScript(); return; }
+      if (b.id === "over") { startOver(b); return; }
+      if (b.id === "fwd") { stepNext(); return; }
+      if (b.id === "back") { stepBack(); return; }
+      if (b.id === "toggle") { if (clock.run) { clock.total = clockNow(); clock.run = false; } else { clock.since = Date.now(); clock.run = true; } }
+      if (b.id === "reset") { clock.run = false; clock.total = 0; clock.chAt = 0; }
+      if (b.id === "smaller") { presSize = Math.max(14, presSize - 2); d.getElementById("text").style.fontSize = presSize + "px"; try { localStorage.setItem("edge-pres-size", presSize); } catch (e) {} }
+      if (b.id === "larger") { presSize = Math.min(44, presSize + 2); d.getElementById("text").style.fontSize = presSize + "px"; try { localStorage.setItem("edge-pres-size", presSize); } catch (e) {} }
+      presPaintClock();
+    });
+    clearInterval(presTick);
+    presTick = setInterval(presPaintClock, 500);
+    presPaint();
+    if (!pres.__presKeys) { pres.__presKeys = true; d.addEventListener("keydown", function (e) { window.__presKey(e); }); }
+    pres.focus();
+  }
+  /* Clicker steps: each [do] line in the script is one press of Space or the right arrow */
+  var stepAt = {}, stepUndo = {}, presLast = "";
+  function flash(el) {
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.classList.add("presFlash");
+    setTimeout(function () { el.classList.remove("presFlash"); }, 1500);
+  }
+  function inHost(host, sel) { return $(host).querySelector(sel); }
+  function heading(text) { return [].filter.call(document.querySelectorAll("h3"), function (x) { return x.textContent.indexOf(text) === 0; })[0]; }
+  function goHead(text) { return function () { flash(heading(text)); return function () {}; }; }
+  function goHost(host) { return function () { flash($(host)); return function () {}; }; }
+  function choose(host, v) {
+    return function () {
+      var was = inHost(host, ".on"), wasV = was && was.dataset.v;
+      flash($(host));
+      inHost(host, '[data-v="' + v + '"]').click();
+      return function () { if (wasV) inHost(host, '[data-v="' + wasV + '"]').click(); };
+    };
+  }
+  function moveTo(id, to, from) {
+    var el = $(id), was = el.value, a = from === undefined ? +was : from, n = 0, N = 22;
+    function put(v) { el.value = v; el.dispatchEvent(new Event("input", { bubbles: true })); }
+    flash(el);
+    var gen = window.__gen, timer = setInterval(function () {
+      if (gen !== window.__gen) { clearInterval(timer); return; }
+      n++;
+      put(n === N ? to : a + (to - a) * n / N);
+      if (n === N) clearInterval(timer);
+    }, 40);
+    return function () { clearInterval(timer); put(was); };
+  }
+  function slide(id, to, from) { return function () { return moveTo(id, to, from); }; }
+  function slides(list) { return function () { var u = list.map(function (l) { return moveTo(l[0], l[1]); }); return function () { u.forEach(function (f) { f(); }); }; }; }
+  function reveal(host) { return function () { flash($(host)); inHost(host, "[data-r]").click(); }; }
+  function jump(host, skip) {
+    return function () {
+      var nx = inHost(host, "[data-nx]");
+      if (nx) nx.click();
+      for (var n = 0; n < skip; n++) { inHost(host, "[data-r]").click(); inHost(host, "[data-nx]").click(); }
+      flash($(host));
+    };
+  }
+  function nextCase() { var b = $("nextCase"); if (b) b.click(); }
+  function act(a) { inHost("game", '[data-act="' + a + '"]').click(); }
+  var STEPS = {
+    start: [goHead("One request"), choose("pathBtns", "index"), choose("pathBtns", "semdn"), goHead("What one query costs"), goHead("Two systems")],
+    mismatch: [goHost("simGame"), reveal("simGame"), jump("simGame", 2), slide("bud", 9, 1), goHost("pairBtns"), slide("pg", 20), goHead("Real queries")],
+    misses: [goHost("game"),
+      function () { flash($("game")); act("serve"); },
+      function () { nextCase(); flash($("game")); },
+      function () { flash($("game")); act("serve"); },
+      function () { nextCase(); flash($("game")); },
+      function () { flash($("game")); act("serve"); },
+      function () { while ($("nextCase")) { nextCase(); if (idx < CASES.length) act(bestAct(CASES[idx].need)); } flash($("game")); },
+      goHead("More context"),
+      function () { flash($("sigs")); var b = inHost("sigs", '[data-s="suff"]'); b.click(); return function () { inHost("sigs", '[data-s="suff"]').click(); }; },
+      slide("th", 30),
+      function () { var d = $("drift"); flash(d); d.click(); return function () { d.click(); }; }],
+    reuse: [function () {
+        flash($("turns"));
+        var n = 0, gen = window.__gen, timer = setInterval(function () { if (gen !== window.__gen) { clearInterval(timer); return; } $("turnNext").click(); if (++n >= TURNS.length) clearInterval(timer); }, 500);
+        return function () { clearInterval(timer); $("turnReset").click(); };
+      },
+      goHead("Already retrieved")],
+    fresh: [choose("freshBtns", "ttl"), choose("freshBtns", "piggy"), choose("freshBtns", "purge"), goHead("Three ways")],
+    sharing: [
+      function () { flash($("tenants")); document.querySelector('[data-preset="canon"]').click(); },
+      function () { flash($("tenants")); document.querySelector('[data-preset="priv"]').click(); },
+      function () { flash($("tenants")); document.querySelector('[data-preset="mix"]').click(); },
+      slide("tn", 8, 0), slides([["enc", 80], ["bigK", 300]]), slide("st", 80)],
+    market: [
+      goHost("roleSplit"), goHost("roleEncoder"), goHost("roleFresh"),
+      goHost("bill"),
+      function () { var r = $("billRep"); flash(r); r.value = "private"; r.dispatchEvent(new Event("input", { bubbles: true })); r.dispatchEvent(new Event("change", { bubbles: true })); },
+      function () { var r = $("billRep"); flash(r); r.value = "canon"; r.dispatchEvent(new Event("input", { bubbles: true })); r.dispatchEvent(new Event("change", { bubbles: true })); },
+      goHost("adopt"), slide("seed", 15), slides([["seed", 0], ["fb", 8]])],
+    trust: [goHost("trustSaid"), goHost("trustBest"), goHost("trustAll"), slide("au", 20)],
+    argue: []
+  };
+  function nextChapter() { var i = chapters.map(function (c) { return c.dataset.ch; }).indexOf(curCh); return chapters[i + 1]; }
+  function presMark(follow) {
+    if (!presOpen()) return;
+    var d = pres.document, at = stepAt[curCh] || 0, t = talk[curCh], nc = nextChapter(), last = null;
+    [].forEach.call(d.querySelectorAll("#text p.act"), function (p) {
+      var k = +p.dataset.step;
+      p.className = "act" + (k < at ? " done" : k === at ? " up" : "");
+      if (k === at - 1) last = p;
+    });
+    d.getElementById("fwd").textContent = at < t.steps.length ? "Next (" + (at + 1) + " of " + t.steps.length + "): " + t.steps[at] : nc ? "Next chapter: " + nc.dataset.label : "End of the talk";
+    d.getElementById("fwd").disabled = at >= t.steps.length && !nc;
+    d.getElementById("status").textContent = presLast;
+    if (follow && last) d.getElementById("text").scrollTop = last.offsetTop - d.getElementById("text").offsetTop - 8;
+  }
+  function stepNext() {
+    var at = stepAt[curCh] || 0, t = talk[curCh], nc = nextChapter();
+    if (at >= t.steps.length) { if (nc) { presLast = "On screen: " + nc.dataset.label; show(nc.dataset.ch, true); } return; }
+    var undo, fn = STEPS[curCh][at], label = (t.steps[at] || "").toLowerCase();
+    if (curCh === "sharing") {
+      if (label.indexOf("mix") >= 0) fn = STEPS.sharing[2];
+      else if (label.indexOf("canonical") >= 0) fn = STEPS.sharing[0];
+      else if (label.indexOf("private") >= 0) fn = STEPS.sharing[1];
+      else if (label.indexOf("tenant") >= 0) fn = STEPS.sharing[3];
+      else if (label.indexOf("drift") >= 0 || label.indexOf("candidate") >= 0) fn = STEPS.sharing[4];
+      else if (label.indexOf("stored") >= 0) fn = STEPS.sharing[5];
+    }
+    if (curCh === "market") {
+      if (label.indexOf("private") >= 0) fn = STEPS.market[4];
+      else if (label.indexOf("canonical") >= 0) fn = STEPS.market[5];
+      else if (label.indexOf("pricing") >= 0 || label.indexOf("steer") >= 0) fn = STEPS.market[3];
+      else if (label.indexOf("fallback") >= 0 || label.indexOf("discovery") >= 0) fn = STEPS.market[8];
+      else if (label.indexOf("15") >= 0) fn = STEPS.market[7];
+      else if (label.indexOf("adoption") >= 0 || label.indexOf("5 percent") >= 0) fn = STEPS.market[6];
+      else if (label.indexOf("fresh") >= 0) fn = STEPS.market[2];
+      else if (label.indexOf("encoder") >= 0) fn = STEPS.market[1];
+      else if (label.indexOf("whose") >= 0 || label.indexOf("decision") >= 0 || label.indexOf("sort") >= 0) fn = STEPS.market[0];
+    }
+    if (!fn) { presLast = "No button for this line."; (stepUndo[curCh] = stepUndo[curCh] || [])[at] = { undo: function () {}, y: window.scrollY }; stepAt[curCh] = at + 1; presMark(true); return; }
+    try { undo = fn(); presLast = "Done: " + t.steps[at]; }
+    catch (e) { presLast = "Could not run, probably already played: " + t.steps[at]; }
+    (stepUndo[curCh] = stepUndo[curCh] || [])[at] = { undo: undo, y: window.scrollY };
+    stepAt[curCh] = at + 1;
+    presMark(true);
+  }
+  function stepBack() {
+    var at = stepAt[curCh] || 0, names = chapters.map(function (c) { return c.dataset.ch; }), i = names.indexOf(curCh);
+    if (!at) { if (i) { presLast = "On screen: " + chapters[i - 1].dataset.label; show(names[i - 1], true); } return; }
+    var u = stepUndo[curCh] && stepUndo[curCh][at - 1];
+    if (!u || !u.undo) { presLast = "This step cannot be undone. The audience screen still shows its result."; presMark(false); return; }
+    u.undo();
+    stepAt[curCh] = at - 1;
+    presLast = "Undone: " + talk[curCh].steps[at - 1];
+    presMark(true);
+  }
+  function presKey(e) {
+    if (e.target && e.target.tagName === "TEXTAREA") return;
+    if (e.metaKey || e.ctrlKey || e.altKey || !presOpen()) return;
+    if (e.key === " " || e.key === "ArrowRight" || e.key === "PageDown") { e.preventDefault(); if (!e.repeat) stepNext(); }
+    else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); if (!e.repeat) stepBack(); }
+  }
+  /* Editing the script in the presenter window; edits stay in this browser */
+  var presEdit = null;
+  function editOpen() {
+    var d = pres.document;
+    presEdit = curCh;
+    d.getElementById("text").innerHTML = '<textarea id="ed" spellcheck="true" style="width:100%;height:calc(100vh - 230px);box-sizing:border-box;font:inherit;color:inherit;background:var(--panel);border:1px solid var(--line);padding:10px"></textarea>';
+    d.getElementById("ed").value = talk[curCh].raw;
+    d.getElementById("edit").textContent = "Save";
+    d.getElementById("cancel").hidden = false;
+    d.getElementById("status").textContent = "Each [do] line is one press. Save keeps this text.";
+    d.getElementById("ed").focus();
+  }
+  function editClose() {
+    presEdit = null;
+    if (!presOpen()) return;
+    var d = pres.document;
+    d.getElementById("edit").textContent = "Edit";
+    d.getElementById("cancel").hidden = true;
+  }
+  function editCommit() {
+    var d = pres.document, raw = d.getElementById("ed").value.trim(), t = parseChapter(raw);
+    talk[presEdit] = t;
+    d.getElementById("status").style.color = "";
+    try { var all = JSON.parse(localStorage.getItem("edge-script-v3")) || {}; all[presEdit] = raw; localStorage.setItem("edge-script-v3", JSON.stringify(all)); presLast = "Saved in this browser. Use Export .md to keep a copy."; }
+    catch (e) { presLast = "Changed for now, but this browser would not store it. Use Export .md before reloading."; }
+    return true;
+  }
+  function exportScript() {
+    var d = pres.document, a = d.createElement("a");
+    if (presEdit && editCommit()) { editClose(); presPaint(); }
+    var md = "# HotNets 26 Demo\n\n" + chapters.map(function (c) { return "## " + c.dataset.label + "\n\n" + talk[c.dataset.ch].raw.replace(/\n*$/, "") + "\n"; }).join("\n");
+    a.href = pres.URL.createObjectURL(new pres.Blob([md], { type: "text/markdown" }));
+    a.download = "Artifact_Script.md";
+    d.body.appendChild(a); a.click(); a.remove();
+  }
+  /* Start over: a fresh page, with the same script window reattaching by itself */
+  var overArmed = null;
+  function startOver(b) {
+    if (!overArmed) {
+      b.textContent = "Click again to reset";
+      overArmed = setTimeout(function () { overArmed = null; if (presOpen()) b.textContent = "Start over"; }, 4000);
+      return;
+    }
+    if (presEdit && !editCommit()) return;
+    clearInterval(presTick);
+    window.__gen = (window.__gen || 0) + 1;
+    document.querySelector("nav").replaceWith(window.__fresh.nav.cloneNode(true));
+    $("main").replaceWith(window.__fresh.main.cloneNode(true));
+    location.hash = "";
+    window.scrollTo(0, 0);
+    window.__boot();
+  }
+  window.__presKey = presKey;
+  window.__presOpen = presenter;
+  if (!window.__keysOn) {
+    window.__keysOn = true;
+    document.addEventListener("keydown", function (e) {
+      if ((e.key === "p" || e.key === "P") && !e.metaKey && !e.ctrlKey && !e.altKey && !(e.target && e.target.tagName === "TEXTAREA")) window.__presOpen();
+      else window.__presKey(e);
+    });
+  }
+
+  /* Open the chapter named in the link, if any */
+  var h = location.hash.slice(1);
+  show(chapters.some(function (c) { return c.dataset.ch === h; }) ? h : "start", false);
+  if (window.__presWin && !window.__presWin.closed) presenter(window.__presWin);
+};
+window.__fresh = { nav: document.querySelector("nav").cloneNode(true), main: document.getElementById("main").cloneNode(true) };
+window.__boot();
+</script>
+
+</html>

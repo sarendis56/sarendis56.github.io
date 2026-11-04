@@ -103,6 +103,7 @@ main:
     link: https://arxiv.org/abs/2609.22486
     pdf: assets/docs/HotNets26.pdf
     code: https://github.com/sarendis56/SemDN_HotNets26
+    demo: /papers/semantics-delivery-network/demo/
     bibtex: |
       @inproceedings{hua2026semantics,
         title={Semantics Delivery Network: Rethinking Web Retrieval Infrastructure for LLM Agents},

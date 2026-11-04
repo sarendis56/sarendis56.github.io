@@ -60,6 +60,7 @@
           {% if publication.link %}<a href="{{ publication.link | escape }}">{% if project.arxiv_id %}arXiv record{% else %}Publication record{% endif %}</a>{% endif %}
           {% if publication.source_pdf %}<a href="{{ publication.source_pdf | escape }}">arXiv PDF</a>{% endif %}
           {% if publication.code %}<a href="{{ publication.code | escape }}">Code</a>{% endif %}
+          {% if publication.demo %}<a href="{{ publication.demo | relative_url }}">Interactive demo</a>{% endif %}
           {% if publication.slides %}<a href="{{ publication.slides | absolute_url }}">Slides</a>{% endif %}
           {% if publication.video %}<a href="{{ publication.video | escape }}">Video</a>{% endif %}
         </div>
