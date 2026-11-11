@@ -4,6 +4,8 @@ layout: homepage
 
 ## About Me
 
+<div class="sh-prompt" aria-hidden="true" data-nosnippet>cat about.md</div>
+
 I completed my bachelor's in Computer Science at the [School of Data Science](https://sds.cuhk.edu.cn/), The Chinese University of Hong Kong, Shenzhen ([CUHK-Shenzhen](https://cuhk.edu.cn/)). I was an exchange [tar heel](https://en.wikipedia.org/wiki/Tar_Heel) at the University of North Carolina at Chapel Hill in Year 2024-25.
 
 My research interests span adversarial machine learning, information retrieval, privacy computing, and hardware security. Recently I am interested in threats and defense problems in agentic AI, information retrieval, and emerging paradigms of RAG. I am always open to research discussions and collaborations!
