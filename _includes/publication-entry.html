@@ -36,6 +36,10 @@
         <a href="{{ publication.slides }}" class="btn btn-sm z-depth-0" role="button" target="_blank"
           style="font-size:12px;">Slides</a>
         {% endif %}
+        {% if publication.poster %}
+        <a href="{{ publication.poster }}" class="btn btn-sm z-depth-0" role="button" target="_blank"
+          style="font-size:12px;">Poster</a>
+        {% endif %}
         {% if publication.video %}
         <a href="{{ publication.video }}" class="btn btn-sm z-depth-0" role="button" target="_blank"
           style="font-size:12px;">Video</a>

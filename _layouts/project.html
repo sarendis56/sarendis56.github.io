@@ -62,6 +62,7 @@
           {% if publication.code %}<a href="{{ publication.code | escape }}">Code</a>{% endif %}
           {% if publication.demo %}<a href="{{ publication.demo | relative_url }}">Interactive demo</a>{% endif %}
           {% if publication.slides %}<a href="{{ publication.slides | absolute_url }}">Slides</a>{% endif %}
+          {% if publication.poster %}<a href="{{ publication.poster | absolute_url }}">Poster</a>{% endif %}
           {% if publication.video %}<a href="{{ publication.video | escape }}">Video</a>{% endif %}
         </div>
       </header>

@@ -129,6 +129,9 @@ main:
     pdf: assets/docs/HotNets26.pdf
     code: https://github.com/sarendis56/SemDN_HotNets26
     demo: /papers/semantics-delivery-network/demo/
+    poster: assets/docs/HotNets_Poster.pdf
+    slides: assets/docs/HotNets_Slides.pdf
+    video: https://drive.google.com/file/d/12U6y-TGuGBD10ZPc6e_BqzlP7rXYLxQm/view?usp=sharing
     bibtex: |
       @inproceedings{hua2026semantics,
         title={Semantics Delivery Network: Rethinking Web Retrieval Infrastructure for LLM Agents},
@@ -145,7 +148,7 @@ main:
         series={HotNets '26}
       }
     notes: |
-      Accepted. Acceptance Rate: 43/188 ≈ 22.9%.
+      Accepted. Acceptance Rate: 43/188 ≈ 22.9%. Link a shorter talk (2 min): https://djapg7v42ea9q.cloudfront.net/short-video/hotnets26-paper46.mp4. Link to a longer talk (25 min): https://djapg7v42ea9q.cloudfront.net/artifact/paper46/talk.mp4. Slides for this longer talk: https://conferences.sigcomm.org/hotnets/2026/artifact/paper46/slides.pdf.
 
   - title: "Matryoshka Hash Representations for Model-Aware Compact Semantic Retrieval"
     id: matryoshka-hash-representations
