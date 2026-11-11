@@ -1,7 +1,7 @@
 # Basic Information
 title: Peichun Hua
-position: B.Eng Student in Computer Science and Engineering
-affiliation: CUHK-Shenzhen
+position: B.Eng, Computer Science and Engineering (2026)
+affiliation: The Chinese University of Hong Kong, Shenzhen (CUHK-Shenzhen)
 email: peichunhua (at) link.cuhk.edu.cn
 
 # Search Engine Optimization (SEO)
@@ -15,7 +15,7 @@ baseurl: ""
 # Links
 # If you don't need one of them, you may delete the corresponding line.
 google_scholar: https://scholar.google.com/citations?user=Ey5bkX0AAAAJ&hl=en
-semantic_scholar: https://www.semanticscholar.org/author/Pei-Chun-Hua/2398806992
+semantic_scholar: https://www.semanticscholar.org/author/Peichun-Hua/2398806992
 cv_link: assets/docs/CV.pdf
 github_link: https://github.com/sarendis56
 
