@@ -148,7 +148,7 @@ main:
         series={HotNets '26}
       }
     notes: |
-      Accepted. Acceptance Rate: 43/188 ≈ 22.9%. Link a shorter talk (2 min): https://djapg7v42ea9q.cloudfront.net/short-video/hotnets26-paper46.mp4. Link to a longer talk (25 min): https://djapg7v42ea9q.cloudfront.net/artifact/paper46/talk.mp4. Slides for this longer talk: https://conferences.sigcomm.org/hotnets/2026/artifact/paper46/slides.pdf.
+      Accepted. Acceptance Rate: 43/188 ≈ 22.9%. Other versions: <a href="https://djapg7v42ea9q.cloudfront.net/short-video/hotnets26-paper46.mp4" target="_blank">2-min talk</a> · <a href="https://djapg7v42ea9q.cloudfront.net/artifact/paper46/talk.mp4" target="_blank">25-min talk</a> · <a href="https://conferences.sigcomm.org/hotnets/2026/artifact/paper46/slides.pdf" target="_blank">25-min talk slides</a>.
 
   - title: "Matryoshka Hash Representations for Model-Aware Compact Semantic Retrieval"
     id: matryoshka-hash-representations
