@@ -148,7 +148,7 @@ main:
         series={HotNets '26}
       }
     notes: |
-      Accepted. Acceptance Rate: 43/188 ≈ 22.9%. Other versions: <a href="https://djapg7v42ea9q.cloudfront.net/short-video/hotnets26-paper46.mp4" target="_blank">2-min talk</a> · <a href="https://djapg7v42ea9q.cloudfront.net/artifact/paper46/talk.mp4" target="_blank">25-min talk</a> · <a href="https://conferences.sigcomm.org/hotnets/2026/artifact/paper46/slides.pdf" target="_blank">25-min talk slides</a>.
+      Accepted. Acceptance Rate: 43/188 ≈ 22.9%. The linked talk and slides above is for a standard 10-min presentation. Other versions: <a href="https://djapg7v42ea9q.cloudfront.net/short-video/hotnets26-paper46.mp4" target="_blank">2-min talk</a> · <a href="https://djapg7v42ea9q.cloudfront.net/artifact/paper46/talk.mp4" target="_blank">25-min talk</a> · <a href="https://conferences.sigcomm.org/hotnets/2026/artifact/paper46/slides.pdf" target="_blank">25-min talk slides</a>.
 
   - title: "Matryoshka Hash Representations for Model-Aware Compact Semantic Retrieval"
     id: matryoshka-hash-representations
@@ -302,6 +302,7 @@ main:
     conference: IEEE International Conference on Systems, Man, and Cybernetics <strong>(SMC)</strong>, 2026.
     link: https://arxiv.org/abs/2605.07340
     pdf: assets/docs/arxiv-2605.07340.pdf
+    slides: assets/docs/SMC_Slides.pdf
     code: https://github.com/WANGXinuuu1/Open-Set-PUF-Authentication-for-Heterogeneous-IoT-Devices
     bibtex: |
       @inproceedings{wang2026openpuf,
