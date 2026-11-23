@@ -1,6 +1,6 @@
 {% assign publication = include.publication %}
 {% capture excluded %}{% include project-excluded.html publication=publication %}{% endcapture %}
-{% unless excluded == 'true' %}
+{% if excluded != 'true' or publication.show_on_homepage %}
 <li>
   <div class="pub-row">
     <div class="col-sm-12" style="position: relative;padding-right: 15px;padding-left: 15px;">
@@ -64,4 +64,4 @@
     </div>
   </div>
 </li>
-{% endunless %}
+{% endif %}

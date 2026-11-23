@@ -26,7 +26,7 @@ permalink: /projects/
     {% assign project_page = site.projects | where: 'project_id', slug | first %}
     {% assign publication = site.data.publications.main | where: 'id', slug | first %}
     {% capture excluded %}{% include project-excluded.html publication=publication project=project_page %}{% endcapture %}
-    {% if project_page and excluded != 'true' %}
+    {% if project_page.show_in_gallery or project_page and excluded != 'true' %}
     {% assign figure = project.figures | first %}
     {% unless figure %}{% assign related = project.related_publications | first %}{% assign figure = related.figures | first %}{% endunless %}
     <article class="card">

@@ -1,4 +1,87 @@
 {
+  "chaosformer": {
+    "name": "ChaosFormer",
+    "status": "Accepted · ACM TODAES",
+    "authors": [
+      "Peichun Hua",
+      "Yue Zheng"
+    ],
+    "summary": "ChaosFormer binds a trained transformer to an authorized edge device. If someone copies the model file, selected weights remain encrypted. The authorized device uses a key derived from its hardware to recover those weights and run the original model.",
+    "stats": [
+      {
+        "value": "10 of 10",
+        "label": "Vision transformer configurations retained their original ImageNet accuracy on authorized execution."
+      },
+      {
+        "value": "0.07–0.12%",
+        "label": "ImageNet accuracy when running the encrypted weights in Table 3."
+      }
+    ],
+    "method": [
+      "The provider selects layers whose weights strongly affect prediction accuracy. It uses a device-specific key to permute weights in those layers. The authorized device reconstructs the key from a physical unclonable function (PUF), which exploits repeatable differences between chips.",
+      "The base scheme rearranges weight values. ChaosFormer-S adds a diffusion step that also changes the encoded values. Both schemes operate on a trained model."
+    ],
+    "figures": [
+      {
+        "src": "/assets/img/projects/chaosformer/method-overview.png",
+        "width": 1200,
+        "height": 630,
+        "alt": "Diagram showing model training, device-specific encryption at purchase, and deployment on authorized and unauthorized hardware.",
+        "caption": "Figure 1 from the accepted manuscript. The provider binds the model to the purchaser’s device before deployment."
+      }
+    ],
+    "results": [
+      "Table 3 compares each original model with its decrypted and encrypted versions on ImageNet. Across all ten configurations, authorized decryption recovered the original accuracy. Running the encrypted weights yielded accuracy close to the 0.1% chance level for 1,000 classes."
+    ],
+    "tables": [
+      {
+        "caption": "ImageNet accuracy (%) for selected configurations from Table 3.",
+        "columns": [
+          "Model",
+          "Original",
+          "Authorized",
+          "Encrypted"
+        ],
+        "rows": [
+          [
+            "ViT-B",
+            "80.32",
+            "80.32",
+            "0.10"
+          ],
+          [
+            "Swin-B-384",
+            "86.44",
+            "86.44",
+            "0.08"
+          ],
+          [
+            "DeiT-S",
+            "77.13",
+            "77.13",
+            "0.09"
+          ]
+        ]
+      }
+    ],
+    "limitations": [
+      "The protection targets copies taken from storage or distribution channels. It assumes the production runtime protects the reconstructed key and decrypted weights during authorized execution."
+    ],
+    "topics": [
+      "Model IP protection",
+      "Edge inference",
+      "Hardware security"
+    ],
+    "references": [
+      {
+        "authors": "Ashish Vaswani et al.",
+        "title": "Attention Is All You Need",
+        "venue": "NeurIPS",
+        "year": 2017,
+        "url": "https://arxiv.org/abs/1706.03762"
+      }
+    ]
+  },
   "tessera": {
     "name": "Tessera",
     "status": "arXiv preprint · 2026",

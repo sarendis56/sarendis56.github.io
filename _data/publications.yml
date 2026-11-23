@@ -119,6 +119,22 @@ main:
         primaryClass={cs.CR}
       }
 
+  - title: "ChaosFormer: Hardware-Bound Edge Transformer Model Obfuscation for Intellectual Property Protection"
+    id: chaosformer
+    authors: <strong>Peichun Hua</strong> and Yue Zheng
+    conference_short: TODAES
+    conference: Accepted for publication in ACM Transactions on Design Automation of Electronic Systems.
+    pdf: assets/docs/TODAES.pdf
+    code: https://github.com/sarendis56/ChaosFormer-IP-Protection
+    show_on_homepage: true
+    bibtex: |
+      @article{huaChaosFormer,
+        author={Peichun Hua and Yue Zheng},
+        title={ChaosFormer: Hardware-Bound Edge Transformer Model Obfuscation for Intellectual Property Protection},
+        journal={ACM Transactions on Design Automation of Electronic Systems},
+        note={Accepted for publication}
+      }
+
   - title: "Semantics Delivery Network: Rethinking Web Retrieval Infrastructure for LLM Agents"
     id: semantics-delivery-network
     source_pdf: https://arxiv.org/pdf/2609.22486

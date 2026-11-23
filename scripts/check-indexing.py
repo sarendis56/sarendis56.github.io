@@ -85,7 +85,8 @@ for slug, project in projects.items():
     check(bool(doc.meta.get('citation_title', [''])[0]), 'Missing title: ' + slug)
     check(len(doc.ld) == 1 and doc.ld[0].get('@type') == 'ScholarlyArticle', 'Invalid structured data: ' + slug)
     check('{{' not in text and '{%' not in text, 'Unrendered Liquid: ' + slug)
-    check('TODAES.pdf' not in text and 'CV.pdf' not in text, 'Excluded document linked from project: ' + slug)
+    check(all(path not in text for path in policy['excluded_paths']
+              if not (noindex and base + path in doc.meta.get('citation_pdf_url', []))), 'Excluded document linked from project: ' + slug)
     if project['status'].startswith('arXiv preprint'):
         check('citation_conference_title' not in doc.meta, 'Preprint mislabeled as conference publication: ' + slug)
     media_groups = [project] + project.get('related_publications', [])
